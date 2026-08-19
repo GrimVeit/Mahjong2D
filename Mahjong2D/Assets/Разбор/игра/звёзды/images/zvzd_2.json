@@ -1,0 +1,20 @@
+{ "skeleton": { "images": "G:/!_РАБОЧЕЕ/казино/маджонг/анимация/images/" },
+"bones": [
+	{ "name": "root" }
+],
+"slots": [
+	{ "name": "cvet", "bone": "root", "attachment": "cvet" },
+	{ "name": "pdpl", "bone": "root", "attachment": "pdpl" }
+],
+"skins": {
+	"default": {
+		"cvet": {
+			"cvet": { "x": 242, "y": -236, "width": 376, "height": 406 }
+		},
+		"pdpl": {
+			"pdpl": { "x": 242, "y": -236.5, "width": 292, "height": 305 }
+		}
+	}
+},
+"animations": { "animation": {} }
+}

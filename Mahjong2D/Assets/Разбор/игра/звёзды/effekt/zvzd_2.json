@@ -1,0 +1,87 @@
+{
+"skeleton": { "hash": "NCQGn9bntJz3+j1oVQ7Jf/bGUdo", "spine": "3.8.0", "x": -194.23, "y": -173.29, "width": 376, "height": 406 },
+"bones": [
+	{ "name": "root" },
+	{ "name": "bone", "parent": "root", "x": -0.86, "y": 35.38 },
+	{ "name": "bone2", "parent": "bone", "length": 106.6, "rotation": 90 },
+	{ "name": "svet", "parent": "bone", "length": 108.58, "rotation": 90.69, "x": 1.32, "y": 0.66 }
+],
+"slots": [
+	{ "name": "cvet", "bone": "svet", "attachment": "cvet" },
+	{ "name": "pdpl", "bone": "bone2", "attachment": "pdpl" }
+],
+"skins": [
+	{
+		"name": "default",
+		"attachments": {
+			"cvet": {
+				"cvet": {
+					"type": "mesh",
+					"uvs": [ 1, 1, 0, 1, 0, 0, 1, 0 ],
+					"triangles": [ 1, 2, 3, 1, 3, 0 ],
+					"vertices": [ -211.51, -178.76, -206.95, 197.21, 199.02, 192.29, 194.46, -183.68 ],
+					"hull": 4
+				}
+			},
+			"pdpl": {
+				"pdpl": {
+					"type": "mesh",
+					"uvs": [ 1, 1, 0, 1, 0, 0, 1, 0 ],
+					"triangles": [ 1, 2, 3, 1, 3, 0 ],
+					"vertices": [ -158.67, -140.63, -158.67, 151.37, 146.33, 151.37, 146.33, -140.63 ],
+					"hull": 4
+				}
+			}
+		}
+	}
+],
+"animations": {
+	"animation": {
+		"slots": {
+			"pdpl": {
+				"color": [
+					{ "time": 0.8333, "color": "ffffffff", "curve": 0.25, "c3": 0.75 },
+					{ "time": 1, "color": "ffffff00" }
+				]
+			},
+			"cvet": {
+				"color": [
+					{ "color": "ffffffe6", "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.9, "color": "ffffffb1", "curve": 0.25, "c3": 0.75 },
+					{ "time": 1, "color": "ffffff00" }
+				]
+			}
+		},
+		"bones": {
+			"bone2": {
+				"rotate": [
+					{ "angle": -90, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.1667, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.3333, "angle": 90, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.5, "angle": 180, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.6667, "angle": -90 }
+				],
+				"scale": [
+					{ "time": 0.5, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.8333, "x": 0.425, "y": 0.425, "curve": 0.25, "c3": 0.75 },
+					{ "time": 1, "x": 1.091, "y": 1.091 }
+				]
+			},
+			"svet": {
+				"rotate": [
+					{ "angle": -90.69, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.2333, "angle": -0.69, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.4, "angle": 89.31, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.5667, "angle": 179.31, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.7333, "angle": -90.69 }
+				],
+				"scale": [
+					{ "time": 0.5667, "curve": 0.25, "c3": 0.75 },
+					{ "time": 0.9, "x": 0.337, "y": 0.337, "curve": 0.25, "c3": 0.75 },
+					{ "time": 1, "x": 0.987, "y": 0.987 }
+				]
+			}
+		}
+	}
+}
+}

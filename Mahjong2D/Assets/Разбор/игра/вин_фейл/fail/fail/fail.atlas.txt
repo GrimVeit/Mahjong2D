@@ -1,0 +1,132 @@
+
+fail.png
+size: 2048,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+L_kist
+  rotate: false
+  xy: 167, 5
+  size: 152, 119
+  orig: 152, 119
+  offset: 0, 0
+  index: -1
+L_manjet_1
+  rotate: true
+  xy: 1639, 17
+  size: 80, 86
+  orig: 80, 86
+  offset: 0, 0
+  index: -1
+L_manjet_2
+  rotate: true
+  xy: 1928, 352
+  size: 73, 69
+  orig: 73, 69
+  offset: 0, 0
+  index: -1
+L_plecho
+  rotate: true
+  xy: 1313, 25
+  size: 150, 242
+  orig: 150, 242
+  offset: 0, 0
+  index: -1
+L_predplecho
+  rotate: true
+  xy: 1639, 99
+  size: 150, 153
+  orig: 150, 153
+  offset: 0, 0
+  index: -1
+P_kist
+  rotate: false
+  xy: 2, 2
+  size: 163, 122
+  orig: 163, 122
+  offset: 0, 0
+  index: -1
+P_manjet_1
+  rotate: false
+  xy: 1928, 427
+  size: 70, 75
+  orig: 70, 75
+  offset: 0, 0
+  index: -1
+P_manjet_2
+  rotate: false
+  xy: 1928, 504
+  size: 77, 85
+  orig: 77, 85
+  offset: 0, 0
+  index: -1
+P_plecho
+  rotate: false
+  xy: 1794, 19
+  size: 105, 230
+  orig: 105, 230
+  offset: 0, 0
+  index: -1
+P_predplecho
+  rotate: false
+  xy: 1901, 100
+  size: 131, 149
+  orig: 131, 149
+  offset: 0, 0
+  index: -1
+body
+  rotate: true
+  xy: 918, 445
+  size: 563, 681
+  orig: 563, 681
+  offset: 0, 0
+  index: -1
+glow
+  rotate: true
+  xy: 2, 126
+  size: 882, 914
+  orig: 882, 914
+  offset: 0, 0
+  index: -1
+golova
+  rotate: true
+  xy: 1639, 251
+  size: 338, 287
+  orig: 338, 287
+  offset: 0, 0
+  index: -1
+kolokol
+  rotate: true
+  xy: 1901, 6
+  size: 92, 119
+  orig: 92, 119
+  offset: 0, 0
+  index: -1
+pica
+  rotate: true
+  xy: 1601, 11
+  size: 578, 36
+  orig: 578, 36
+  offset: 0, 0
+  index: -1
+poiotno1
+  rotate: false
+  xy: 918, 100
+  size: 393, 75
+  orig: 393, 75
+  offset: 0, 0
+  index: -1
+polotno2
+  rotate: true
+  xy: 1601, 591
+  size: 417, 351
+  orig: 417, 351
+  offset: 0, 0
+  index: -1
+tabl
+  rotate: false
+  xy: 918, 177
+  size: 633, 266
+  orig: 633, 266
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,20 @@
+
+zvzd_2.png
+size: 512,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+cvet
+  rotate: false
+  xy: 2, 296
+  size: 376, 406
+  orig: 376, 406
+  offset: 0, 0
+  index: -1
+pdpl
+  rotate: true
+  xy: 2, 2
+  size: 292, 305
+  orig: 292, 305
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,153 @@
+
+win.png
+size: 2048,2048
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+L_2_lenti
+  rotate: true
+  xy: 2, 5
+  size: 66, 195
+  orig: 66, 195
+  offset: 0, 0
+  index: -1
+L_CHRN_lenta
+  rotate: false
+  xy: 1005, 23
+  size: 109, 146
+  orig: 109, 146
+  offset: 0, 0
+  index: -1
+L_KR_lenta
+  rotate: true
+  xy: 1116, 41
+  size: 128, 118
+  orig: 128, 118
+  offset: 0, 0
+  index: -1
+L_huka_jezl
+  rotate: false
+  xy: 959, 1509
+  size: 215, 536
+  orig: 215, 536
+  offset: 0, 0
+  index: -1
+L_kolokol_1
+  rotate: false
+  xy: 234, 24
+  size: 22, 22
+  orig: 22, 22
+  offset: 0, 0
+  index: -1
+L_kolokol_2
+  rotate: false
+  xy: 233, 48
+  size: 23, 23
+  orig: 23, 23
+  offset: 0, 0
+  index: -1
+L_kolokol_3
+  rotate: true
+  xy: 234, 2
+  size: 20, 19
+  orig: 20, 19
+  offset: 0, 0
+  index: -1
+L_plecho
+  rotate: true
+  xy: 613, 2
+  size: 167, 160
+  orig: 167, 160
+  offset: 0, 0
+  index: -1
+P_plecho
+  rotate: true
+  xy: 775, 57
+  size: 112, 228
+  orig: 112, 228
+  offset: 0, 0
+  index: -1
+P_ruka
+  rotate: false
+  xy: 1176, 1537
+  size: 243, 194
+  orig: 243, 194
+  offset: 0, 0
+  index: -1
+Telo
+  rotate: false
+  xy: 2, 397
+  size: 563, 672
+  orig: 563, 672
+  offset: 0, 0
+  index: -1
+gol_kolocol_1
+  rotate: true
+  xy: 199, 35
+  size: 36, 32
+  orig: 36, 32
+  offset: 0, 0
+  index: -1
+gol_kolokol_2
+  rotate: false
+  xy: 199, 3
+  size: 33, 30
+  orig: 33, 30
+  offset: 0, 0
+  index: -1
+golova
+  rotate: true
+  xy: 972, 854
+  size: 338, 276
+  orig: 338, 276
+  offset: 0, 0
+  index: -1
+kolokol
+  rotate: false
+  xy: 1236, 50
+  size: 95, 119
+  orig: 95, 119
+  offset: 0, 0
+  index: -1
+l_lenta
+  rotate: false
+  xy: 1176, 1733
+  size: 301, 312
+  orig: 301, 312
+  offset: 0, 0
+  index: -1
+p_lenta
+  rotate: false
+  xy: 959, 1194
+  size: 301, 313
+  orig: 301, 313
+  offset: 0, 0
+  index: -1
+podnos
+  rotate: false
+  xy: 2, 73
+  size: 609, 322
+  orig: 609, 322
+  offset: 0, 0
+  index: -1
+svet
+  rotate: false
+  xy: 2, 1071
+  size: 955, 974
+  orig: 955, 974
+  offset: 0, 0
+  index: -1
+win
+  rotate: false
+  xy: 613, 171
+  size: 668, 276
+  orig: 668, 276
+  offset: 0, 0
+  index: -1
+zvzdi
+  rotate: false
+  xy: 567, 449
+  size: 403, 620
+  orig: 403, 620
+  offset: 0, 0
+  index: -1
