@@ -4,7 +4,7 @@ using BaCon;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public interface ISceneController
+public interface ISceneEntry
 {
     UniTask Initialize(DIContainer container);
     UniTask ShutDown();

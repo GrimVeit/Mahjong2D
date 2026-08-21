@@ -23,7 +23,7 @@ public sealed class GameApplication : IDisposable
     {
         var sceneService = GlobalContainer.Resolve<SceneService>();
 
-        return sceneService.ChangeScene(new SceneTransition(Scenes.SCENE_1,LoadingType.Default));
+        return sceneService.ChangeScene(new SceneTransition(Scenes.Menu, LoadingType.Default));
     }
 
 

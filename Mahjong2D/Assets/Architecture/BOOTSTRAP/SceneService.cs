@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class SceneService
 {
-    private ISceneController currentScene;
+    private ISceneEntry currentScene;
     private bool isTransitioning;
 
     private readonly DIContainer globalContainer;
@@ -22,7 +22,7 @@ public class SceneService
     {
         if (isTransitioning)
         {
-            throw new System.InvalidOperationException("A scene transition is already in progress.");
+            Debug.LogWarning("A scene transition is already in progress.");
         }
 
         isTransitioning = true;
@@ -56,12 +56,12 @@ public class SceneService
             FindObjectsInactive.Include,
             FindObjectsSortMode.None);
 
-        var sceneControllers = controllers.OfType<ISceneController>().ToArray();
+        var sceneControllers = controllers.OfType<ISceneEntry>().ToArray();
 
         if (sceneControllers.Length != 1)
         {
             throw new System.InvalidOperationException(
-                $"Scene must contain exactly one {nameof(ISceneController)}; found {sceneControllers.Length}.");
+                $"Scene must contain exactly one {nameof(ISceneEntry)}; found {sceneControllers.Length}.");
         }
 
         currentScene = sceneControllers[0];

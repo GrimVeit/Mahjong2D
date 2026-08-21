@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary>
 /// Common scene entry point. Each scene configures its own sounds in the Inspector.
 /// </summary>
-public abstract class SceneEntryPoint : MonoBehaviour, ISceneController
+public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
 {
     [Header("Scene sounds")]
     [SerializeField] private List<Sound> sounds = new();
@@ -15,7 +15,7 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneController
 
     private SoundPresenter soundPresenter;
 
-    public async UniTask Initialize(DIContainer container)
+    public virtual async UniTask Initialize(DIContainer container)
     {
         SceneService = container.Resolve<SceneService>();
 
@@ -28,7 +28,7 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneController
         await OnSceneInitialized(container);
     }
 
-    public async UniTask ShutDown()
+    public virtual async UniTask ShutDown()
     {
         await OnSceneShuttingDown();
         soundPresenter?.Dispose();

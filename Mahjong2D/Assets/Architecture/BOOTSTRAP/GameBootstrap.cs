@@ -6,7 +6,7 @@ public static class GameBootstrap
 {
     private static GameApplication application;
 
-    //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void Reset()
     {
         Application.quitting -= Shutdown;
@@ -14,7 +14,7 @@ public static class GameBootstrap
         application = null;
     }
 
-    //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Initialize()
     {
         InitializeAsync().Forget();

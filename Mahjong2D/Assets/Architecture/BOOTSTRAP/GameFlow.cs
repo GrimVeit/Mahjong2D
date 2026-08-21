@@ -26,7 +26,7 @@ public class GameFlow
     {
         await sceneService.ChangeScene(
             new SceneTransition(
-                Scenes.SCENE_1,
+                Scenes.Menu,
                 LoadingType.Default
             )
         );

@@ -20,7 +20,7 @@ public class CircleTransitionUI : MonoBehaviour
     private Material material;
 
     private Tween radiusTween;
-    private Tween fadeTween;
+    private Sequence fadeSequence;
 
     private static readonly int Radius =
         Shader.PropertyToID("_Radius");
@@ -32,7 +32,7 @@ public class CircleTransitionUI : MonoBehaviour
         Shader.PropertyToID("_Aspect");
 
 
-    private void Awake()
+    public void Initialize()
     {
         if (transitionImage == null)
         {
@@ -44,8 +44,6 @@ public class CircleTransitionUI : MonoBehaviour
             return;
         }
 
-        // Создаём отдельный экземпляр материала
-        // только для этого Image.
         material = Instantiate(
             transitionImage.material
         );
@@ -59,42 +57,15 @@ public class CircleTransitionUI : MonoBehaviour
 
         UpdateAspect();
 
-        // В начале круг полностью закрыт?
-        // Нет — Radius 0 означает, что Image невидим.
         SetRadius(0f);
 
         transitionImage.raycastTarget = false;
     }
 
-
-    private void Start()
-    {
-        UpdateAspect();
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.LeftAlt))
-        {
-            Show();
-        }
-
-        if (Input.GetKeyDown(KeyCode.RightAlt))
-        {
-            Hide();
-        }
-    }
-
-
-    // =========================================================
-    // SHOW
-    // Круг появляется из центра
-    // =========================================================
-
-    public Tween Show()
+    public void Show()
     {
         radiusTween?.Kill();
-        fadeTween?.Kill();
+        fadeSequence?.Kill();
 
         radiusTween = DOTween.To(
                 () => material.GetFloat(Radius),
@@ -104,9 +75,8 @@ public class CircleTransitionUI : MonoBehaviour
             )
             .SetEase(showEase);
 
-        fadeTween = transitionCanvasGroup.DOFade(1, duration);
-
-        return radiusTween;
+        fadeSequence = DOTween.Sequence();
+        fadeSequence.AppendInterval(0.3f).Append(transitionCanvasGroup.DOFade(1, duration / 2));
     }
 
 
@@ -115,10 +85,10 @@ public class CircleTransitionUI : MonoBehaviour
     // Круг исчезает к центру
     // =========================================================
 
-    public Tween Hide()
+    public void Hide()
     {
         radiusTween?.Kill();
-        fadeTween?.Kill();
+        fadeSequence?.Kill();
 
         radiusTween = DOTween.To(
                 () => material.GetFloat(Radius),
@@ -128,9 +98,8 @@ public class CircleTransitionUI : MonoBehaviour
             )
             .SetEase(hideEase);
 
-        fadeTween = transitionCanvasGroup.DOFade(0, duration);
-
-        return radiusTween;
+        fadeSequence = DOTween.Sequence();
+        fadeSequence.Append(transitionCanvasGroup.DOFade(0, duration/2));
     }
 
 

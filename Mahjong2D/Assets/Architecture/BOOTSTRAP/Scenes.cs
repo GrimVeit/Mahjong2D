@@ -4,6 +4,6 @@ using UnityEngine;
 
 public static class Scenes
 {
-    public const string SCENE_1 = "Menu";
-    public const string SCENE_2 = "Scene2";
+    public const string Menu = "MenuScene";
+    public const string Game = "GameScene";
 }

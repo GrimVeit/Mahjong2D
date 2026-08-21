@@ -5,24 +5,28 @@ using UnityEngine;
 public class UIRootView : MonoBehaviour
 {
     [SerializeField] private Canvas canvas;
-    [SerializeField] private GameObject loadingScreen;
+    [SerializeField] private CircleTransitionUI circleTransitionUI;
     [SerializeField] private Transform uiSceneContainer;
 
     private void Awake()
     {
-        loadingScreen.SetActive(false);
+        circleTransitionUI.Hide();
+
+        circleTransitionUI.Initialize();
     }
 
     public async UniTask ShowLoadingScreen(LoadingType loadingType)
     {
-        loadingScreen.SetActive(true);
-        await UniTask.Delay(300, DelayType.UnscaledDeltaTime);
+        circleTransitionUI.Show();
+
+        await UniTask.Delay(600, DelayType.UnscaledDeltaTime);
     }
 
     public async UniTask HideLoadingScreen(LoadingType loadingType)
     {
-        await UniTask.Delay(300, DelayType.UnscaledDeltaTime);
-        loadingScreen.SetActive(false);
+        circleTransitionUI?.Hide();
+
+        await UniTask.Delay(600, DelayType.UnscaledDeltaTime);
     }
 
     public void AttachSceneUI(GameObject sceneUI, Camera camera)
