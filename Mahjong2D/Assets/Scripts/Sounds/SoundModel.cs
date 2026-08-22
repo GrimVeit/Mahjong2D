@@ -4,169 +4,117 @@ using UnityEngine;
 
 public class SoundModel
 {
-    public float VolumeSound => volumeSound;
-    public float VolumeMusic => volumeMusic;
+    private readonly Dictionary<string, Sound> _sounds;
 
-    public event Action OnMuteSounds;
-    public event Action OnUnmuteSounds;
+    private readonly ISoundSettingsInfoProvider _settingsInfo;
+    private readonly ISoundSettingsEventsProvider _settingsEvents;
 
-    public Dictionary<string, Sound> sounds = new Dictionary<string, Sound>();
-
-    private string KEY_MUTE;
-    private string KEY_VOLUME_SOUND;
-    private string KEY_VOLUME_MUSIC;
-
-    private bool isMute = false;
-
-    private float volumeSound;
-    private float volumeMusic;
-
-    public SoundModel(List<Sound> sounds, string KEY_MUTE, string KEY_VOLUME_SOUND, string KEY_VOLUME_MUSIC)
+    public SoundModel(List<Sound> sounds, ISoundSettingsInfoProvider settingsInfo, ISoundSettingsEventsProvider settingsEvents)
     {
-        for (int i = 0; i < sounds.Count; i++)
+        _sounds = new Dictionary<string, Sound>();
+
+        foreach (Sound sound in sounds)
         {
-            this.sounds[sounds[i].ID] = sounds[i];
+            if (sound == null)
+                continue;
+
+            if (_sounds.ContainsKey(sound.ID))
+            {
+                Debug.LogError($"Duplicate sound ID: '{sound.ID}'.");
+                continue;
+            }
+
+            _sounds.Add(sound.ID, sound);
         }
 
-        this.KEY_MUTE = KEY_MUTE;
-        this.KEY_VOLUME_SOUND = KEY_VOLUME_SOUND;
-        this.KEY_VOLUME_MUSIC = KEY_VOLUME_MUSIC;
+        _settingsInfo = settingsInfo;
+        _settingsEvents = settingsEvents;
     }
 
     public void Initialize()
     {
-        isMute = PlayerPrefs.GetInt(KEY_MUTE, 1) == 0;
-
-        volumeSound = PlayerPrefs.GetFloat(KEY_VOLUME_SOUND, 0.5f);
-        volumeMusic = PlayerPrefs.GetFloat(KEY_VOLUME_MUSIC, 0.7f);
-
-        SetVolume(volumeSound, AudioType.Sound);
-        SetVolume(volumeMusic, AudioType.Music);
-
-        foreach (var sound in sounds.Values)
+        foreach (Sound sound in _sounds.Values)
         {
             sound.Initialize();
         }
 
-        CheckMuteUnmute();
+        _settingsEvents.OnChangeSoundVolume += HandleChangeSoundVolume;
+        _settingsEvents.OnChangeMusicVolume += HandleChangeMusicVolume;
+        _settingsEvents.OnChangeMute += HandleChangeMute;
+
+        HandleChangeSoundVolume(_settingsInfo.SoundVolume);
+        HandleChangeMusicVolume(_settingsInfo.MusicVolume);
+        HandleChangeMute(_settingsInfo.IsMuted);
     }
 
     public void Dispose()
     {
-        int value;
+        _settingsEvents.OnChangeSoundVolume -= HandleChangeSoundVolume;
+        _settingsEvents.OnChangeMusicVolume -= HandleChangeMusicVolume;
+        _settingsEvents.OnChangeMute -= HandleChangeMute;
 
-        if (isMute) value = 0;
-        else value = 1;
-
-        PlayerPrefs.SetInt(KEY_MUTE, value);
-        PlayerPrefs.SetFloat(KEY_VOLUME_SOUND, volumeSound);
-        PlayerPrefs.SetFloat(KEY_VOLUME_MUSIC, volumeMusic);
-
-        foreach (var sound in sounds.Values)
+        foreach (Sound sound in _sounds.Values)
         {
             sound.Dispose();
         }
     }
 
-    public void MuteUnmute()
-    {
-        isMute = !isMute;
-        CheckMuteUnmute();
-    }
-
-    private void CheckMuteUnmute()
-    {
-        if (isMute)
-        {
-            MuteAll();
-            OnMuteSounds?.Invoke();
-        }
-        else
-        {
-            UnmuteAll();
-            OnUnmuteSounds?.Invoke();
-        }
-    }
-
-    private void MuteAll()
-    {
-        foreach (var sound in sounds.Values)
-        {
-            sound.MainMute();
-        }
-    }
-
-    private void UnmuteAll()
-    {
-        foreach (var sound in sounds.Values)
-        {
-            sound.MainUnmute();
-        }
-    }
+    // --------------------------------------------------
+    // SOUND
+    // --------------------------------------------------
 
     public ISound GetSound(string id)
     {
-        if (sounds.ContainsKey(id))
-        {
-            return sounds[id];
-        }
+        if (_sounds.TryGetValue(id, out Sound sound))
+            return sound;
 
-        Debug.LogError("Нет звукового файла с идентификатором " + id);
+        Debug.LogError(
+            $"Sound with ID '{id}' was not found.");
+
         return null;
     }
 
     public void Play(string id)
     {
-        if (sounds.ContainsKey(id))
-        {
-            sounds[id].Play();
-            return;
-        }
-
-        Debug.LogError("Нет звукового файла с идентификатором " + id);
+        GetSound(id)?.Play();
     }
 
     public void PlayOneShot(string id)
     {
-        if (sounds.ContainsKey(id))
-        {
-            sounds[id].PlayOneShot();
-            return;
-        }
-
-        Debug.LogError("Нет звукового файла с идентификатором " + id);
+        GetSound(id)?.PlayOneShot();
     }
 
-    #region Output
+    // --------------------------------------------------
+    // SETTINGS
+    // --------------------------------------------------
 
-    public event Action<float> OnChangeVolumeSound;
-    public event Action<float> OnChangeVolumeMusic;
-
-    #endregion
-
-    #region Input
-
-    public void SetVolume(float value, AudioType type)
+    private void HandleChangeSoundVolume(float value)
     {
-        foreach (var sound in sounds.Values)
+        foreach (Sound sound in _sounds.Values)
         {
-            if (sound.AudioType == type)
-            {
-                sound.SetMainRatio(value);
-            }
-        }
+            if (sound.AudioType != AudioType.Sound)
+                continue;
 
-        if (type == AudioType.Sound)
-        {
-            OnChangeVolumeSound?.Invoke(value);
-            volumeSound = value;
-        }
-        else
-        {
-            volumeMusic = value;
-            OnChangeVolumeMusic?.Invoke(value);
+            sound.SetGlobalVolume(value);
         }
     }
 
-    #endregion
+    private void HandleChangeMusicVolume(float value)
+    {
+        foreach (Sound sound in _sounds.Values)
+        {
+            if (sound.AudioType != AudioType.Music)
+                continue;
+
+            sound.SetGlobalVolume(value);
+        }
+    }
+
+    private void HandleChangeMute(bool value)
+    {
+        foreach (Sound sound in _sounds.Values)
+        {
+            sound.SetMuted(value);
+        }
+    }
 }

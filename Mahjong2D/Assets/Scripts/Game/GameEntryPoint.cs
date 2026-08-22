@@ -4,26 +4,16 @@ using BaCon;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class GameEntryPoint : SceneEntryPoint, ISceneEntry
+public class GameEntryPoint : SceneEntryPoint
 {
-    private SceneService _sceneService;
-
     public override async UniTask Initialize(DIContainer container)
     {
-        _sceneService = container.Resolve<SceneService>();
-
         await base.Initialize(container);
-
-        await UniTask.CompletedTask;
     }
 
     public override async UniTask ShutDown()
     {
         await base.ShutDown();
-
-
-
-        await UniTask.CompletedTask;
     }
 
     private void Update()
@@ -41,6 +31,8 @@ public class GameEntryPoint : SceneEntryPoint, ISceneEntry
 
     private async UniTask GoToGame_UniTask()
     {
-        await _sceneService.ChangeScene(new SceneTransition(Scenes.Menu, LoadingType.Menu));
+        await SceneService.ChangeScene(
+            new SceneTransition(Scenes.Menu, LoadingType.Menu)
+        );
     }
 }

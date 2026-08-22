@@ -1,10 +1,10 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Panel_UIEffectGroup))]
 public abstract class Panel : MonoBehaviour
 {
+    [SerializeField] private Panel_UIEffectGroup effectGroup;
     public bool IsOpen { get; private set; }
 
     public event Action Shown;
@@ -15,27 +15,49 @@ public abstract class Panel : MonoBehaviour
 
     public void Show()
     {
-        if (IsOpen) return; IsOpen = true;
+        if (IsOpen)
+            return;
+
+        IsOpen = true;
 
         gameObject.SetActive(true);
 
-        OnShow();
-        Shown?.Invoke();
+        effectGroup.PlayShow();
+
+        OnStartShow();
     }
 
     public void Hide()
     {
-        if (!IsOpen) return; IsOpen = false;
+        if (!IsOpen)
+            return;
 
-        OnHide();
+        IsOpen = false;
+
+        effectGroup.PlayHide();
+
+        OnStartHide();
+    }
+
+    protected void CompleteShow()
+    {
+        Shown?.Invoke();
     }
 
     protected void CompleteHide()
     {
         gameObject.SetActive(false);
+
         Hidden?.Invoke();
     }
 
-    protected virtual void OnShow() { }
-    protected virtual void OnHide() { }
+    protected virtual void OnStartShow()
+    {
+        CompleteShow();
+    }
+
+    protected virtual void OnStartHide()
+    {
+        CompleteHide();
+    }
 }

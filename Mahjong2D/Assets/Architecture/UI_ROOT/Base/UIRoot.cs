@@ -1,42 +1,25 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class UIRoot : MonoBehaviour
+public abstract class UIRoot : MonoBehaviour
 {
-    private Panel currentPanel;
+    protected ISoundProvider _soundProvider { get; private set; }
+
+    public virtual void Initialize() { }
+    public virtual void Dispose() { }
+
+    public void SetSoundProvider(ISoundProvider soundProvider)
+    {
+        _soundProvider = soundProvider;
+    }
 
     protected void ShowPanel(Panel panel)
     {
-        if (panel == null || panel.IsOpen)
-            return;
-
         panel.Show();
     }
 
-    protected void ClosePanel(Panel panel)
+    protected void HidePanel(Panel panel)
     {
-        if (panel == null || !panel.IsOpen)
-            return;
-
         panel.Hide();
-
-        if (currentPanel == panel)
-            currentPanel = null;
-    }
-
-    protected void ShowExclusivePanel(Panel panel)
-    {
-        if (panel == null)
-            return;
-
-        if (currentPanel == panel && panel.IsOpen)
-            return;
-
-        currentPanel?.Hide();
-
-        currentPanel = panel;
-
-        panel.Show();
     }
 }

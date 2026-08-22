@@ -1,27 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using BaCon;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class MenuEntryPoint : SceneEntryPoint, ISceneEntry
+public class MenuEntryPoint : SceneEntryPoint
 {
-    private SceneService _sceneService;
-
     public override async UniTask Initialize(DIContainer container)
     {
         await base.Initialize(container);
-
-        _sceneService = container.Resolve<SceneService>();
-
-        await UniTask.CompletedTask;
     }
 
     public override async UniTask ShutDown()
     {
         await base.ShutDown();
-
-        await UniTask.CompletedTask;
     }
 
     private void Update()
@@ -39,6 +32,8 @@ public class MenuEntryPoint : SceneEntryPoint, ISceneEntry
 
     private async UniTask GoToGame_UniTask()
     {
-        await _sceneService.ChangeScene(new SceneTransition(Scenes.Game, LoadingType.Game));
+        await SceneService.ChangeScene(
+            new SceneTransition(Scenes.Game, LoadingType.Game)
+        );
     }
 }
