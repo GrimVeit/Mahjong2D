@@ -71,8 +71,7 @@ public class Panel_UIEffectGroup : MonoBehaviour
         {
             foreach (var effect in effects)
             {
-                sequence.AppendCallback(() => effect.PlayHide());
-                sequence.AppendInterval(hideDelayBetweenEffects);
+                effect.PlayHide();
             }
         }
     }

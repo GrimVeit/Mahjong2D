@@ -1,19 +1,18 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ViewContainer : MonoBehaviour
 {
-    private readonly Dictionary<Type, MonoBehaviour> viewsWithoutID = new Dictionary<Type, MonoBehaviour>();
-    private readonly Dictionary<(Type, string), MonoBehaviour> viewsWithID = new Dictionary<(Type, string), MonoBehaviour>();
+    private readonly Dictionary<Type, View> viewsWithoutID = new();
+    private readonly Dictionary<(Type, string), View> viewsWithID = new();
 
     public void Initialize()
     {
         viewsWithoutID.Clear();
         viewsWithID.Clear();
 
-        var views = GetComponentsInChildren<MonoBehaviour>(true);
+        var views = GetComponentsInChildren<View>(true);
 
         foreach (var view in views)
         {
@@ -21,7 +20,7 @@ public class ViewContainer : MonoBehaviour
         }
     }
 
-    public void RegisterView(Type type, MonoBehaviour view)
+    public void RegisterView(Type type, View view)
     {
         if (view is IIdentify identify)
         {
@@ -49,11 +48,11 @@ public class ViewContainer : MonoBehaviour
 
     }
 
-    public T GetView<T>() where T : MonoBehaviour
+    public T GetView<T>() where T : View
     {
         var type = typeof(T);
 
-        if (viewsWithoutID.TryGetValue(type, out MonoBehaviour view))
+        if (viewsWithoutID.TryGetValue(type, out View view))
         {
             return (T)view;
         }
@@ -62,11 +61,11 @@ public class ViewContainer : MonoBehaviour
         return null;
     }
 
-    public T GetView<T>(string ID) where T : MonoBehaviour
+    public T GetView<T>(string ID) where T : View
     {
         var type = (typeof(T), ID);
 
-        if (viewsWithID.TryGetValue(type, out MonoBehaviour view))
+        if (viewsWithID.TryGetValue(type, out View view))
         {
             return (T)view;
         }

@@ -11,7 +11,6 @@ public class UIRootView : MonoBehaviour
     private void Awake()
     {
         circleTransitionUI.Hide();
-
         circleTransitionUI.Initialize();
     }
 

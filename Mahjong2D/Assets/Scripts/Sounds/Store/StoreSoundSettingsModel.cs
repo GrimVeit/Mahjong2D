@@ -66,6 +66,8 @@ public class StoreSoundSettingsModel
 
         MusicVolume = value;
 
+        Debug.Log(MusicVolume);
+
         OnChangeMusicVolume?.Invoke(MusicVolume);
     }
 

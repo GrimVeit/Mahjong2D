@@ -6,50 +6,164 @@ using UnityEngine;
 /// <summary>
 /// Common scene entry point. Each scene configures its own sounds in the Inspector.
 /// </summary>
+/// <summary>
+/// Common scene entry point.
+/// Handles common scene systems and application lifecycle.
+/// </summary>
 public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
 {
     [Header("Scene sounds")]
     [SerializeField] private List<Sound> sounds = new();
 
+    // TRANSACTION
     protected SceneService SceneService { get; private set; }
 
-    private StoreSoundSettingsPresenter storeSoundSettingsPresenter;
-    private SoundPresenter soundPresenter;
+    // SOUND
+    protected StoreSoundSettingsPresenter _storeSoundSettingsPresenter;
+    protected SoundPresenter _soundPresenter;
+
+    // MONEY
+    protected StoreMoneyPresenter _storeMoneyPresenter;
 
     public virtual async UniTask Initialize(DIContainer container)
     {
         SceneService = container.Resolve<SceneService>();
 
-        storeSoundSettingsPresenter = new StoreSoundSettingsPresenter(
+        // -------------------------------------------------
+        // SOUND SETTINGS
+        // -------------------------------------------------
+
+        _storeSoundSettingsPresenter = new StoreSoundSettingsPresenter(
             new StoreSoundSettingsModel(
                 PlayerPrefsKeys.AUDIO_VOLUME_SOUND,
                 PlayerPrefsKeys.AUDIO_VOLUME_MUSIC,
                 PlayerPrefsKeys.AUDIO_MUTED
             )
         );
-        container.RegisterInstance<ISoundSettingsEventsProvider>(storeSoundSettingsPresenter);
-        container.RegisterInstance<ISoundSettingsInfoProvider>(storeSoundSettingsPresenter);
-        container.RegisterInstance<ISoundSettingsProvider>(storeSoundSettingsPresenter);
 
-        soundPresenter = new SoundPresenter(new SoundModel(sounds, storeSoundSettingsPresenter, storeSoundSettingsPresenter));
-        container.RegisterInstance<ISoundProvider>(soundPresenter);
+        container.RegisterInstance<ISoundSettingsEventsProvider>(
+            _storeSoundSettingsPresenter
+        );
 
-        await OnSceneInitialized(container);
+        container.RegisterInstance<ISoundSettingsInfoProvider>(
+            _storeSoundSettingsPresenter
+        );
+
+        container.RegisterInstance<ISoundSettingsProvider>(
+            _storeSoundSettingsPresenter
+        );
+
+        _storeSoundSettingsPresenter.Initialize();
+
+        // -------------------------------------------------
+        // SOUND
+        // -------------------------------------------------
+
+        _soundPresenter = new SoundPresenter(
+            new SoundModel(
+                sounds,
+                _storeSoundSettingsPresenter,
+                _storeSoundSettingsPresenter
+            )
+        );
+
+        container.RegisterInstance<ISoundProvider>(
+            _soundPresenter
+        );
+
+        _soundPresenter.Initialize();
+
+        // -------------------------------------------------
+        // MONEY
+        // -------------------------------------------------
+
+        _storeMoneyPresenter = new StoreMoneyPresenter(
+            new StoreMoneyModel(
+                PlayerPrefsKeys.MONEY_BALANCE
+            )
+        );
+
+        container.RegisterInstance<IMoneyEventsProvider>(
+            _storeMoneyPresenter
+        );
+
+        container.RegisterInstance<IMoneyInfoProvider>(
+            _storeMoneyPresenter
+        );
+
+        container.RegisterInstance<IMoneyProvider>(
+            _storeMoneyPresenter
+        );
+
+        _storeMoneyPresenter.Initialize();
+
+        await OnBaseInitialized(container);
     }
 
     public virtual async UniTask ShutDown()
     {
-        await OnSceneShuttingDown();
-
-        soundPresenter?.Dispose();
-        soundPresenter = null;
-
-        storeSoundSettingsPresenter?.Dispose();
-        storeSoundSettingsPresenter = null;
+        _soundPresenter?.Dispose();
+        _storeSoundSettingsPresenter?.Dispose();
 
         SceneService = null;
+
+        await OnBaseShutdown();
     }
 
-    protected virtual UniTask OnSceneInitialized(DIContainer container) => UniTask.CompletedTask;
-    protected virtual UniTask OnSceneShuttingDown() => UniTask.CompletedTask;
+    // -----------------------------------------------------
+    // APPLICATION LIFECYCLE
+    // -----------------------------------------------------
+
+    private void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus)
+        {
+            SaveApplicationData();
+        }
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
+        {
+            SaveApplicationData();
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveApplicationData();
+    }
+
+    private void SaveApplicationData()
+    {
+        OnApplicationSaving();
+
+        PlayerPrefs.Save();
+    }
+
+    // -----------------------------------------------------
+    // LIFECYCLE HOOKS
+    // -----------------------------------------------------
+
+    protected virtual UniTask OnBaseInitialized(DIContainer container)
+        => UniTask.CompletedTask;
+
+    protected virtual UniTask OnBaseShutdown()
+        => UniTask.CompletedTask;
+
+    protected virtual UniTask OnSceneInitialized(DIContainer container)
+        => UniTask.CompletedTask;
+
+    protected virtual UniTask OnSceneShuttingDown()
+        => UniTask.CompletedTask;
+
+    /// <summary>
+    /// Called when application data should be saved.
+    /// </summary>
+    protected virtual void OnApplicationSaving()
+    {
+        _storeSoundSettingsPresenter?.Dispose();
+        _storeMoneyPresenter?.Dispose();
+    }
 }
