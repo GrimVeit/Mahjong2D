@@ -2,16 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class MahjongModel
 {
-    private readonly MahjongBoardGenerator generator;
+    private readonly MahjongBoardGenerator _generator;
 
-    private readonly List<MahjongTileData> tiles =
-        new List<MahjongTileData>();
+    private readonly List<MahjongTileData> tiles = new();
 
     private MahjongTileData firstSelectedTile;
 
@@ -23,13 +18,12 @@ public class MahjongModel
     public MahjongModel(
         MahjongBoardGenerator generator)
     {
-        this.generator = generator;
+        _generator = generator;
     }
 
 
     public void Initialize()
     {
-        GenerateBoard();
     }
 
 
@@ -45,31 +39,62 @@ public class MahjongModel
     // GENERATE
     // =========================================================
 
-    public void GenerateBoard()
+    public void GenerateBoard(List<Sprite> sprites)
     {
         ClearBoard();
 
-        List<MahjongTilePosition> positions =
-            generator.Generate();
+
+        if (sprites == null) return;
+
+        List<MahjongTilePosition> positions = _generator.Generate(sprites.Count);
+
+        int expectedTileCount = sprites.Count * 2;
+
+        if (positions.Count != expectedTileCount) return;
 
         int id = 0;
 
-        foreach (MahjongTilePosition position in positions)
+        for (
+            int pairId = 0;
+            pairId < sprites.Count;
+            pairId++)
         {
-            MahjongTileData tile =
-                new MahjongTileData(
-                    id,
-                    position.Layer,
-                    position.GridX,
-                    position.GridY
+            Sprite sprite =
+                sprites[pairId];
+
+
+            for (
+                int copy = 0;
+                copy < 2;
+                copy++)
+            {
+                MahjongTilePosition position =
+                    positions[id];
+
+
+                MahjongTileData tile =
+                    new MahjongTileData(
+                        id,
+                        pairId,
+                        sprite,
+                        position.Layer,
+                        position.GridX,
+                        position.GridY
+                    );
+
+
+                tiles.Add(tile);
+
+
+                OnTileCreated?.Invoke(
+                    tile
                 );
 
-            tiles.Add(tile);
 
-            OnTileCreated?.Invoke(tile);
-
-            id++;
+                id++;
+            }
         }
+
 
         UpdateActiveStates();
     }
@@ -113,28 +138,79 @@ public class MahjongModel
             return;
 
 
+        // =====================================================
+        // FIRST CLICK
+        // =====================================================
+
         if (firstSelectedTile == null)
         {
             firstSelectedTile = tile;
+
 
             OnTileSelected?.Invoke(
                 tile.Id
             );
 
+
             return;
         }
 
 
+        // =====================================================
+        // CLICK ON SAME TILE AGAIN
+        // =====================================================
+
         if (firstSelectedTile == tile)
+        {
+            OnTileUnselected?.Invoke(
+                firstSelectedTile.Id
+            );
+
+
+            firstSelectedTile = null;
+
+
             return;
+        }
+
+
+        // =====================================================
+        // SECOND TILE
+        // =====================================================
+
+        MahjongTileData firstTile =
+            firstSelectedTile;
 
 
         MahjongTileData secondTile =
             tile;
 
 
-        MahjongTileData firstTile =
-            firstSelectedTile;
+        // =====================================================
+        // PAIR CHECK
+        // =====================================================
+
+        if (firstTile.PairId != secondTile.PairId)
+        {
+            OnTileUnselected?.Invoke(
+                firstTile.Id
+            );
+
+
+            firstSelectedTile = null;
+
+
+            return;
+        }
+
+
+        // =====================================================
+        // CORRECT PAIR
+        // =====================================================
+
+        OnTileUnselected?.Invoke(
+            firstTile.Id
+        );
 
 
         firstSelectedTile = null;
@@ -341,15 +417,19 @@ public class MahjongModel
         int secondLayerCount = 0;
         int thirdLayerCount = 0;
 
+
         List<MahjongTileData> availableTiles =
             new List<MahjongTileData>();
+
 
         foreach (MahjongTileData tile in tiles)
         {
             if (tile.IsRemoved)
                 continue;
 
+
             availableTiles.Add(tile);
+
 
             switch (tile.Layer)
             {
@@ -357,9 +437,11 @@ public class MahjongModel
                     firstLayerCount++;
                     break;
 
+
                 case 1:
                     secondLayerCount++;
                     break;
+
 
                 case 2:
                     thirdLayerCount++;
@@ -367,17 +449,21 @@ public class MahjongModel
             }
         }
 
+
         List<MahjongTilePosition> positions =
-            generator.Generate(
+            _generator.Generate(
                 firstLayerCount,
                 secondLayerCount,
                 thirdLayerCount
             );
 
+
         if (positions.Count != availableTiles.Count)
             return;
 
+
         Shuffle(positions);
+
 
         for (int i = 0; i < availableTiles.Count; i++)
         {
@@ -388,9 +474,12 @@ public class MahjongModel
             );
         }
 
+
         firstSelectedTile = null;
 
+
         UpdateActiveStates();
+
 
         OnMix?.Invoke();
     }
@@ -433,8 +522,10 @@ public class MahjongModel
 
             T temp = list[i];
 
+
             list[i] =
                 list[randomIndex];
+
 
             list[randomIndex] =
                 temp;
@@ -449,17 +540,26 @@ public class MahjongModel
     public event Action<MahjongTileData>
         OnTileCreated;
 
+
     public event Action<int>
         OnTileRemoved;
+
 
     public event Action<int, bool>
         OnTileActiveChanged;
 
+
     public event Action<int>
         OnTileSelected;
 
+
+    public event Action<int>
+        OnTileUnselected;
+
+
     public event Action
         OnBoardCleared;
+
 
     public event Action
         OnMix;

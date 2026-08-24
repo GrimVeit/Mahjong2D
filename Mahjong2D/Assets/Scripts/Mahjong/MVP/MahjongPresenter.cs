@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class MahjongPresenter
 {
@@ -30,6 +32,12 @@ public class MahjongPresenter
         model.OnTileActiveChanged +=
             HandleTileActiveChanged;
 
+        model.OnTileSelected +=
+            HandleTileSelected;
+
+        model.OnTileUnselected +=
+            HandleTileUnselected;
+
         model.OnBoardCleared +=
             HandleBoardCleared;
 
@@ -57,6 +65,12 @@ public class MahjongPresenter
         model.OnTileActiveChanged -=
             HandleTileActiveChanged;
 
+        model.OnTileSelected -=
+            HandleTileSelected;
+
+        model.OnTileUnselected -=
+            HandleTileUnselected;
+
         model.OnBoardCleared -=
             HandleBoardCleared;
 
@@ -73,9 +87,12 @@ public class MahjongPresenter
     // PUBLIC API
     // =========================================================
 
-    public void GenerateBoard()
+    public void GenerateBoard(
+        List<Sprite> sprites)
     {
-        model.GenerateBoard();
+        model.GenerateBoard(
+            sprites
+        );
     }
 
 
@@ -127,6 +144,24 @@ public class MahjongPresenter
         view.SetTileActive(
             tileId,
             isActive
+        );
+    }
+
+
+    private void HandleTileSelected(
+        int tileId)
+    {
+        view.SelectTile(
+            tileId
+        );
+    }
+
+
+    private void HandleTileUnselected(
+        int tileId)
+    {
+        view.UnselectTile(
+            tileId
         );
     }
 

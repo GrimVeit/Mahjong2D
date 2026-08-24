@@ -1,23 +1,34 @@
 using System;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class MahjongTile :
-    MonoBehaviour,
-    IPointerClickHandler
+public class MahjongTile : MonoBehaviour, IPointerClickHandler
 {
-    [SerializeField]
-    private Image background;
+    [SerializeField] private Image background;
+
+    [Header("Select")]
+    [SerializeField] private Image imageSelectDeselect;
+    [SerializeField] private float durationSelectDeselect;
+
+    private Tween tweenSelect;
 
 
     private int id;
 
 
     public void Initialize(
-        int id)
+        int id,
+        Sprite sprite)
     {
         this.id = id;
+
+
+        if (background != null)
+        {
+            background.sprite = sprite;
+        }
     }
 
 
@@ -44,7 +55,7 @@ public class MahjongTile :
             color.r = 0.5f;
             color.g = 0.5f;
             color.b = 0.5f;
-            color.a = 0.7f;
+            color.a = 1f;
         }
 
 
@@ -52,6 +63,30 @@ public class MahjongTile :
             color;
     }
 
+
+    // =========================================================
+    // SELECTION
+    // =========================================================
+
+    public void Select()
+    {
+        tweenSelect?.Kill();
+
+        tweenSelect = imageSelectDeselect.DOFade(1, durationSelectDeselect);
+    }
+
+
+    public void Unselect()
+    {
+        tweenSelect?.Kill();
+
+        tweenSelect = imageSelectDeselect.DOFade(0, durationSelectDeselect);
+    }
+
+
+    // =========================================================
+    // INPUT
+    // =========================================================
 
     public void OnPointerClick(
         PointerEventData eventData)
@@ -61,6 +96,10 @@ public class MahjongTile :
         );
     }
 
+
+    // =========================================================
+    // OUTPUT
+    // =========================================================
 
     public event Action<int>
         OnClick;

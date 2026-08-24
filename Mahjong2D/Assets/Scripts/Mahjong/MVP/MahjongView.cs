@@ -1,4 +1,4 @@
-using System;
+пїњusing System;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
@@ -63,8 +63,11 @@ public class MahjongView : View
             if (tile == null)
                 continue;
 
-            tile.OnClick -= HandleTileClick;
+
+            tile.OnClick -=
+                HandleTileClick;
         }
+
 
         tileViews.Clear();
     }
@@ -83,12 +86,16 @@ public class MahjongView : View
                 boardRoot
             );
 
+
         tile.Initialize(
-            data.Id
+            data.Id,
+            data.Sprite
         );
+
 
         tile.OnClick +=
             HandleTileClick;
+
 
         tileViews.Add(
             data.Id,
@@ -99,6 +106,7 @@ public class MahjongView : View
         RectTransform rect =
             tile.transform as RectTransform;
 
+
         rect.anchoredPosition =
             CalculatePosition(data);
 
@@ -106,6 +114,46 @@ public class MahjongView : View
         tile.SetActiveVisual(
             data.IsActive
         );
+    }
+
+
+    // =========================================================
+    // SELECT
+    // =========================================================
+
+    public void SelectTile(
+        int tileId)
+    {
+        if (
+            !tileViews.TryGetValue(
+                tileId,
+                out MahjongTile tile
+            )
+        )
+        {
+            return;
+        }
+
+
+        tile.Select();
+    }
+
+
+    public void UnselectTile(
+        int tileId)
+    {
+        if (
+            !tileViews.TryGetValue(
+                tileId,
+                out MahjongTile tile
+            )
+        )
+        {
+            return;
+        }
+
+
+        tile.Unselect();
     }
 
 
@@ -130,9 +178,11 @@ public class MahjongView : View
         tile.OnClick -=
             HandleTileClick;
 
+
         tileViews.Remove(
             tileId
         );
+
 
         Destroy(
             tile.gameObject
@@ -274,15 +324,6 @@ public class MahjongView : View
         }
 
 
-        /*
-         * Ќижние €русы должны быть раньше
-         * в Canvas hierarchy.
-         *
-         * „ем больше Layer Ч
-         * тем позже объект будет в hierarchy
-         * и тем выше он будет отрисован.
-         */
-
         sortedTiles.Sort(
             CompareTilesDrawingOrder
         );
@@ -322,12 +363,6 @@ public class MahjongView : View
             return layerCompare;
 
 
-        /*
-         * ¬нутри одного €руса
-         * сохран€ем стабильный пор€док
-         * по Y, затем по X.
-         */
-
         int yCompare =
             first.GridY.CompareTo(
                 second.GridY
@@ -352,15 +387,12 @@ public class MahjongView : View
     private Vector2 CalculatePosition(
         MahjongTileData data)
     {
-        /*
-         * Layer 1 + Layer 2
-         */
-
         if (data.Layer < 2)
         {
             float x =
                 data.GridX *
                 tileSize.x;
+
 
             float y =
                 data.GridY *
@@ -371,6 +403,7 @@ public class MahjongView : View
                 4f *
                 tileSize.x;
 
+
             float boardHeight =
                 5f *
                 tileSize.y;
@@ -379,6 +412,7 @@ public class MahjongView : View
             x -=
                 (boardWidth - tileSize.x) / 2f;
 
+
             y -=
                 (boardHeight - tileSize.y) / 2f;
 
@@ -386,6 +420,7 @@ public class MahjongView : View
             x +=
                 data.Layer *
                 layerOffsetX;
+
 
             y +=
                 data.Layer *
@@ -399,16 +434,10 @@ public class MahjongView : View
         }
 
 
-        /*
-         * Layer 3
-         *
-         * Ќаходитс€ между тайлами
-         * второго €руса.
-         */
-
         float leftX =
             data.GridX *
             tileSize.x;
+
 
         float rightX =
             (data.GridX + 1) *

@@ -1,37 +1,37 @@
-using System.Collections.Generic;
-using UnityEngine;
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MahjongBoardGenerator : MonoBehaviour
 {
-    [Header("Layer 1")]
+    [Header("Layouts")]
+
     [SerializeField]
-    private MahjongLayerSettings firstLayer;
-
-
-    [Header("Layer 2")]
-    [SerializeField]
-    private MahjongLayerSettings secondLayer;
-
-
-    [Header("Layer 3")]
-    [SerializeField]
-    private MahjongLayerSettings thirdLayer;
+    private List<MahjongLayoutSettings> layouts =
+        new List<MahjongLayoutSettings>();
 
 
     // =========================================================
-    // INITIAL GENERATION
+    // GENERATE FROM SPRITE COUNT
     // =========================================================
 
-    public List<MahjongTilePosition> Generate()
+    public List<MahjongTilePosition> Generate(
+        int uniqueSpriteCount)
     {
+        MahjongLayoutSettings settings =
+            GetSettings(
+                uniqueSpriteCount * 2
+            );
+
+
+        if (settings == null)
+            return new List<MahjongTilePosition>();
+
+
         return Generate(
-            firstLayer.Count,
-            secondLayer.Count,
-            thirdLayer.Count
+            settings.FirstLayerCount,
+            settings.SecondLayerCount,
+            settings.ThirdLayerCount
         );
     }
 
@@ -45,32 +45,16 @@ public class MahjongBoardGenerator : MonoBehaviour
         int secondLayerCount,
         int thirdLayerCount)
     {
-        firstLayerCount = Mathf.Clamp(
-            firstLayerCount,
-            0,
-            20
-        );
+        firstLayerCount = Mathf.Clamp(firstLayerCount, 0, 20);
 
-        secondLayerCount = Mathf.Clamp(
-            secondLayerCount,
-            0,
-            20
-        );
+        secondLayerCount = Mathf.Clamp(secondLayerCount, 0, 20);
 
-        thirdLayerCount = Mathf.Clamp(
-            thirdLayerCount,
-            0,
-            15
-        );
-
+        thirdLayerCount = Mathf.Clamp(thirdLayerCount, 0, 15);
 
         const int maxAttempts = 100;
 
 
-        for (
-            int attempt = 0;
-            attempt < maxAttempts;
-            attempt++)
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
         {
             List<MahjongTilePosition> result =
                 TryGenerate(
@@ -96,6 +80,24 @@ public class MahjongBoardGenerator : MonoBehaviour
             secondLayerCount,
             thirdLayerCount
         );
+    }
+
+
+    // =========================================================
+    // SETTINGS
+    // =========================================================
+
+    private MahjongLayoutSettings GetSettings(int uniqueSpriteCount)
+    {
+        foreach (MahjongLayoutSettings settings in layouts)
+        {
+            if (settings.SpriteCount == uniqueSpriteCount)
+            {
+                return settings;
+            }
+        }
+
+        return null;
     }
 
 
@@ -533,8 +535,10 @@ public class MahjongBoardGenerator : MonoBehaviour
 
             T temp = list[i];
 
+
             list[i] =
                 list[randomIndex];
+
 
             list[randomIndex] =
                 temp;
@@ -547,14 +551,49 @@ public class MahjongBoardGenerator : MonoBehaviour
     // =========================================================
 
     [Serializable]
-    private class MahjongLayerSettings
+    private class MahjongLayoutSettings
     {
+        [Header("Unique Sprites")]
+
+        [Min(1)]
+        [SerializeField]
+        private int spriteCount = 4;
+
+
+        [Header("Layer 1")]
+
         [Min(0)]
         [SerializeField]
-        private int count = 20;
+        private int firstLayerCount;
 
 
-        public int Count =>
-            count;
+        [Header("Layer 2")]
+
+        [Min(0)]
+        [SerializeField]
+        private int secondLayerCount;
+
+
+        [Header("Layer 3")]
+
+        [Min(0)]
+        [SerializeField]
+        private int thirdLayerCount;
+
+
+        public int SpriteCount =>
+            spriteCount;
+
+
+        public int FirstLayerCount =>
+            firstLayerCount;
+
+
+        public int SecondLayerCount =>
+            secondLayerCount;
+
+
+        public int ThirdLayerCount =>
+            thirdLayerCount;
     }
 }

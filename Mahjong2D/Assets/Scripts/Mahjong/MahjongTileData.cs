@@ -1,26 +1,42 @@
+using UnityEngine;
+
 public class MahjongTileData
 {
     public int Id { get; }
+
+    public int PairId { get; }
+
+    public Sprite Sprite { get; }
+
 
     public int Layer { get; private set; }
     public int GridX { get; private set; }
     public int GridY { get; private set; }
 
+
     public bool IsActive { get; private set; }
     public bool IsRemoved { get; private set; }
 
+
     public MahjongTileData(
         int id,
+        int pairId,
+        Sprite sprite,
         int layer,
         int gridX,
         int gridY)
     {
         Id = id;
 
+        PairId = pairId;
+
+        Sprite = sprite;
+
         Layer = layer;
         GridX = gridX;
         GridY = gridY;
     }
+
 
     public void SetPosition(
         int layer,
@@ -32,10 +48,13 @@ public class MahjongTileData
         GridY = gridY;
     }
 
-    public void SetActive(bool value)
+
+    public void SetActive(
+        bool value)
     {
         IsActive = value;
     }
+
 
     public void Remove()
     {

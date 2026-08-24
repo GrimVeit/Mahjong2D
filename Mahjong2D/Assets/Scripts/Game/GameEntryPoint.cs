@@ -11,6 +11,7 @@ public class GameEntryPoint : SceneEntryPoint
 
     [Header("Generator")]
     [SerializeField] private MahjongBoardGenerator mahjongBoardGenerator;
+    [SerializeField] private List<Sprite> sprites = new List<Sprite>();
 
     private UIRoot_Game _uIRoot;
     private ViewContainer _viewContainer;
@@ -83,7 +84,7 @@ public class GameEntryPoint : SceneEntryPoint
 
         if (Input.GetKeyDown(KeyCode.LeftAlt))
         {
-            _mahjongPresenter.GenerateBoard();
+            _mahjongPresenter.GenerateBoard(sprites);
         }
 
         if (Input.GetKeyDown(KeyCode.RightAlt))
