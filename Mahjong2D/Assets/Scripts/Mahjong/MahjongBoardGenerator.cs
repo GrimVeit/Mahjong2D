@@ -45,16 +45,45 @@ public class MahjongBoardGenerator : MonoBehaviour
         int secondLayerCount,
         int thirdLayerCount)
     {
-        firstLayerCount = Mathf.Clamp(firstLayerCount, 0, 20);
+        firstLayerCount =
+            Mathf.Clamp(
+                firstLayerCount,
+                0,
+                20
+            );
 
-        secondLayerCount = Mathf.Clamp(secondLayerCount, 0, 20);
+        secondLayerCount =
+            Mathf.Clamp(
+                secondLayerCount,
+                0,
+                20
+            );
 
-        thirdLayerCount = Mathf.Clamp(thirdLayerCount, 0, 15);
+        thirdLayerCount =
+            Mathf.Clamp(
+                thirdLayerCount,
+                0,
+                15
+            );
+
+
+        int totalCount =
+            firstLayerCount +
+            secondLayerCount +
+            thirdLayerCount;
+
 
         const int maxAttempts = 100;
 
 
-        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        // =====================================================
+        // NORMAL GENERATION
+        // =====================================================
+
+        for (
+            int attempt = 0;
+            attempt < maxAttempts;
+            attempt++)
         {
             List<MahjongTilePosition> result =
                 TryGenerate(
@@ -64,21 +93,54 @@ public class MahjongBoardGenerator : MonoBehaviour
                 );
 
 
-            if (result != null)
+            if (
+                result != null &&
+                result.Count == totalCount)
+            {
                 return result;
+            }
         }
 
 
         Debug.LogWarning(
-            $"Could not generate Mahjong layout: " +
-            $"{firstLayerCount}/{secondLayerCount}/{thirdLayerCount}"
+            $"Could not normally generate Mahjong layout: " +
+            $"{firstLayerCount}/" +
+            $"{secondLayerCount}/" +
+            $"{thirdLayerCount}. " +
+            $"Using greedy fallback."
         );
 
 
-        return GenerateFallback(
-            firstLayerCount,
-            secondLayerCount,
-            thirdLayerCount
+        // =====================================================
+        // GREEDY FALLBACK
+        // =====================================================
+
+        List<MahjongTilePosition> fallback =
+            GenerateFallback(
+                totalCount
+            );
+
+
+        if (
+            fallback.Count == totalCount)
+        {
+            return fallback;
+        }
+
+
+        // =====================================================
+        // HARD FALLBACK
+        // =====================================================
+
+        Debug.LogWarning(
+            $"Greedy Mahjong fallback failed: " +
+            $"{fallback.Count}/{totalCount}. " +
+            $"Using hard fallback."
+        );
+
+
+        return GenerateHardFallback(
+            totalCount
         );
     }
 
@@ -87,15 +149,21 @@ public class MahjongBoardGenerator : MonoBehaviour
     // SETTINGS
     // =========================================================
 
-    private MahjongLayoutSettings GetSettings(int uniqueSpriteCount)
+    private MahjongLayoutSettings GetSettings(
+        int uniqueSpriteCount)
     {
-        foreach (MahjongLayoutSettings settings in layouts)
+        foreach (
+            MahjongLayoutSettings settings
+            in layouts)
         {
-            if (settings.SpriteCount == uniqueSpriteCount)
+            if (
+                settings.SpriteCount ==
+                uniqueSpriteCount)
             {
                 return settings;
             }
         }
+
 
         return null;
     }
@@ -125,7 +193,9 @@ public class MahjongBoardGenerator : MonoBehaviour
             );
 
 
-        Shuffle(firstCandidates);
+        Shuffle(
+            firstCandidates
+        );
 
 
         for (
@@ -184,7 +254,9 @@ public class MahjongBoardGenerator : MonoBehaviour
         }
 
 
-        Shuffle(secondCandidates);
+        Shuffle(
+            secondCandidates
+        );
 
 
         for (
@@ -243,7 +315,9 @@ public class MahjongBoardGenerator : MonoBehaviour
         }
 
 
-        Shuffle(thirdCandidates);
+        Shuffle(
+            thirdCandidates
+        );
 
 
         for (
@@ -261,6 +335,399 @@ public class MahjongBoardGenerator : MonoBehaviour
                     cell.x,
                     cell.y
                 )
+            );
+        }
+
+
+        return positions;
+    }
+
+
+    // =========================================================
+    // GREEDY FALLBACK
+    // =========================================================
+
+    private List<MahjongTilePosition> GenerateFallback(
+        int totalCount)
+    {
+        List<MahjongTilePosition> positions =
+            new List<MahjongTilePosition>();
+
+
+        // =====================================================
+        // ADD ONE TILE AT A TIME
+        // =====================================================
+
+        for (
+            int i = 0;
+            i < totalCount;
+            i++)
+        {
+            bool added = false;
+
+
+            // =================================================
+            // TRY THIRD LAYER
+            // =================================================
+
+            List<Vector2Int> thirdCandidates =
+                GetThirdLayerFallbackCandidates(
+                    positions
+                );
+
+
+            Shuffle(
+                thirdCandidates
+            );
+
+
+            if (thirdCandidates.Count > 0)
+            {
+                Vector2Int cell =
+                    thirdCandidates[0];
+
+
+                positions.Add(
+                    new MahjongTilePosition(
+                        2,
+                        cell.x,
+                        cell.y
+                    )
+                );
+
+
+                added = true;
+            }
+
+
+            // =================================================
+            // TRY SECOND LAYER
+            // =================================================
+
+            if (!added)
+            {
+                List<Vector2Int> secondCandidates =
+                    GetSecondLayerFallbackCandidates(
+                        positions
+                    );
+
+
+                Shuffle(
+                    secondCandidates
+                );
+
+
+                if (secondCandidates.Count > 0)
+                {
+                    Vector2Int cell =
+                        secondCandidates[0];
+
+
+                    positions.Add(
+                        new MahjongTilePosition(
+                            1,
+                            cell.x,
+                            cell.y
+                        )
+                    );
+
+
+                    added = true;
+                }
+            }
+
+
+            // =================================================
+            // TRY FIRST LAYER
+            // =================================================
+
+            if (!added)
+            {
+                List<Vector2Int> firstCandidates =
+                    GetFirstLayerFallbackCandidates(
+                        positions
+                    );
+
+
+                Shuffle(
+                    firstCandidates
+                );
+
+
+                if (firstCandidates.Count > 0)
+                {
+                    Vector2Int cell =
+                        firstCandidates[0];
+
+
+                    positions.Add(
+                        new MahjongTilePosition(
+                            0,
+                            cell.x,
+                            cell.y
+                        )
+                    );
+
+
+                    added = true;
+                }
+            }
+
+
+            // =================================================
+            // NOTHING AVAILABLE
+            // =================================================
+
+            if (!added)
+            {
+                break;
+            }
+        }
+
+
+        return positions;
+    }
+
+
+    // =========================================================
+    // GREEDY FALLBACK CANDIDATES
+    // =========================================================
+
+    private List<Vector2Int>
+        GetThirdLayerFallbackCandidates(
+            List<MahjongTilePosition> positions)
+    {
+        List<Vector2Int> candidates =
+            new List<Vector2Int>();
+
+
+        for (int y = 0; y < 5; y++)
+        {
+            for (int x = 0; x < 3; x++)
+            {
+                // Third layer requires
+                // two supporting tiles on layer 1.
+
+                if (
+                    !HasSecondLayerSupport(
+                        positions,
+                        x,
+                        y))
+                {
+                    continue;
+                }
+
+
+                // Position must be free.
+
+                if (
+                    HasPosition(
+                        positions,
+                        2,
+                        x,
+                        y))
+                {
+                    continue;
+                }
+
+
+                candidates.Add(
+                    new Vector2Int(
+                        x,
+                        y
+                    )
+                );
+            }
+        }
+
+
+        return candidates;
+    }
+
+
+    private List<Vector2Int>
+        GetSecondLayerFallbackCandidates(
+            List<MahjongTilePosition> positions)
+    {
+        List<Vector2Int> candidates =
+            new List<Vector2Int>();
+
+
+        for (int y = 0; y < 5; y++)
+        {
+            for (int x = 0; x < 4; x++)
+            {
+                // Second layer requires
+                // a tile directly below it.
+
+                if (
+                    !HasFirstLayerSupport(
+                        positions,
+                        x,
+                        y))
+                {
+                    continue;
+                }
+
+
+                // Position must be free.
+
+                if (
+                    HasPosition(
+                        positions,
+                        1,
+                        x,
+                        y))
+                {
+                    continue;
+                }
+
+
+                candidates.Add(
+                    new Vector2Int(
+                        x,
+                        y
+                    )
+                );
+            }
+        }
+
+
+        return candidates;
+    }
+
+
+    private List<Vector2Int>
+        GetFirstLayerFallbackCandidates(
+            List<MahjongTilePosition> positions)
+    {
+        List<Vector2Int> candidates =
+            new List<Vector2Int>();
+
+
+        for (int y = 0; y < 5; y++)
+        {
+            for (int x = 0; x < 4; x++)
+            {
+                // First layer can be placed anywhere.
+
+                if (
+                    HasPosition(
+                        positions,
+                        0,
+                        x,
+                        y))
+                {
+                    continue;
+                }
+
+
+                candidates.Add(
+                    new Vector2Int(
+                        x,
+                        y
+                    )
+                );
+            }
+        }
+
+
+        return candidates;
+    }
+
+
+    // =========================================================
+    // HARD FALLBACK
+    // =========================================================
+
+    private List<MahjongTilePosition>
+        GenerateHardFallback(
+            int totalCount)
+    {
+        List<MahjongTilePosition> positions =
+            new List<MahjongTilePosition>();
+
+
+        List<MahjongTilePosition> allPositions =
+            new List<MahjongTilePosition>();
+
+
+        // =====================================================
+        // LAYER 0
+        // =====================================================
+
+        for (int y = 0; y < 5; y++)
+        {
+            for (int x = 0; x < 4; x++)
+            {
+                allPositions.Add(
+                    new MahjongTilePosition(
+                        0,
+                        x,
+                        y
+                    )
+                );
+            }
+        }
+
+
+        // =====================================================
+        // LAYER 1
+        // =====================================================
+
+        for (int y = 0; y < 5; y++)
+        {
+            for (int x = 0; x < 4; x++)
+            {
+                allPositions.Add(
+                    new MahjongTilePosition(
+                        1,
+                        x,
+                        y
+                    )
+                );
+            }
+        }
+
+
+        // =====================================================
+        // LAYER 2
+        // =====================================================
+
+        for (int y = 0; y < 5; y++)
+        {
+            for (int x = 0; x < 3; x++)
+            {
+                allPositions.Add(
+                    new MahjongTilePosition(
+                        2,
+                        x,
+                        y
+                    )
+                );
+            }
+        }
+
+
+        Shuffle(
+            allPositions
+        );
+
+
+        int amount =
+            Mathf.Min(
+                totalCount,
+                allPositions.Count
+            );
+
+
+        for (
+            int i = 0;
+            i < amount;
+            i++)
+        {
+            positions.Add(
+                allPositions[i]
             );
         }
 
@@ -353,136 +820,6 @@ public class MahjongBoardGenerator : MonoBehaviour
 
 
     // =========================================================
-    // FALLBACK
-    // =========================================================
-
-    private List<MahjongTilePosition> GenerateFallback(
-        int firstLayerCount,
-        int secondLayerCount,
-        int thirdLayerCount)
-    {
-        List<MahjongTilePosition> positions =
-            new List<MahjongTilePosition>();
-
-
-        // FIRST
-
-        int firstAdded = 0;
-
-
-        for (
-            int y = 0;
-            y < 5 &&
-            firstAdded < firstLayerCount;
-            y++)
-        {
-            for (
-                int x = 0;
-                x < 4 &&
-                firstAdded < firstLayerCount;
-                x++)
-            {
-                positions.Add(
-                    new MahjongTilePosition(
-                        0,
-                        x,
-                        y
-                    )
-                );
-
-
-                firstAdded++;
-            }
-        }
-
-
-        // SECOND
-
-        int secondAdded = 0;
-
-
-        for (
-            int y = 0;
-            y < 5 &&
-            secondAdded < secondLayerCount;
-            y++)
-        {
-            for (
-                int x = 0;
-                x < 4 &&
-                secondAdded < secondLayerCount;
-                x++)
-            {
-                if (
-                    !HasFirstLayerSupport(
-                        positions,
-                        x,
-                        y))
-                {
-                    continue;
-                }
-
-
-                positions.Add(
-                    new MahjongTilePosition(
-                        1,
-                        x,
-                        y
-                    )
-                );
-
-
-                secondAdded++;
-            }
-        }
-
-
-        // THIRD
-
-        int thirdAdded = 0;
-
-
-        for (
-            int y = 0;
-            y < 5 &&
-            thirdAdded < thirdLayerCount;
-            y++)
-        {
-            for (
-                int x = 0;
-                x < 3 &&
-                thirdAdded < thirdLayerCount;
-                x++)
-            {
-                if (
-                    !HasSecondLayerSupport(
-                        positions,
-                        x,
-                        y))
-                {
-                    continue;
-                }
-
-
-                positions.Add(
-                    new MahjongTilePosition(
-                        2,
-                        x,
-                        y
-                    )
-                );
-
-
-                thirdAdded++;
-            }
-        }
-
-
-        return positions;
-    }
-
-
-    // =========================================================
     // RANDOM
     // =========================================================
 
@@ -494,15 +831,9 @@ public class MahjongBoardGenerator : MonoBehaviour
             new List<Vector2Int>();
 
 
-        for (
-            int y = 0;
-            y < height;
-            y++)
+        for (int y = 0; y < height; y++)
         {
-            for (
-                int x = 0;
-                x < width;
-                x++)
+            for (int x = 0; x < width; x++)
             {
                 cells.Add(
                     new Vector2Int(
@@ -533,7 +864,8 @@ public class MahjongBoardGenerator : MonoBehaviour
                 );
 
 
-            T temp = list[i];
+            T temp =
+                list[i];
 
 
             list[i] =

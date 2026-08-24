@@ -161,6 +161,49 @@ public class MahjongView : View
     // REMOVE
     // =========================================================
 
+    public void NotifyPairRemoved(
+    MahjongTileData firstTile,
+    MahjongTileData secondTile)
+    {
+        if (
+            !tileViews.TryGetValue(
+                firstTile.Id,
+                out MahjongTile firstView))
+        {
+            return;
+        }
+
+
+        if (
+            !tileViews.TryGetValue(
+                secondTile.Id,
+                out MahjongTile secondView))
+        {
+            return;
+        }
+
+
+        RectTransform firstRect =
+            firstView.transform as RectTransform;
+
+        RectTransform secondRect =
+            secondView.transform as RectTransform;
+
+
+        MahjongPairRemovedData data =
+            new MahjongPairRemovedData(
+                firstTile.Sprite,
+                tileSize,
+                firstRect.position,
+                secondRect.position
+            );
+
+
+        OnPairRemoved?.Invoke(
+            data
+        );
+    }
+
     public void RemoveTile(
         int tileId)
     {
@@ -303,7 +346,7 @@ public class MahjongView : View
     // DRAWING ORDER
     // =========================================================
 
-    private void UpdateDrawingOrder(
+   public void UpdateDrawingOrder(
         IReadOnlyList<MahjongTileData> tiles)
     {
         List<MahjongTileData> sortedTiles =
@@ -508,4 +551,33 @@ public class MahjongView : View
 
     public event Action<int>
         OnClickTile;
+
+    public event Action<MahjongPairRemovedData>
+    OnPairRemoved;
+}
+
+public readonly struct MahjongPairRemovedData
+{
+    public Sprite Sprite { get; }
+
+    public Vector2 TileSize { get; }
+
+    public Vector2 FirstPosition { get; }
+
+    public Vector2 SecondPosition { get; }
+
+
+    public MahjongPairRemovedData(
+        Sprite sprite,
+        Vector2 tileSize,
+        Vector2 firstPosition,
+        Vector2 secondPosition)
+    {
+        Sprite = sprite;
+
+        TileSize = tileSize;
+
+        FirstPosition = firstPosition;
+        SecondPosition = secondPosition;
+    }
 }

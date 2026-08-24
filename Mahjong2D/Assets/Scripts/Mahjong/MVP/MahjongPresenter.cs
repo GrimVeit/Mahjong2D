@@ -93,6 +93,10 @@ public class MahjongPresenter
         model.GenerateBoard(
             sprites
         );
+
+        view.UpdateDrawingOrder(
+        model.Tiles
+    );
     }
 
 

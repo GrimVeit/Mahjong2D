@@ -39,66 +39,100 @@ public class MahjongModel
     // GENERATE
     // =========================================================
 
-    public void GenerateBoard(List<Sprite> sprites)
+    public void GenerateBoard(
+    List<Sprite> sprites)
     {
         ClearBoard();
 
 
-        if (sprites == null) return;
+        if (sprites == null)
+            return;
 
-        List<MahjongTilePosition> positions = _generator.Generate(sprites.Count);
 
-        int expectedTileCount = sprites.Count * 2;
+        List<MahjongTilePosition> positions =
+            _generator.Generate(
+                sprites.Count
+            );
 
-        if (positions.Count != expectedTileCount) return;
 
-        int id = 0;
+        if (positions.Count != sprites.Count * 2)
+            return;
+
+
+        // =====================================================
+        // CREATE PAIRS
+        // =====================================================
+
+        List<int> pairIds =
+            new List<int>();
+
 
         for (
             int pairId = 0;
             pairId < sprites.Count;
             pairId++)
         {
+            //  аждый PairId должен встретитьс€ ровно 2 раза.
+
+            pairIds.Add(pairId);
+            pairIds.Add(pairId);
+        }
+
+
+        // =====================================================
+        // SHUFFLE PAIRS
+        // =====================================================
+
+        Shuffle(
+            pairIds
+        );
+
+
+        // =====================================================
+        // CREATE TILES
+        // =====================================================
+
+        for (
+            int id = 0;
+            id < positions.Count;
+            id++)
+        {
+            int pairId =
+                pairIds[id];
+
+
             Sprite sprite =
                 sprites[pairId];
 
 
-            for (
-                int copy = 0;
-                copy < 2;
-                copy++)
-            {
-                MahjongTilePosition position =
-                    positions[id];
+            MahjongTilePosition position =
+                positions[id];
 
 
-                MahjongTileData tile =
-                    new MahjongTileData(
-                        id,
-                        pairId,
-                        sprite,
-                        position.Layer,
-                        position.GridX,
-                        position.GridY
-                    );
-
-
-                tiles.Add(tile);
-
-
-                OnTileCreated?.Invoke(
-                    tile
+            MahjongTileData tile =
+                new MahjongTileData(
+                    id,
+                    pairId,
+                    sprite,
+                    position.Layer,
+                    position.GridX,
+                    position.GridY
                 );
 
 
-                id++;
-            }
+            tiles.Add(
+                tile
+            );
+
+
+            OnTileCreated?.Invoke(
+                tile
+            );
         }
 
 
         UpdateActiveStates();
     }
-
 
     private void ClearBoard()
     {
