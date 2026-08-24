@@ -2,1886 +2,1886 @@
 using UnityEngine;
 using DG.Tweening;
 
-public class MahjongBoard : MonoBehaviour
-{
-    [Header("Board")]
-    [SerializeField] private RectTransform boardRect;
+//public class MahjongBoard : MonoBehaviour
+//{
+//    [Header("Board")]
+//    [SerializeField] private RectTransform boardRect;
 
-    [Header("Tile Prefab")]
-    [SerializeField] private MahjongTile tilePrefab;
+//    [Header("Tile Prefab")]
+//    [SerializeField] private MahjongTile tilePrefab;
 
-    [Header("Tile Size")]
-    [SerializeField]
-    private Vector2 tileSize =
-        new Vector2(235f, 290f);
+//    [Header("Tile Size")]
+//    [SerializeField]
+//    private Vector2 tileSize =
+//        new Vector2(235f, 290f);
 
-    [Header("Layer Offset")]
-    [SerializeField] private float layerOffsetX = 18f;
-    [SerializeField] private float layerOffsetY = 22f;
+//    [Header("Layer Offset")]
+//    [SerializeField] private float layerOffsetX = 18f;
+//    [SerializeField] private float layerOffsetY = 22f;
 
 
-    // =========================================================
-    // GENERATION SETTINGS
-    // =========================================================
+//    // =========================================================
+//    // GENERATION SETTINGS
+//    // =========================================================
 
-    [Header("Generation")]
+//    [Header("Generation")]
 
-    [SerializeField]
-    [Range(1, 20)]
-    private int layer0TileCount = 20;
+//    [SerializeField]
+//    [Range(1, 20)]
+//    private int layer0TileCount = 20;
 
-    [SerializeField]
-    [Range(1, 20)]
-    private int layer1TileCount = 12;
+//    [SerializeField]
+//    [Range(1, 20)]
+//    private int layer1TileCount = 12;
 
-    [SerializeField]
-    [Range(1, 15)]
-    private int layer2TileCount = 5;
+//    [SerializeField]
+//    [Range(1, 15)]
+//    private int layer2TileCount = 5;
 
-    [SerializeField]
-    private int randomSeed = 0;
+//    [SerializeField]
+//    private int randomSeed = 0;
 
-    [SerializeField]
-    private bool useRandomSeed = true;
+//    [SerializeField]
+//    private bool useRandomSeed = true;
 
 
-    // =========================================================
-    // MIX SETTINGS
-    // =========================================================
+//    // =========================================================
+//    // MIX SETTINGS
+//    // =========================================================
 
-    [Header("Mix")]
+//    [Header("Mix")]
 
-    [SerializeField]
-    private float mixDuration = 0.35f;
+//    [SerializeField]
+//    private float mixDuration = 0.35f;
 
-    [SerializeField]
-    private Ease mixEase = Ease.InOutQuad;
+//    [SerializeField]
+//    private Ease mixEase = Ease.InOutQuad;
 
 
-    // =========================================================
-    // INTERNAL DATA
-    // =========================================================
+//    // =========================================================
+//    // INTERNAL DATA
+//    // =========================================================
 
-    private readonly List<SpawnedTileData> spawnedTiles =
-        new List<SpawnedTileData>();
+//    private readonly List<SpawnedTileData> spawnedTiles =
+//        new List<SpawnedTileData>();
 
 
-    private readonly List<GridPosition> layer0Positions =
-        new List<GridPosition>();
+//    private readonly List<GridPosition> layer0Positions =
+//        new List<GridPosition>();
 
-    private readonly List<GridPosition> layer1Positions =
-        new List<GridPosition>();
+//    private readonly List<GridPosition> layer1Positions =
+//        new List<GridPosition>();
 
-    private readonly List<GridPosition> layer2Positions =
-        new List<GridPosition>();
+//    private readonly List<GridPosition> layer2Positions =
+//        new List<GridPosition>();
 
 
-    // =========================================================
-    // SELECTION
-    // =========================================================
+//    // =========================================================
+//    // SELECTION
+//    // =========================================================
 
-    private MahjongTile firstSelectedTile;
+//    private MahjongTile firstSelectedTile;
 
 
-    // =========================================================
-    // MIX STATE
-    // =========================================================
+//    // =========================================================
+//    // MIX STATE
+//    // =========================================================
 
-    private bool isMixing;
+//    private bool isMixing;
 
 
-    // =========================================================
-    // DATA CLASSES
-    // =========================================================
+//    // =========================================================
+//    // DATA CLASSES
+//    // =========================================================
 
-    private class SpawnedTileData
-    {
-        public MahjongTile tile;
+//    private class SpawnedTileData
+//    {
+//        public MahjongTile tile;
 
-        public int layer;
+//        public int layer;
 
-        public int gridX;
+//        public int gridX;
 
-        public int gridY;
-    }
+//        public int gridY;
+//    }
 
 
-    private class GridPosition
-    {
-        public int x;
+//    private class GridPosition
+//    {
+//        public int x;
 
-        public int y;
+//        public int y;
 
 
-        public GridPosition(
-            int x,
-            int y)
-        {
-            this.x = x;
-            this.y = y;
-        }
-    }
+//        public GridPosition(
+//            int x,
+//            int y)
+//        {
+//            this.x = x;
+//            this.y = y;
+//        }
+//    }
 
 
-    // =========================================================
-    // START
-    // =========================================================
+//    // =========================================================
+//    // START
+//    // =========================================================
 
-    private void Start()
-    {
-        GenerateBoard();
-    }
+//    private void Start()
+//    {
+//        GenerateBoard();
+//    }
 
-    public void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.LeftAlt))
-        {
-            GenerateBoard();
-        }
+//    public void Update()
+//    {
+//        if (Input.GetKeyDown(KeyCode.LeftAlt))
+//        {
+//            GenerateBoard();
+//        }
 
-        if (Input.GetKeyDown(KeyCode.RightAlt))
-        {
-            Mix();
-        }
-    }
+//        if (Input.GetKeyDown(KeyCode.RightAlt))
+//        {
+//            Mix();
+//        }
+//    }
 
 
-    // =========================================================
-    // GENERATE BOARD
-    // =========================================================
+//    // =========================================================
+//    // GENERATE BOARD
+//    // =========================================================
 
-    [ContextMenu("Generate Board")]
-    public void GenerateBoard()
-    {
-        /*
-         * Если вдруг GenerateBoard вызвали
-         * во время Mix — останавливаем DOTween.
-         */
+//    [ContextMenu("Generate Board")]
+//    public void GenerateBoard()
+//    {
+//        /*
+//         * Если вдруг GenerateBoard вызвали
+//         * во время Mix — останавливаем DOTween.
+//         */
 
-        DOTween.Kill(boardRect);
+//        DOTween.Kill(boardRect);
 
 
-        isMixing = false;
+//        isMixing = false;
 
-        firstSelectedTile = null;
+//        firstSelectedTile = null;
 
 
-        ClearBoard();
+//        ClearBoard();
 
-        InitializeRandom();
+//        InitializeRandom();
 
-        GeneratePositions();
+//        GeneratePositions();
 
-        SpawnGeneratedTiles();
+//        SpawnGeneratedTiles();
 
-        SortTiles();
+//        SortTiles();
 
-        UpdateTileStates();
-    }
+//        UpdateTileStates();
+//    }
 
 
-    // =========================================================
-    // RANDOM
-    // =========================================================
+//    // =========================================================
+//    // RANDOM
+//    // =========================================================
 
-    private void InitializeRandom()
-    {
-        if (useRandomSeed)
-        {
-            Random.InitState(
-                System.Environment.TickCount
-            );
-        }
-        else
-        {
-            Random.InitState(randomSeed);
-        }
-    }
+//    private void InitializeRandom()
+//    {
+//        if (useRandomSeed)
+//        {
+//            Random.InitState(
+//                System.Environment.TickCount
+//            );
+//        }
+//        else
+//        {
+//            Random.InitState(randomSeed);
+//        }
+//    }
 
 
-    // =========================================================
-    // GENERATE POSITIONS
-    // =========================================================
+//    // =========================================================
+//    // GENERATE POSITIONS
+//    // =========================================================
 
-    private void GeneratePositions()
-    {
-        layer0Positions.Clear();
+//    private void GeneratePositions()
+//    {
+//        layer0Positions.Clear();
 
-        layer1Positions.Clear();
+//        layer1Positions.Clear();
 
-        layer2Positions.Clear();
+//        layer2Positions.Clear();
 
 
-        GenerateLayer0();
+//        GenerateLayer0();
 
-        GenerateLayer1();
+//        GenerateLayer1();
 
-        GenerateLayer2();
-    }
+//        GenerateLayer2();
+//    }
 
 
-    // =========================================================
-    // LAYER 0
-    // =========================================================
+//    // =========================================================
+//    // LAYER 0
+//    // =========================================================
 
-    private void GenerateLayer0()
-    {
-        List<GridPosition> available =
-            CreateAllPositions(4, 5);
+//    private void GenerateLayer0()
+//    {
+//        List<GridPosition> available =
+//            CreateAllPositions(4, 5);
 
 
-        GridPosition start =
-            GetCenterPosition(4, 5);
+//        GridPosition start =
+//            GetCenterPosition(4, 5);
 
 
-        layer0Positions.Add(start);
+//        layer0Positions.Add(start);
 
 
-        available.RemoveAll(
-            p =>
-                p.x == start.x &&
-                p.y == start.y
-        );
+//        available.RemoveAll(
+//            p =>
+//                p.x == start.x &&
+//                p.y == start.y
+//        );
 
 
-        while (
-            layer0Positions.Count <
-            layer0TileCount)
-        {
-            List<GridPosition> candidates =
-                GetNeighbourCandidates(
-                    layer0Positions,
-                    available
-                );
+//        while (
+//            layer0Positions.Count <
+//            layer0TileCount)
+//        {
+//            List<GridPosition> candidates =
+//                GetNeighbourCandidates(
+//                    layer0Positions,
+//                    available
+//                );
 
 
-            if (candidates.Count == 0)
-                break;
+//            if (candidates.Count == 0)
+//                break;
 
 
-            GridPosition selected =
-                candidates[
-                    Random.Range(
-                        0,
-                        candidates.Count
-                    )
-                ];
+//            GridPosition selected =
+//                candidates[
+//                    Random.Range(
+//                        0,
+//                        candidates.Count
+//                    )
+//                ];
 
 
-            layer0Positions.Add(
-                selected
-            );
+//            layer0Positions.Add(
+//                selected
+//            );
 
 
-            available.Remove(
-                selected
-            );
-        }
-    }
+//            available.Remove(
+//                selected
+//            );
+//        }
+//    }
 
 
-    // =========================================================
-    // LAYER 1
-    // =========================================================
+//    // =========================================================
+//    // LAYER 1
+//    // =========================================================
 
-    private void GenerateLayer1()
-    {
-        List<GridPosition> available =
-            CreateAllPositions(4, 5);
+//    private void GenerateLayer1()
+//    {
+//        List<GridPosition> available =
+//            CreateAllPositions(4, 5);
 
 
-        List<GridPosition> candidates =
-            new List<GridPosition>();
+//        List<GridPosition> candidates =
+//            new List<GridPosition>();
 
 
-        foreach (GridPosition position in available)
-        {
-            if (
-                HasPosition(
-                    layer0Positions,
-                    position.x,
-                    position.y
-                )
-            )
-            {
-                candidates.Add(position);
-            }
-        }
+//        foreach (GridPosition position in available)
+//        {
+//            if (
+//                HasPosition(
+//                    layer0Positions,
+//                    position.x,
+//                    position.y
+//                )
+//            )
+//            {
+//                candidates.Add(position);
+//            }
+//        }
 
 
-        if (candidates.Count == 0)
-            return;
+//        if (candidates.Count == 0)
+//            return;
 
 
-        GridPosition start =
-            candidates[
-                Random.Range(
-                    0,
-                    candidates.Count
-                )
-            ];
+//        GridPosition start =
+//            candidates[
+//                Random.Range(
+//                    0,
+//                    candidates.Count
+//                )
+//            ];
 
 
-        layer1Positions.Add(start);
+//        layer1Positions.Add(start);
 
-        candidates.Remove(start);
+//        candidates.Remove(start);
 
 
-        while (
-            layer1Positions.Count <
-            layer1TileCount)
-        {
-            List<GridPosition> localCandidates =
-                GetNeighbourCandidates(
-                    layer1Positions,
-                    candidates
-                );
+//        while (
+//            layer1Positions.Count <
+//            layer1TileCount)
+//        {
+//            List<GridPosition> localCandidates =
+//                GetNeighbourCandidates(
+//                    layer1Positions,
+//                    candidates
+//                );
 
 
-            if (localCandidates.Count == 0)
-                break;
+//            if (localCandidates.Count == 0)
+//                break;
 
 
-            GridPosition selected =
-                localCandidates[
-                    Random.Range(
-                        0,
-                        localCandidates.Count
-                    )
-                ];
+//            GridPosition selected =
+//                localCandidates[
+//                    Random.Range(
+//                        0,
+//                        localCandidates.Count
+//                    )
+//                ];
 
 
-            layer1Positions.Add(
-                selected
-            );
+//            layer1Positions.Add(
+//                selected
+//            );
 
 
-            candidates.Remove(
-                selected
-            );
-        }
-    }
+//            candidates.Remove(
+//                selected
+//            );
+//        }
+//    }
 
 
-    // =========================================================
-    // LAYER 2
-    // =========================================================
+//    // =========================================================
+//    // LAYER 2
+//    // =========================================================
 
-    private void GenerateLayer2()
-    {
-        List<GridPosition> available =
-            CreateAllPositions(3, 5);
+//    private void GenerateLayer2()
+//    {
+//        List<GridPosition> available =
+//            CreateAllPositions(3, 5);
 
 
-        List<GridPosition> candidates =
-            new List<GridPosition>();
+//        List<GridPosition> candidates =
+//            new List<GridPosition>();
 
 
-        foreach (GridPosition position in available)
-        {
-            int leftX =
-                position.x;
+//        foreach (GridPosition position in available)
+//        {
+//            int leftX =
+//                position.x;
 
 
-            int rightX =
-                position.x + 1;
+//            int rightX =
+//                position.x + 1;
 
 
-            bool hasLeftSupport =
-                HasPosition(
-                    layer1Positions,
-                    leftX,
-                    position.y
-                );
+//            bool hasLeftSupport =
+//                HasPosition(
+//                    layer1Positions,
+//                    leftX,
+//                    position.y
+//                );
 
 
-            bool hasRightSupport =
-                HasPosition(
-                    layer1Positions,
-                    rightX,
-                    position.y
-                );
+//            bool hasRightSupport =
+//                HasPosition(
+//                    layer1Positions,
+//                    rightX,
+//                    position.y
+//                );
 
 
-            /*
-             * Для третьего яруса
-             * обязательны ОБЕ опоры.
-             */
+//            /*
+//             * Для третьего яруса
+//             * обязательны ОБЕ опоры.
+//             */
 
-            if (
-                hasLeftSupport &&
-                hasRightSupport
-            )
-            {
-                candidates.Add(position);
-            }
-        }
+//            if (
+//                hasLeftSupport &&
+//                hasRightSupport
+//            )
+//            {
+//                candidates.Add(position);
+//            }
+//        }
 
 
-        if (candidates.Count == 0)
-            return;
+//        if (candidates.Count == 0)
+//            return;
 
 
-        GridPosition start =
-            candidates[
-                Random.Range(
-                    0,
-                    candidates.Count
-                )
-            ];
+//        GridPosition start =
+//            candidates[
+//                Random.Range(
+//                    0,
+//                    candidates.Count
+//                )
+//            ];
 
 
-        layer2Positions.Add(start);
+//        layer2Positions.Add(start);
 
-        candidates.Remove(start);
+//        candidates.Remove(start);
 
 
-        while (
-            layer2Positions.Count <
-            layer2TileCount)
-        {
-            List<GridPosition> localCandidates =
-                GetNeighbourCandidates(
-                    layer2Positions,
-                    candidates
-                );
+//        while (
+//            layer2Positions.Count <
+//            layer2TileCount)
+//        {
+//            List<GridPosition> localCandidates =
+//                GetNeighbourCandidates(
+//                    layer2Positions,
+//                    candidates
+//                );
 
 
-            if (localCandidates.Count == 0)
-                break;
+//            if (localCandidates.Count == 0)
+//                break;
 
 
-            GridPosition selected =
-                localCandidates[
-                    Random.Range(
-                        0,
-                        localCandidates.Count
-                    )
-                ];
+//            GridPosition selected =
+//                localCandidates[
+//                    Random.Range(
+//                        0,
+//                        localCandidates.Count
+//                    )
+//                ];
 
 
-            layer2Positions.Add(
-                selected
-            );
+//            layer2Positions.Add(
+//                selected
+//            );
 
 
-            candidates.Remove(
-                selected
-            );
-        }
-    }
+//            candidates.Remove(
+//                selected
+//            );
+//        }
+//    }
 
 
-    // =========================================================
-    // CREATE GRID
-    // =========================================================
+//    // =========================================================
+//    // CREATE GRID
+//    // =========================================================
 
-    private List<GridPosition> CreateAllPositions(
-        int columns,
-        int rows)
-    {
-        List<GridPosition> result =
-            new List<GridPosition>();
+//    private List<GridPosition> CreateAllPositions(
+//        int columns,
+//        int rows)
+//    {
+//        List<GridPosition> result =
+//            new List<GridPosition>();
 
 
-        for (int y = 0; y < rows; y++)
-        {
-            for (int x = 0; x < columns; x++)
-            {
-                result.Add(
-                    new GridPosition(
-                        x,
-                        y
-                    )
-                );
-            }
-        }
+//        for (int y = 0; y < rows; y++)
+//        {
+//            for (int x = 0; x < columns; x++)
+//            {
+//                result.Add(
+//                    new GridPosition(
+//                        x,
+//                        y
+//                    )
+//                );
+//            }
+//        }
 
 
-        return result;
-    }
+//        return result;
+//    }
 
 
-    // =========================================================
-    // CENTER
-    // =========================================================
+//    // =========================================================
+//    // CENTER
+//    // =========================================================
 
-    private GridPosition GetCenterPosition(
-        int columns,
-        int rows)
-    {
-        return new GridPosition(
-            (columns - 1) / 2,
-            (rows - 1) / 2
-        );
-    }
+//    private GridPosition GetCenterPosition(
+//        int columns,
+//        int rows)
+//    {
+//        return new GridPosition(
+//            (columns - 1) / 2,
+//            (rows - 1) / 2
+//        );
+//    }
 
 
-    // =========================================================
-    // NEIGHBOURS
-    // =========================================================
+//    // =========================================================
+//    // NEIGHBOURS
+//    // =========================================================
 
-    private List<GridPosition> GetNeighbourCandidates(
-        List<GridPosition> current,
-        List<GridPosition> available)
-    {
-        List<GridPosition> result =
-            new List<GridPosition>();
+//    private List<GridPosition> GetNeighbourCandidates(
+//        List<GridPosition> current,
+//        List<GridPosition> available)
+//    {
+//        List<GridPosition> result =
+//            new List<GridPosition>();
 
 
-        foreach (GridPosition candidate in available)
-        {
-            foreach (GridPosition existing in current)
-            {
-                int dx =
-                    Mathf.Abs(
-                        candidate.x -
-                        existing.x
-                    );
+//        foreach (GridPosition candidate in available)
+//        {
+//            foreach (GridPosition existing in current)
+//            {
+//                int dx =
+//                    Mathf.Abs(
+//                        candidate.x -
+//                        existing.x
+//                    );
 
 
-                int dy =
-                    Mathf.Abs(
-                        candidate.y -
-                        existing.y
-                    );
+//                int dy =
+//                    Mathf.Abs(
+//                        candidate.y -
+//                        existing.y
+//                    );
 
 
-                if (
-                    dx <= 1 &&
-                    dy <= 1 &&
-                    (dx + dy) > 0
-                )
-                {
-                    result.Add(candidate);
+//                if (
+//                    dx <= 1 &&
+//                    dy <= 1 &&
+//                    (dx + dy) > 0
+//                )
+//                {
+//                    result.Add(candidate);
 
-                    break;
-                }
-            }
-        }
+//                    break;
+//                }
+//            }
+//        }
 
 
-        return result;
-    }
+//        return result;
+//    }
 
 
-    // =========================================================
-    // POSITION CHECK
-    // =========================================================
+//    // =========================================================
+//    // POSITION CHECK
+//    // =========================================================
 
-    private bool HasPosition(
-        List<GridPosition> positions,
-        int x,
-        int y)
-    {
-        foreach (GridPosition position in positions)
-        {
-            if (
-                position.x == x &&
-                position.y == y
-            )
-            {
-                return true;
-            }
-        }
+//    private bool HasPosition(
+//        List<GridPosition> positions,
+//        int x,
+//        int y)
+//    {
+//        foreach (GridPosition position in positions)
+//        {
+//            if (
+//                position.x == x &&
+//                position.y == y
+//            )
+//            {
+//                return true;
+//            }
+//        }
 
 
-        return false;
-    }
+//        return false;
+//    }
 
 
-    // =========================================================
-    // SPAWN GENERATED TILES
-    // =========================================================
+//    // =========================================================
+//    // SPAWN GENERATED TILES
+//    // =========================================================
 
-    private void SpawnGeneratedTiles()
-    {
-        foreach (GridPosition position in layer0Positions)
-        {
-            SpawnLayer0Tile(position);
-        }
+//    private void SpawnGeneratedTiles()
+//    {
+//        foreach (GridPosition position in layer0Positions)
+//        {
+//            SpawnLayer0Tile(position);
+//        }
 
 
-        foreach (GridPosition position in layer1Positions)
-        {
-            SpawnLayer1Tile(position);
-        }
+//        foreach (GridPosition position in layer1Positions)
+//        {
+//            SpawnLayer1Tile(position);
+//        }
 
 
-        foreach (GridPosition position in layer2Positions)
-        {
-            SpawnLayer2Tile(position);
-        }
-    }
+//        foreach (GridPosition position in layer2Positions)
+//        {
+//            SpawnLayer2Tile(position);
+//        }
+//    }
 
 
-    // =========================================================
-    // LAYER 0 POSITION
-    // =========================================================
+//    // =========================================================
+//    // LAYER 0 POSITION
+//    // =========================================================
 
-    private void SpawnLayer0Tile(
-        GridPosition position)
-    {
-        const int columns = 4;
+//    private void SpawnLayer0Tile(
+//        GridPosition position)
+//    {
+//        const int columns = 4;
 
-        const int rows = 5;
+//        const int rows = 5;
 
 
-        float startX =
-            -(columns - 1) *
-            tileSize.x *
-            0.5f;
+//        float startX =
+//            -(columns - 1) *
+//            tileSize.x *
+//            0.5f;
 
 
-        float startY =
-            -(rows - 1) *
-            tileSize.y *
-            0.5f;
+//        float startY =
+//            -(rows - 1) *
+//            tileSize.y *
+//            0.5f;
 
 
-        Vector2 tilePosition =
-            new Vector2(
-                startX +
-                position.x *
-                tileSize.x,
+//        Vector2 tilePosition =
+//            new Vector2(
+//                startX +
+//                position.x *
+//                tileSize.x,
 
-                startY +
-                position.y *
-                tileSize.y
-            );
+//                startY +
+//                position.y *
+//                tileSize.y
+//            );
 
 
-        SpawnTile(
-            tilePosition,
-            0,
-            position.x,
-            position.y
-        );
-    }
+//        SpawnTile(
+//            tilePosition,
+//            0,
+//            position.x,
+//            position.y
+//        );
+//    }
 
 
-    // =========================================================
-    // LAYER 1 POSITION
-    // =========================================================
+//    // =========================================================
+//    // LAYER 1 POSITION
+//    // =========================================================
 
-    private void SpawnLayer1Tile(
-        GridPosition position)
-    {
-        const int columns = 4;
+//    private void SpawnLayer1Tile(
+//        GridPosition position)
+//    {
+//        const int columns = 4;
 
-        const int rows = 5;
+//        const int rows = 5;
 
 
-        float startX =
-            -(columns - 1) *
-            tileSize.x *
-            0.5f;
+//        float startX =
+//            -(columns - 1) *
+//            tileSize.x *
+//            0.5f;
 
 
-        float startY =
-            -(rows - 1) *
-            tileSize.y *
-            0.5f;
+//        float startY =
+//            -(rows - 1) *
+//            tileSize.y *
+//            0.5f;
 
 
-        Vector2 tilePosition =
-            new Vector2(
-                startX +
-                position.x *
-                tileSize.x +
-                layerOffsetX,
+//        Vector2 tilePosition =
+//            new Vector2(
+//                startX +
+//                position.x *
+//                tileSize.x +
+//                layerOffsetX,
 
-                startY +
-                position.y *
-                tileSize.y +
-                layerOffsetY
-            );
+//                startY +
+//                position.y *
+//                tileSize.y +
+//                layerOffsetY
+//            );
 
 
-        SpawnTile(
-            tilePosition,
-            1,
-            position.x,
-            position.y
-        );
-    }
+//        SpawnTile(
+//            tilePosition,
+//            1,
+//            position.x,
+//            position.y
+//        );
+//    }
 
 
-    // =========================================================
-    // LAYER 2 POSITION
-    // =========================================================
+//    // =========================================================
+//    // LAYER 2 POSITION
+//    // =========================================================
 
-    private void SpawnLayer2Tile(
-        GridPosition position)
-    {
-        const int rows = 5;
+//    private void SpawnLayer2Tile(
+//        GridPosition position)
+//    {
+//        const int rows = 5;
 
 
-        float layer1StartX =
-            -(4 - 1) *
-            tileSize.x *
-            0.5f;
+//        float layer1StartX =
+//            -(4 - 1) *
+//            tileSize.x *
+//            0.5f;
 
 
-        float layer1X0 =
-            layer1StartX +
-            0 * tileSize.x +
-            layerOffsetX;
+//        float layer1X0 =
+//            layer1StartX +
+//            0 * tileSize.x +
+//            layerOffsetX;
 
 
-        float layer1X1 =
-            layer1StartX +
-            1 * tileSize.x +
-            layerOffsetX;
+//        float layer1X1 =
+//            layer1StartX +
+//            1 * tileSize.x +
+//            layerOffsetX;
 
 
-        float layer1X2 =
-            layer1StartX +
-            2 * tileSize.x +
-            layerOffsetX;
+//        float layer1X2 =
+//            layer1StartX +
+//            2 * tileSize.x +
+//            layerOffsetX;
 
 
-        float layer1X3 =
-            layer1StartX +
-            3 * tileSize.x +
-            layerOffsetX;
+//        float layer1X3 =
+//            layer1StartX +
+//            3 * tileSize.x +
+//            layerOffsetX;
 
 
-        float layer2X0 =
-            (layer1X0 + layer1X1) *
-            0.5f +
-            layerOffsetX;
+//        float layer2X0 =
+//            (layer1X0 + layer1X1) *
+//            0.5f +
+//            layerOffsetX;
 
 
-        float layer2X1 =
-            (layer1X1 + layer1X2) *
-            0.5f +
-            layerOffsetX;
+//        float layer2X1 =
+//            (layer1X1 + layer1X2) *
+//            0.5f +
+//            layerOffsetX;
 
 
-        float layer2X2 =
-            (layer1X2 + layer1X3) *
-            0.5f +
-            layerOffsetX;
+//        float layer2X2 =
+//            (layer1X2 + layer1X3) *
+//            0.5f +
+//            layerOffsetX;
 
 
-        float layer1StartY =
-            -(rows - 1) *
-            tileSize.y *
-            0.5f;
+//        float layer1StartY =
+//            -(rows - 1) *
+//            tileSize.y *
+//            0.5f;
 
 
-        float layer1Y =
-            layer1StartY +
-            position.y *
-            tileSize.y +
-            layerOffsetY;
+//        float layer1Y =
+//            layer1StartY +
+//            position.y *
+//            tileSize.y +
+//            layerOffsetY;
 
 
-        float layer2Y =
-            layer1Y +
-            layerOffsetY;
+//        float layer2Y =
+//            layer1Y +
+//            layerOffsetY;
 
 
-        float x;
+//        float x;
 
 
-        if (position.x == 0)
-        {
-            x = layer2X0;
-        }
-        else if (position.x == 1)
-        {
-            x = layer2X1;
-        }
-        else
-        {
-            x = layer2X2;
-        }
+//        if (position.x == 0)
+//        {
+//            x = layer2X0;
+//        }
+//        else if (position.x == 1)
+//        {
+//            x = layer2X1;
+//        }
+//        else
+//        {
+//            x = layer2X2;
+//        }
 
 
-        SpawnTile(
-            new Vector2(
-                x,
-                layer2Y
-            ),
-            2,
-            position.x,
-            position.y
-        );
-    }
+//        SpawnTile(
+//            new Vector2(
+//                x,
+//                layer2Y
+//            ),
+//            2,
+//            position.x,
+//            position.y
+//        );
+//    }
 
 
-    // =========================================================
-    // SPAWN TILE
-    // =========================================================
+//    // =========================================================
+//    // SPAWN TILE
+//    // =========================================================
 
-    private void SpawnTile(
-        Vector2 position,
-        int layer,
-        int gridX,
-        int gridY)
-    {
-        MahjongTile tile =
-            Instantiate(
-                tilePrefab,
-                boardRect
-            );
+//    private void SpawnTile(
+//        Vector2 position,
+//        int layer,
+//        int gridX,
+//        int gridY)
+//    {
+//        MahjongTile tile =
+//            Instantiate(
+//                tilePrefab,
+//                boardRect
+//            );
 
 
-        RectTransform rect =
-            tile.GetComponent<RectTransform>();
+//        RectTransform rect =
+//            tile.GetComponent<RectTransform>();
 
 
-        rect.anchorMin =
-            new Vector2(
-                0.5f,
-                0.5f
-            );
+//        rect.anchorMin =
+//            new Vector2(
+//                0.5f,
+//                0.5f
+//            );
 
 
-        rect.anchorMax =
-            new Vector2(
-                0.5f,
-                0.5f
-            );
+//        rect.anchorMax =
+//            new Vector2(
+//                0.5f,
+//                0.5f
+//            );
 
 
-        rect.pivot =
-            new Vector2(
-                0.5f,
-                0.5f
-            );
+//        rect.pivot =
+//            new Vector2(
+//                0.5f,
+//                0.5f
+//            );
 
 
-        rect.sizeDelta =
-            tileSize;
+//        rect.sizeDelta =
+//            tileSize;
 
 
-        rect.anchoredPosition =
-            position;
+//        rect.anchoredPosition =
+//            position;
 
 
-        /*
-         * Сообщаем тайлу его Board.
-         */
+//        /*
+//         * Сообщаем тайлу его Board.
+//         */
 
-        tile.Initialize(this);
+//        tile.Initialize(this);
 
 
-        spawnedTiles.Add(
-            new SpawnedTileData
-            {
-                tile = tile,
+//        spawnedTiles.Add(
+//            new SpawnedTileData
+//            {
+//                tile = tile,
 
-                layer = layer,
+//                layer = layer,
 
-                gridX = gridX,
+//                gridX = gridX,
 
-                gridY = gridY
-            }
-        );
-    }
+//                gridY = gridY
+//            }
+//        );
+//    }
 
 
-    // =========================================================
-    // SORT
-    // =========================================================
+//    // =========================================================
+//    // SORT
+//    // =========================================================
 
-    private void SortTiles()
-    {
-        spawnedTiles.Sort(
-            (a, b) =>
-            {
-                int layerCompare =
-                    a.layer.CompareTo(
-                        b.layer
-                    );
+//    private void SortTiles()
+//    {
+//        spawnedTiles.Sort(
+//            (a, b) =>
+//            {
+//                int layerCompare =
+//                    a.layer.CompareTo(
+//                        b.layer
+//                    );
 
 
-                if (layerCompare != 0)
-                    return layerCompare;
+//                if (layerCompare != 0)
+//                    return layerCompare;
 
 
-                int yCompare =
-                    a.gridY.CompareTo(
-                        b.gridY
-                    );
+//                int yCompare =
+//                    a.gridY.CompareTo(
+//                        b.gridY
+//                    );
 
 
-                if (yCompare != 0)
-                    return yCompare;
+//                if (yCompare != 0)
+//                    return yCompare;
 
 
-                return a.gridX.CompareTo(
-                    b.gridX
-                );
-            }
-        );
+//                return a.gridX.CompareTo(
+//                    b.gridX
+//                );
+//            }
+//        );
 
 
-        for (
-            int i = 0;
-            i < spawnedTiles.Count;
-            i++)
-        {
-            spawnedTiles[i]
-                .tile
-                .transform
-                .SetSiblingIndex(i);
-        }
-    }
+//        for (
+//            int i = 0;
+//            i < spawnedTiles.Count;
+//            i++)
+//        {
+//            spawnedTiles[i]
+//                .tile
+//                .transform
+//                .SetSiblingIndex(i);
+//        }
+//    }
 
 
-    // =========================================================
-    // TILE CLICK
-    // =========================================================
+//    // =========================================================
+//    // TILE CLICK
+//    // =========================================================
 
-    public void OnTileClicked(
-        MahjongTile clickedTile)
-    {
-        /*
-         * Во время Mix клики запрещены.
-         */
+//    public void OnTileClicked(
+//        MahjongTile clickedTile)
+//    {
+//        /*
+//         * Во время Mix клики запрещены.
+//         */
 
-        if (isMixing)
-            return;
+//        if (isMixing)
+//            return;
 
 
-        /*
-         * Первый тайл.
-         */
+//        /*
+//         * Первый тайл.
+//         */
 
-        if (firstSelectedTile == null)
-        {
-            firstSelectedTile =
-                clickedTile;
+//        if (firstSelectedTile == null)
+//        {
+//            firstSelectedTile =
+//                clickedTile;
 
-            return;
-        }
+//            return;
+//        }
 
 
-        /*
-         * Повторный клик по тому же тайлу.
-         */
+//        /*
+//         * Повторный клик по тому же тайлу.
+//         */
 
-        if (
-            firstSelectedTile ==
-            clickedTile
-        )
-        {
-            return;
-        }
+//        if (
+//            firstSelectedTile ==
+//            clickedTile
+//        )
+//        {
+//            return;
+//        }
 
 
-        /*
-         * Пока просто удаляем
-         * любые два активных тайла.
-         */
+//        /*
+//         * Пока просто удаляем
+//         * любые два активных тайла.
+//         */
 
-        RemoveTile(
-            firstSelectedTile
-        );
+//        RemoveTile(
+//            firstSelectedTile
+//        );
 
 
-        RemoveTile(
-            clickedTile
-        );
+//        RemoveTile(
+//            clickedTile
+//        );
 
 
-        firstSelectedTile = null;
+//        firstSelectedTile = null;
 
 
-        /*
-         * Пересчитываем доступность
-         * оставшихся тайлов.
-         */
+//        /*
+//         * Пересчитываем доступность
+//         * оставшихся тайлов.
+//         */
 
-        UpdateTileStates();
-    }
+//        UpdateTileStates();
+//    }
 
 
-    // =========================================================
-    // REMOVE TILE
-    // =========================================================
+//    // =========================================================
+//    // REMOVE TILE
+//    // =========================================================
 
-    private void RemoveTile(
-        MahjongTile tile)
-    {
-        for (
-            int i =
-                spawnedTiles.Count - 1;
+//    private void RemoveTile(
+//        MahjongTile tile)
+//    {
+//        for (
+//            int i =
+//                spawnedTiles.Count - 1;
 
-            i >= 0;
+//            i >= 0;
 
-            i--)
-        {
-            if (
-                spawnedTiles[i].tile ==
-                tile
-            )
-            {
-                spawnedTiles.RemoveAt(i);
+//            i--)
+//        {
+//            if (
+//                spawnedTiles[i].tile ==
+//                tile
+//            )
+//            {
+//                spawnedTiles.RemoveAt(i);
 
-                break;
-            }
-        }
+//                break;
+//            }
+//        }
 
 
-        if (tile != null)
-        {
-            Destroy(
-                tile.gameObject
-            );
-        }
-    }
+//        if (tile != null)
+//        {
+//            Destroy(
+//                tile.gameObject
+//            );
+//        }
+//    }
 
 
-    // =========================================================
-    // MIX
-    // =========================================================
+//    // =========================================================
+//    // MIX
+//    // =========================================================
 
-    public void Mix()
-    {
-        /*
-         * Нельзя запустить Mix повторно,
-         * пока предыдущий ещё идёт.
-         */
+//    public void Mix()
+//    {
+//        /*
+//         * Нельзя запустить Mix повторно,
+//         * пока предыдущий ещё идёт.
+//         */
 
-        if (isMixing)
-            return;
+//        if (isMixing)
+//            return;
 
 
-        /*
-         * Если осталось меньше двух тайлов,
-         * перемешивать нечего.
-         */
+//        /*
+//         * Если осталось меньше двух тайлов,
+//         * перемешивать нечего.
+//         */
 
-        if (spawnedTiles.Count <= 1)
-            return;
+//        if (spawnedTiles.Count <= 1)
+//            return;
 
 
-        isMixing = true;
+//        isMixing = true;
 
 
-        /*
-         * Сбрасываем первый выбранный тайл.
-         */
+//        /*
+//         * Сбрасываем первый выбранный тайл.
+//         */
 
-        firstSelectedTile = null;
+//        firstSelectedTile = null;
 
 
-        /*
-         * На всякий случай убиваем старые
-         * Tween'ы позиций тайлов.
-         */
+//        /*
+//         * На всякий случай убиваем старые
+//         * Tween'ы позиций тайлов.
+//         */
 
-        foreach (SpawnedTileData data in spawnedTiles)
-        {
-            RectTransform rect =
-                data.tile.GetComponent<RectTransform>();
+//        foreach (SpawnedTileData data in spawnedTiles)
+//        {
+//            RectTransform rect =
+//                data.tile.GetComponent<RectTransform>();
 
 
-            rect.DOKill();
-        }
+//            rect.DOKill();
+//        }
 
 
-        /*
-         * Собираем позиции отдельно
-         * для каждого яруса.
-         */
+//        /*
+//         * Собираем позиции отдельно
+//         * для каждого яруса.
+//         */
 
-        List<Vector2> layer0TargetPositions =
-            GetCurrentLayerPositions(0);
+//        List<Vector2> layer0TargetPositions =
+//            GetCurrentLayerPositions(0);
 
 
-        List<Vector2> layer1TargetPositions =
-            GetCurrentLayerPositions(1);
+//        List<Vector2> layer1TargetPositions =
+//            GetCurrentLayerPositions(1);
 
 
-        List<Vector2> layer2TargetPositions =
-            GetCurrentLayerPositions(2);
+//        List<Vector2> layer2TargetPositions =
+//            GetCurrentLayerPositions(2);
 
 
-        /*
-         * Перемешиваем позиции.
-         */
+//        /*
+//         * Перемешиваем позиции.
+//         */
 
-        Shuffle(
-            layer0TargetPositions
-        );
+//        Shuffle(
+//            layer0TargetPositions
+//        );
 
 
-        Shuffle(
-            layer1TargetPositions
-        );
+//        Shuffle(
+//            layer1TargetPositions
+//        );
 
 
-        Shuffle(
-            layer2TargetPositions
-        );
+//        Shuffle(
+//            layer2TargetPositions
+//        );
 
 
-        /*
-         * Индексы назначения.
-         */
+//        /*
+//         * Индексы назначения.
+//         */
 
-        int layer0Index = 0;
+//        int layer0Index = 0;
 
-        int layer1Index = 0;
+//        int layer1Index = 0;
 
-        int layer2Index = 0;
+//        int layer2Index = 0;
 
 
-        /*
-         * Запускаем перемещение.
-         */
+//        /*
+//         * Запускаем перемещение.
+//         */
 
-        foreach (SpawnedTileData data in spawnedTiles)
-        {
-            RectTransform rect =
-                data.tile.GetComponent<RectTransform>();
+//        foreach (SpawnedTileData data in spawnedTiles)
+//        {
+//            RectTransform rect =
+//                data.tile.GetComponent<RectTransform>();
 
 
-            Vector2 targetPosition;
+//            Vector2 targetPosition;
 
 
-            if (data.layer == 0)
-            {
-                targetPosition =
-                    layer0TargetPositions[
-                        layer0Index
-                    ];
+//            if (data.layer == 0)
+//            {
+//                targetPosition =
+//                    layer0TargetPositions[
+//                        layer0Index
+//                    ];
 
 
-                layer0Index++;
-            }
-            else if (data.layer == 1)
-            {
-                targetPosition =
-                    layer1TargetPositions[
-                        layer1Index
-                    ];
+//                layer0Index++;
+//            }
+//            else if (data.layer == 1)
+//            {
+//                targetPosition =
+//                    layer1TargetPositions[
+//                        layer1Index
+//                    ];
 
 
-                layer1Index++;
-            }
-            else
-            {
-                targetPosition =
-                    layer2TargetPositions[
-                        layer2Index
-                    ];
+//                layer1Index++;
+//            }
+//            else
+//            {
+//                targetPosition =
+//                    layer2TargetPositions[
+//                        layer2Index
+//                    ];
 
 
-                layer2Index++;
-            }
+//                layer2Index++;
+//            }
 
 
-            /*
-             * Плавное движение.
-             */
+//            /*
+//             * Плавное движение.
+//             */
 
-            rect
-                .DOAnchorPos(
-                    targetPosition,
-                    mixDuration
-                )
-                .SetEase(
-                    mixEase
-                );
-        }
+//            rect
+//                .DOAnchorPos(
+//                    targetPosition,
+//                    mixDuration
+//                )
+//                .SetEase(
+//                    mixEase
+//                );
+//        }
 
 
-        /*
-         * После окончания Mix:
-         *
-         * 1. Синхронизируем gridX/gridY.
-         * 2. Пересчитываем доступность.
-         * 3. Разрешаем клики.
-         */
+//        /*
+//         * После окончания Mix:
+//         *
+//         * 1. Синхронизируем gridX/gridY.
+//         * 2. Пересчитываем доступность.
+//         * 3. Разрешаем клики.
+//         */
 
-        DOVirtual.DelayedCall(
-            mixDuration,
-            FinishMix
-        );
-    }
+//        DOVirtual.DelayedCall(
+//            mixDuration,
+//            FinishMix
+//        );
+//    }
 
 
-    // =========================================================
-    // GET CURRENT POSITIONS
-    // =========================================================
+//    // =========================================================
+//    // GET CURRENT POSITIONS
+//    // =========================================================
 
-    private List<Vector2> GetCurrentLayerPositions(
-        int targetLayer)
-    {
-        List<Vector2> positions =
-            new List<Vector2>();
+//    private List<Vector2> GetCurrentLayerPositions(
+//        int targetLayer)
+//    {
+//        List<Vector2> positions =
+//            new List<Vector2>();
 
 
-        foreach (SpawnedTileData data in spawnedTiles)
-        {
-            if (
-                data.layer !=
-                targetLayer
-            )
-            {
-                continue;
-            }
+//        foreach (SpawnedTileData data in spawnedTiles)
+//        {
+//            if (
+//                data.layer !=
+//                targetLayer
+//            )
+//            {
+//                continue;
+//            }
 
 
-            RectTransform rect =
-                data.tile.GetComponent<RectTransform>();
+//            RectTransform rect =
+//                data.tile.GetComponent<RectTransform>();
 
 
-            positions.Add(
-                rect.anchoredPosition
-            );
-        }
+//            positions.Add(
+//                rect.anchoredPosition
+//            );
+//        }
 
 
-        return positions;
-    }
+//        return positions;
+//    }
 
 
-    // =========================================================
-    // FINISH MIX
-    // =========================================================
+//    // =========================================================
+//    // FINISH MIX
+//    // =========================================================
 
-    private void FinishMix()
-    {
-        /*
-         * Сначала обновляем логические координаты
-         * согласно новым позициям.
-         */
+//    private void FinishMix()
+//    {
+//        /*
+//         * Сначала обновляем логические координаты
+//         * согласно новым позициям.
+//         */
 
-        UpdateLogicalPositionsAfterMix();
+//        UpdateLogicalPositionsAfterMix();
 
 
-        /*
-         * Затем сортируем Canvas.
-         */
+//        /*
+//         * Затем сортируем Canvas.
+//         */
 
-        SortTiles();
+//        SortTiles();
 
 
-        /*
-         * Пересчитываем активность.
-         */
+//        /*
+//         * Пересчитываем активность.
+//         */
 
-        UpdateTileStates();
+//        UpdateTileStates();
 
 
-        /*
-         * Теперь снова разрешаем клики.
-         */
+//        /*
+//         * Теперь снова разрешаем клики.
+//         */
 
-        isMixing = false;
-    }
+//        isMixing = false;
+//    }
 
 
-    // =========================================================
-    // UPDATE LOGICAL POSITIONS
-    // =========================================================
+//    // =========================================================
+//    // UPDATE LOGICAL POSITIONS
+//    // =========================================================
 
-    private void UpdateLogicalPositionsAfterMix()
-    {
-        /*
-         * После Mix позиции визуально уже поменялись.
-         *
-         * Теперь каждому тайлу нужно назначить
-         * соответствующий gridX/gridY.
-         */
+//    private void UpdateLogicalPositionsAfterMix()
+//    {
+//        /*
+//         * После Mix позиции визуально уже поменялись.
+//         *
+//         * Теперь каждому тайлу нужно назначить
+//         * соответствующий gridX/gridY.
+//         */
 
 
-        foreach (SpawnedTileData data in spawnedTiles)
-        {
-            RectTransform rect =
-                data.tile.GetComponent<RectTransform>();
+//        foreach (SpawnedTileData data in spawnedTiles)
+//        {
+//            RectTransform rect =
+//                data.tile.GetComponent<RectTransform>();
 
 
-            Vector2 position =
-                rect.anchoredPosition;
+//            Vector2 position =
+//                rect.anchoredPosition;
 
 
-            if (data.layer == 0)
-            {
-                UpdateLayer0LogicalPosition(
-                    data,
-                    position
-                );
-            }
-            else if (data.layer == 1)
-            {
-                UpdateLayer1LogicalPosition(
-                    data,
-                    position
-                );
-            }
-            else
-            {
-                UpdateLayer2LogicalPosition(
-                    data,
-                    position
-                );
-            }
-        }
-    }
+//            if (data.layer == 0)
+//            {
+//                UpdateLayer0LogicalPosition(
+//                    data,
+//                    position
+//                );
+//            }
+//            else if (data.layer == 1)
+//            {
+//                UpdateLayer1LogicalPosition(
+//                    data,
+//                    position
+//                );
+//            }
+//            else
+//            {
+//                UpdateLayer2LogicalPosition(
+//                    data,
+//                    position
+//                );
+//            }
+//        }
+//    }
 
 
-    // =========================================================
-    // UPDATE LAYER 0 LOGIC
-    // =========================================================
+//    // =========================================================
+//    // UPDATE LAYER 0 LOGIC
+//    // =========================================================
 
-    private void UpdateLayer0LogicalPosition(
-        SpawnedTileData data,
-        Vector2 position)
-    {
-        const int columns = 4;
+//    private void UpdateLayer0LogicalPosition(
+//        SpawnedTileData data,
+//        Vector2 position)
+//    {
+//        const int columns = 4;
 
-        const int rows = 5;
+//        const int rows = 5;
 
 
-        float startX =
-            -(columns - 1) *
-            tileSize.x *
-            0.5f;
+//        float startX =
+//            -(columns - 1) *
+//            tileSize.x *
+//            0.5f;
 
 
-        float startY =
-            -(rows - 1) *
-            tileSize.y *
-            0.5f;
+//        float startY =
+//            -(rows - 1) *
+//            tileSize.y *
+//            0.5f;
 
 
-        int x =
-            Mathf.RoundToInt(
-                (position.x - startX) /
-                tileSize.x
-            );
+//        int x =
+//            Mathf.RoundToInt(
+//                (position.x - startX) /
+//                tileSize.x
+//            );
 
 
-        int y =
-            Mathf.RoundToInt(
-                (position.y - startY) /
-                tileSize.y
-            );
+//        int y =
+//            Mathf.RoundToInt(
+//                (position.y - startY) /
+//                tileSize.y
+//            );
 
 
-        data.gridX = x;
+//        data.gridX = x;
 
-        data.gridY = y;
-    }
+//        data.gridY = y;
+//    }
 
 
-    // =========================================================
-    // UPDATE LAYER 1 LOGIC
-    // =========================================================
+//    // =========================================================
+//    // UPDATE LAYER 1 LOGIC
+//    // =========================================================
 
-    private void UpdateLayer1LogicalPosition(
-        SpawnedTileData data,
-        Vector2 position)
-    {
-        const int columns = 4;
+//    private void UpdateLayer1LogicalPosition(
+//        SpawnedTileData data,
+//        Vector2 position)
+//    {
+//        const int columns = 4;
 
-        const int rows = 5;
+//        const int rows = 5;
 
 
-        float startX =
-            -(columns - 1) *
-            tileSize.x *
-            0.5f;
+//        float startX =
+//            -(columns - 1) *
+//            tileSize.x *
+//            0.5f;
 
 
-        float startY =
-            -(rows - 1) *
-            tileSize.y *
-            0.5f;
+//        float startY =
+//            -(rows - 1) *
+//            tileSize.y *
+//            0.5f;
 
 
-        int x =
-            Mathf.RoundToInt(
-                (
-                    position.x -
-                    layerOffsetX -
-                    startX
-                ) /
-                tileSize.x
-            );
+//        int x =
+//            Mathf.RoundToInt(
+//                (
+//                    position.x -
+//                    layerOffsetX -
+//                    startX
+//                ) /
+//                tileSize.x
+//            );
 
 
-        int y =
-            Mathf.RoundToInt(
-                (
-                    position.y -
-                    layerOffsetY -
-                    startY
-                ) /
-                tileSize.y
-            );
+//        int y =
+//            Mathf.RoundToInt(
+//                (
+//                    position.y -
+//                    layerOffsetY -
+//                    startY
+//                ) /
+//                tileSize.y
+//            );
 
 
-        data.gridX = x;
+//        data.gridX = x;
 
-        data.gridY = y;
-    }
+//        data.gridY = y;
+//    }
 
 
-    // =========================================================
-    // UPDATE LAYER 2 LOGIC
-    // =========================================================
+//    // =========================================================
+//    // UPDATE LAYER 2 LOGIC
+//    // =========================================================
 
-    private void UpdateLayer2LogicalPosition(
-        SpawnedTileData data,
-        Vector2 position)
-    {
-        const int rows = 5;
+//    private void UpdateLayer2LogicalPosition(
+//        SpawnedTileData data,
+//        Vector2 position)
+//    {
+//        const int rows = 5;
 
 
-        float layer1StartX =
-            -(4 - 1) *
-            tileSize.x *
-            0.5f;
+//        float layer1StartX =
+//            -(4 - 1) *
+//            tileSize.x *
+//            0.5f;
 
 
-        float layer1X0 =
-            layer1StartX +
-            0 * tileSize.x +
-            layerOffsetX;
+//        float layer1X0 =
+//            layer1StartX +
+//            0 * tileSize.x +
+//            layerOffsetX;
 
 
-        float layer1X1 =
-            layer1StartX +
-            1 * tileSize.x +
-            layerOffsetX;
+//        float layer1X1 =
+//            layer1StartX +
+//            1 * tileSize.x +
+//            layerOffsetX;
 
 
-        float layer1X2 =
-            layer1StartX +
-            2 * tileSize.x +
-            layerOffsetX;
+//        float layer1X2 =
+//            layer1StartX +
+//            2 * tileSize.x +
+//            layerOffsetX;
 
 
-        float layer1X3 =
-            layer1StartX +
-            3 * tileSize.x +
-            layerOffsetX;
+//        float layer1X3 =
+//            layer1StartX +
+//            3 * tileSize.x +
+//            layerOffsetX;
 
 
-        float layer2X0 =
-            (layer1X0 + layer1X1) *
-            0.5f +
-            layerOffsetX;
+//        float layer2X0 =
+//            (layer1X0 + layer1X1) *
+//            0.5f +
+//            layerOffsetX;
 
 
-        float layer2X1 =
-            (layer1X1 + layer1X2) *
-            0.5f +
-            layerOffsetX;
+//        float layer2X1 =
+//            (layer1X1 + layer1X2) *
+//            0.5f +
+//            layerOffsetX;
 
 
-        float layer2X2 =
-            (layer1X2 + layer1X3) *
-            0.5f +
-            layerOffsetX;
+//        float layer2X2 =
+//            (layer1X2 + layer1X3) *
+//            0.5f +
+//            layerOffsetX;
 
 
-        float[] possibleX =
-        {
-            layer2X0,
-            layer2X1,
-            layer2X2
-        };
+//        float[] possibleX =
+//        {
+//            layer2X0,
+//            layer2X1,
+//            layer2X2
+//        };
 
 
-        int closestX = 0;
+//        int closestX = 0;
 
 
-        float closestDistance =
-            Mathf.Abs(
-                position.x -
-                possibleX[0]
-            );
+//        float closestDistance =
+//            Mathf.Abs(
+//                position.x -
+//                possibleX[0]
+//            );
 
 
-        for (
-            int i = 1;
-            i < possibleX.Length;
-            i++)
-        {
-            float distance =
-                Mathf.Abs(
-                    position.x -
-                    possibleX[i]
-                );
+//        for (
+//            int i = 1;
+//            i < possibleX.Length;
+//            i++)
+//        {
+//            float distance =
+//                Mathf.Abs(
+//                    position.x -
+//                    possibleX[i]
+//                );
 
 
-            if (
-                distance <
-                closestDistance
-            )
-            {
-                closestDistance =
-                    distance;
+//            if (
+//                distance <
+//                closestDistance
+//            )
+//            {
+//                closestDistance =
+//                    distance;
 
 
-                closestX = i;
-            }
-        }
+//                closestX = i;
+//            }
+//        }
 
 
-        float layer1StartY =
-            -(rows - 1) *
-            tileSize.y *
-            0.5f;
+//        float layer1StartY =
+//            -(rows - 1) *
+//            tileSize.y *
+//            0.5f;
 
 
-        int y =
-            Mathf.RoundToInt(
-                (
-                    position.y -
-                    layerOffsetY -
-                    layerOffsetY -
-                    layer1StartY
-                ) /
-                tileSize.y
-            );
+//        int y =
+//            Mathf.RoundToInt(
+//                (
+//                    position.y -
+//                    layerOffsetY -
+//                    layerOffsetY -
+//                    layer1StartY
+//                ) /
+//                tileSize.y
+//            );
 
 
-        data.gridX =
-            closestX;
+//        data.gridX =
+//            closestX;
 
 
-        data.gridY =
-            y;
-    }
+//        data.gridY =
+//            y;
+//    }
 
 
-    // =========================================================
-    // SHUFFLE
-    // =========================================================
+//    // =========================================================
+//    // SHUFFLE
+//    // =========================================================
 
-    private void Shuffle<T>(
-        List<T> list)
-    {
-        for (
-            int i = list.Count - 1;
-            i > 0;
-            i--)
-        {
-            int randomIndex =
-                Random.Range(
-                    0,
-                    i + 1
-                );
+//    private void Shuffle<T>(
+//        List<T> list)
+//    {
+//        for (
+//            int i = list.Count - 1;
+//            i > 0;
+//            i--)
+//        {
+//            int randomIndex =
+//                Random.Range(
+//                    0,
+//                    i + 1
+//                );
 
 
-            T temp =
-                list[i];
+//            T temp =
+//                list[i];
 
 
-            list[i] =
-                list[randomIndex];
+//            list[i] =
+//                list[randomIndex];
 
 
-            list[randomIndex] =
-                temp;
-        }
-    }
+//            list[randomIndex] =
+//                temp;
+//        }
+//    }
 
 
-    // =========================================================
-    // UPDATE TILE STATES
-    // =========================================================
+//    // =========================================================
+//    // UPDATE TILE STATES
+//    // =========================================================
 
-    private void UpdateTileStates()
-    {
-        foreach (SpawnedTileData data in spawnedTiles)
-        {
-            bool isFree =
-                IsTileFree(data);
+//    private void UpdateTileStates()
+//    {
+//        foreach (SpawnedTileData data in spawnedTiles)
+//        {
+//            bool isFree =
+//                IsTileFree(data);
 
 
-            data.tile.SetActiveVisual(
-                isFree
-            );
-        }
-    }
+//            data.tile.SetActiveVisual(
+//                isFree
+//            );
+//        }
+//    }
 
 
-    // =========================================================
-    // CHECK TILE FREE
-    // =========================================================
+//    // =========================================================
+//    // CHECK TILE FREE
+//    // =========================================================
 
-    private bool IsTileFree(
-        SpawnedTileData tileData)
-    {
-        /*
-         * Сверху ничего не должно быть.
-         */
+//    private bool IsTileFree(
+//        SpawnedTileData tileData)
+//    {
+//        /*
+//         * Сверху ничего не должно быть.
+//         */
 
-        if (
-            HasTileAbove(tileData)
-        )
-        {
-            return false;
-        }
+//        if (
+//            HasTileAbove(tileData)
+//        )
+//        {
+//            return false;
+//        }
 
 
-        /*
-         * Хотя бы одна сторона
-         * должна быть свободна.
-         */
+//        /*
+//         * Хотя бы одна сторона
+//         * должна быть свободна.
+//         */
 
-        bool leftBlocked =
-            HasTileOnSide(
-                tileData,
-                -1
-            );
+//        bool leftBlocked =
+//            HasTileOnSide(
+//                tileData,
+//                -1
+//            );
 
 
-        bool rightBlocked =
-            HasTileOnSide(
-                tileData,
-                1
-            );
+//        bool rightBlocked =
+//            HasTileOnSide(
+//                tileData,
+//                1
+//            );
 
 
-        return !leftBlocked ||
-               !rightBlocked;
-    }
+//        return !leftBlocked ||
+//               !rightBlocked;
+//    }
 
 
-    // =========================================================
-    // TILE ABOVE
-    // =========================================================
+//    // =========================================================
+//    // TILE ABOVE
+//    // =========================================================
 
-    private bool HasTileAbove(
-        SpawnedTileData current)
-    {
-        foreach (SpawnedTileData other in spawnedTiles)
-        {
-            if (other == current)
-                continue;
+//    private bool HasTileAbove(
+//        SpawnedTileData current)
+//    {
+//        foreach (SpawnedTileData other in spawnedTiles)
+//        {
+//            if (other == current)
+//                continue;
 
 
-            if (
-                other.layer <=
-                current.layer
-            )
-            {
-                continue;
-            }
+//            if (
+//                other.layer <=
+//                current.layer
+//            )
+//            {
+//                continue;
+//            }
 
 
-            if (
-                DoTilesOverlap(
-                    current.tile,
-                    other.tile
-                )
-            )
-            {
-                return true;
-            }
-        }
+//            if (
+//                DoTilesOverlap(
+//                    current.tile,
+//                    other.tile
+//                )
+//            )
+//            {
+//                return true;
+//            }
+//        }
 
 
-        return false;
-    }
+//        return false;
+//    }
 
 
-    // =========================================================
-    // SIDE TILE
-    // =========================================================
+//    // =========================================================
+//    // SIDE TILE
+//    // =========================================================
 
-    private bool HasTileOnSide(
-        SpawnedTileData current,
-        int direction)
-    {
-        foreach (SpawnedTileData other in spawnedTiles)
-        {
-            if (other == current)
-                continue;
+//    private bool HasTileOnSide(
+//        SpawnedTileData current,
+//        int direction)
+//    {
+//        foreach (SpawnedTileData other in spawnedTiles)
+//        {
+//            if (other == current)
+//                continue;
 
 
-            if (
-                other.layer !=
-                current.layer
-            )
-            {
-                continue;
-            }
+//            if (
+//                other.layer !=
+//                current.layer
+//            )
+//            {
+//                continue;
+//            }
 
 
-            if (direction < 0)
-            {
-                if (
-                    other.gridX !=
-                    current.gridX - 1
-                )
-                {
-                    continue;
-                }
-            }
-            else
-            {
-                if (
-                    other.gridX !=
-                    current.gridX + 1
-                )
-                {
-                    continue;
-                }
-            }
+//            if (direction < 0)
+//            {
+//                if (
+//                    other.gridX !=
+//                    current.gridX - 1
+//                )
+//                {
+//                    continue;
+//                }
+//            }
+//            else
+//            {
+//                if (
+//                    other.gridX !=
+//                    current.gridX + 1
+//                )
+//                {
+//                    continue;
+//                }
+//            }
 
 
-            if (
-                other.gridY !=
-                current.gridY
-            )
-            {
-                continue;
-            }
+//            if (
+//                other.gridY !=
+//                current.gridY
+//            )
+//            {
+//                continue;
+//            }
 
 
-            return true;
-        }
+//            return true;
+//        }
 
 
-        return false;
-    }
+//        return false;
+//    }
 
 
-    // =========================================================
-    // RECT OVERLAP
-    // =========================================================
+//    // =========================================================
+//    // RECT OVERLAP
+//    // =========================================================
 
-    private bool DoTilesOverlap(
-        MahjongTile first,
-        MahjongTile second)
-    {
-        RectTransform firstRect =
-            first.GetComponent<RectTransform>();
+//    private bool DoTilesOverlap(
+//        MahjongTile first,
+//        MahjongTile second)
+//    {
+//        RectTransform firstRect =
+//            first.GetComponent<RectTransform>();
 
 
-        RectTransform secondRect =
-            second.GetComponent<RectTransform>();
+//        RectTransform secondRect =
+//            second.GetComponent<RectTransform>();
 
 
-        Rect firstWorldRect =
-            GetWorldRect(firstRect);
+//        Rect firstWorldRect =
+//            GetWorldRect(firstRect);
 
 
-        Rect secondWorldRect =
-            GetWorldRect(secondRect);
+//        Rect secondWorldRect =
+//            GetWorldRect(secondRect);
 
 
-        return firstWorldRect.Overlaps(
-            secondWorldRect
-        );
-    }
+//        return firstWorldRect.Overlaps(
+//            secondWorldRect
+//        );
+//    }
 
 
-    // =========================================================
-    // WORLD RECT
-    // =========================================================
+//    // =========================================================
+//    // WORLD RECT
+//    // =========================================================
 
-    private Rect GetWorldRect(
-        RectTransform rectTransform)
-    {
-        Vector3[] corners =
-            new Vector3[4];
+//    private Rect GetWorldRect(
+//        RectTransform rectTransform)
+//    {
+//        Vector3[] corners =
+//            new Vector3[4];
 
 
-        rectTransform.GetWorldCorners(
-            corners
-        );
+//        rectTransform.GetWorldCorners(
+//            corners
+//        );
 
 
-        float minX =
-            corners[0].x;
+//        float minX =
+//            corners[0].x;
 
-        float maxX =
-            corners[0].x;
+//        float maxX =
+//            corners[0].x;
 
-        float minY =
-            corners[0].y;
+//        float minY =
+//            corners[0].y;
 
-        float maxY =
-            corners[0].y;
+//        float maxY =
+//            corners[0].y;
 
 
-        for (int i = 1; i < 4; i++)
-        {
-            minX =
-                Mathf.Min(
-                    minX,
-                    corners[i].x
-                );
+//        for (int i = 1; i < 4; i++)
+//        {
+//            minX =
+//                Mathf.Min(
+//                    minX,
+//                    corners[i].x
+//                );
 
 
-            maxX =
-                Mathf.Max(
-                    maxX,
-                    corners[i].x
-                );
+//            maxX =
+//                Mathf.Max(
+//                    maxX,
+//                    corners[i].x
+//                );
 
 
-            minY =
-                Mathf.Min(
-                    minY,
-                    corners[i].y
-                );
+//            minY =
+//                Mathf.Min(
+//                    minY,
+//                    corners[i].y
+//                );
 
 
-            maxY =
-                Mathf.Max(
-                    maxY,
-                    corners[i].y
-                );
-        }
+//            maxY =
+//                Mathf.Max(
+//                    maxY,
+//                    corners[i].y
+//                );
+//        }
 
 
-        return Rect.MinMaxRect(
-            minX,
-            minY,
-            maxX,
-            maxY
-        );
-    }
+//        return Rect.MinMaxRect(
+//            minX,
+//            minY,
+//            maxX,
+//            maxY
+//        );
+//    }
 
 
-    // =========================================================
-    // CLEAR
-    // =========================================================
+//    // =========================================================
+//    // CLEAR
+//    // =========================================================
 
-    private void ClearBoard()
-    {
-        spawnedTiles.Clear();
+//    private void ClearBoard()
+//    {
+//        spawnedTiles.Clear();
 
 
-        layer0Positions.Clear();
+//        layer0Positions.Clear();
 
-        layer1Positions.Clear();
+//        layer1Positions.Clear();
 
-        layer2Positions.Clear();
+//        layer2Positions.Clear();
 
 
-        if (boardRect == null)
-            return;
+//        if (boardRect == null)
+//            return;
 
 
-        for (
-            int i =
-                boardRect.childCount - 1;
+//        for (
+//            int i =
+//                boardRect.childCount - 1;
 
-            i >= 0;
+//            i >= 0;
 
-            i--)
-        {
-            Destroy(
-                boardRect.GetChild(i).gameObject
-            );
-        }
-    }
-}
+//            i--)
+//        {
+//            Destroy(
+//                boardRect.GetChild(i).gameObject
+//            );
+//        }
+//    }
+//}

@@ -1,0 +1,466 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class MahjongModel
+{
+    private readonly MahjongBoardGenerator generator;
+
+    private readonly List<MahjongTileData> tiles =
+        new List<MahjongTileData>();
+
+    private MahjongTileData firstSelectedTile;
+
+
+    public IReadOnlyList<MahjongTileData> Tiles =>
+        tiles;
+
+
+    public MahjongModel(
+        MahjongBoardGenerator generator)
+    {
+        this.generator = generator;
+    }
+
+
+    public void Initialize()
+    {
+        GenerateBoard();
+    }
+
+
+    public void Dispose()
+    {
+        tiles.Clear();
+
+        firstSelectedTile = null;
+    }
+
+
+    // =========================================================
+    // GENERATE
+    // =========================================================
+
+    public void GenerateBoard()
+    {
+        ClearBoard();
+
+        List<MahjongTilePosition> positions =
+            generator.Generate();
+
+        int id = 0;
+
+        foreach (MahjongTilePosition position in positions)
+        {
+            MahjongTileData tile =
+                new MahjongTileData(
+                    id,
+                    position.Layer,
+                    position.GridX,
+                    position.GridY
+                );
+
+            tiles.Add(tile);
+
+            OnTileCreated?.Invoke(tile);
+
+            id++;
+        }
+
+        UpdateActiveStates();
+    }
+
+
+    private void ClearBoard()
+    {
+        if (tiles.Count == 0)
+            return;
+
+
+        tiles.Clear();
+
+        firstSelectedTile = null;
+
+
+        OnBoardCleared?.Invoke();
+    }
+
+
+    // =========================================================
+    // SELECT
+    // =========================================================
+
+    public void SelectTile(
+        int tileId)
+    {
+        MahjongTileData tile =
+            GetTile(tileId);
+
+
+        if (tile == null)
+            return;
+
+
+        if (tile.IsRemoved)
+            return;
+
+
+        if (!tile.IsActive)
+            return;
+
+
+        if (firstSelectedTile == null)
+        {
+            firstSelectedTile = tile;
+
+            OnTileSelected?.Invoke(
+                tile.Id
+            );
+
+            return;
+        }
+
+
+        if (firstSelectedTile == tile)
+            return;
+
+
+        MahjongTileData secondTile =
+            tile;
+
+
+        MahjongTileData firstTile =
+            firstSelectedTile;
+
+
+        firstSelectedTile = null;
+
+
+        RemoveTile(firstTile);
+        RemoveTile(secondTile);
+
+
+        UpdateActiveStates();
+    }
+
+
+    // =========================================================
+    // REMOVE
+    // =========================================================
+
+    private void RemoveTile(
+        MahjongTileData tile)
+    {
+        if (tile == null)
+            return;
+
+
+        if (tile.IsRemoved)
+            return;
+
+
+        tile.Remove();
+
+
+        OnTileRemoved?.Invoke(
+            tile.Id
+        );
+    }
+
+
+    // =========================================================
+    // ACTIVE
+    // =========================================================
+
+    private void UpdateActiveStates()
+    {
+        foreach (
+            MahjongTileData tile
+            in tiles)
+        {
+            if (tile.IsRemoved)
+                continue;
+
+
+            bool active =
+                IsTileActive(tile);
+
+
+            if (tile.IsActive == active)
+                continue;
+
+
+            tile.SetActive(
+                active
+            );
+
+
+            OnTileActiveChanged?.Invoke(
+                tile.Id,
+                active
+            );
+        }
+    }
+
+
+    private bool IsTileActive(
+        MahjongTileData tile)
+    {
+        if (HasTileAbove(tile))
+            return false;
+
+
+        bool leftBlocked =
+            HasTileOnSide(
+                tile,
+                -1
+            );
+
+
+        bool rightBlocked =
+            HasTileOnSide(
+                tile,
+                1
+            );
+
+
+        return
+            !leftBlocked ||
+            !rightBlocked;
+    }
+
+
+    private bool HasTileAbove(
+        MahjongTileData tile)
+    {
+        foreach (
+            MahjongTileData other
+            in tiles)
+        {
+            if (other == tile)
+                continue;
+
+
+            if (other.IsRemoved)
+                continue;
+
+
+            if (other.Layer <= tile.Layer)
+                continue;
+
+
+            if (
+                IsTileOverlapping(
+                    tile,
+                    other))
+            {
+                return true;
+            }
+        }
+
+
+        return false;
+    }
+
+
+    private bool HasTileOnSide(
+        MahjongTileData tile,
+        int direction)
+    {
+        foreach (
+            MahjongTileData other
+            in tiles)
+        {
+            if (other == tile)
+                continue;
+
+
+            if (other.IsRemoved)
+                continue;
+
+
+            if (other.Layer != tile.Layer)
+                continue;
+
+
+            if (other.GridY != tile.GridY)
+                continue;
+
+
+            if (
+                other.GridX !=
+                tile.GridX + direction)
+            {
+                continue;
+            }
+
+
+            return true;
+        }
+
+
+        return false;
+    }
+
+
+    private bool IsTileOverlapping(
+        MahjongTileData first,
+        MahjongTileData second)
+    {
+        int deltaX =
+            Mathf.Abs(
+                first.GridX -
+                second.GridX
+            );
+
+
+        int deltaY =
+            Mathf.Abs(
+                first.GridY -
+                second.GridY
+            );
+
+
+        return
+            deltaX <= 1 &&
+            deltaY <= 1;
+    }
+
+
+    // =========================================================
+    // MIX
+    // =========================================================
+
+    public void Mix()
+    {
+        int firstLayerCount = 0;
+        int secondLayerCount = 0;
+        int thirdLayerCount = 0;
+
+        List<MahjongTileData> availableTiles =
+            new List<MahjongTileData>();
+
+        foreach (MahjongTileData tile in tiles)
+        {
+            if (tile.IsRemoved)
+                continue;
+
+            availableTiles.Add(tile);
+
+            switch (tile.Layer)
+            {
+                case 0:
+                    firstLayerCount++;
+                    break;
+
+                case 1:
+                    secondLayerCount++;
+                    break;
+
+                case 2:
+                    thirdLayerCount++;
+                    break;
+            }
+        }
+
+        List<MahjongTilePosition> positions =
+            generator.Generate(
+                firstLayerCount,
+                secondLayerCount,
+                thirdLayerCount
+            );
+
+        if (positions.Count != availableTiles.Count)
+            return;
+
+        Shuffle(positions);
+
+        for (int i = 0; i < availableTiles.Count; i++)
+        {
+            availableTiles[i].SetPosition(
+                positions[i].Layer,
+                positions[i].GridX,
+                positions[i].GridY
+            );
+        }
+
+        firstSelectedTile = null;
+
+        UpdateActiveStates();
+
+        OnMix?.Invoke();
+    }
+
+
+    // =========================================================
+    // HELPERS
+    // =========================================================
+
+    private MahjongTileData GetTile(
+        int tileId)
+    {
+        foreach (
+            MahjongTileData tile
+            in tiles)
+        {
+            if (tile.Id == tileId)
+                return tile;
+        }
+
+
+        return null;
+    }
+
+
+    private void Shuffle<T>(
+        List<T> list)
+    {
+        for (
+            int i = list.Count - 1;
+            i > 0;
+            i--)
+        {
+            int randomIndex =
+                UnityEngine.Random.Range(
+                    0,
+                    i + 1
+                );
+
+
+            T temp = list[i];
+
+            list[i] =
+                list[randomIndex];
+
+            list[randomIndex] =
+                temp;
+        }
+    }
+
+
+    // =========================================================
+    // OUTPUT
+    // =========================================================
+
+    public event Action<MahjongTileData>
+        OnTileCreated;
+
+    public event Action<int>
+        OnTileRemoved;
+
+    public event Action<int, bool>
+        OnTileActiveChanged;
+
+    public event Action<int>
+        OnTileSelected;
+
+    public event Action
+        OnBoardCleared;
+
+    public event Action
+        OnMix;
+}

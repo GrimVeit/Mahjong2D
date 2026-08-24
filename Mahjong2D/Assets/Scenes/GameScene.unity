@@ -176,6 +176,7 @@ MonoBehaviour:
     isPlayAwake: 1
     audioType: 1
   uIRoot: {fileID: 5499485385716780466, guid: 13040dadc2e07d648b608502b86daa51, type: 3}
+  mahjongBoardGenerator: {fileID: 1631780863}
 --- !u!1 &495547365
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,6 +337,56 @@ Transform:
   - {fileID: 495547366}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1631780861
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1631780862}
+  - component: {fileID: 1631780863}
+  m_Layer: 0
+  m_Name: MahjongGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1631780862
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1631780861}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.0173899, y: 2.1595242, z: 3.321756}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1631780863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1631780861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a47bdd1f4eb69a4b9dbdd298db769d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firstLayer:
+    count: 15
+  secondLayer:
+    count: 8
+  thirdLayer:
+    count: 5
 --- !u!1 &1828649614
 GameObject:
   m_ObjectHideFlags: 0
@@ -480,3 +531,4 @@ SceneRoots:
   - {fileID: 1828649617}
   - {fileID: 417607494}
   - {fileID: 757174751}
+  - {fileID: 1631780862}

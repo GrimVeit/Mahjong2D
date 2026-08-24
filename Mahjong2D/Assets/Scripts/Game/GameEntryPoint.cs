@@ -9,10 +9,15 @@ public class GameEntryPoint : SceneEntryPoint
     [Header("UI Root Prefab")]
     [SerializeField] private UIRoot_Game uIRoot;
 
+    [Header("Generator")]
+    [SerializeField] private MahjongBoardGenerator mahjongBoardGenerator;
+
     private UIRoot_Game _uIRoot;
     private ViewContainer _viewContainer;
 
     private MoneyVisualPresenter _moneyVisualPresenter;
+
+    private MahjongPresenter _mahjongPresenter;
 
     public override async UniTask Initialize(DIContainer container)
     {
@@ -44,8 +49,11 @@ public class GameEntryPoint : SceneEntryPoint
             _viewContainer.GetView<MoneyVisualView>()
         );
 
+        _mahjongPresenter = new MahjongPresenter(new MahjongModel(mahjongBoardGenerator), _viewContainer.GetView<MahjongView>());
+
         _uIRoot.Initialize();
         _moneyVisualPresenter.Initialize();
+        _mahjongPresenter.Initialize();
 
         return UniTask.CompletedTask;
     }
@@ -71,6 +79,16 @@ public class GameEntryPoint : SceneEntryPoint
         if (Input.GetKeyDown(KeyCode.Space))
         {
             GoToGame();
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            _mahjongPresenter.GenerateBoard();
+        }
+
+        if (Input.GetKeyDown(KeyCode.RightAlt))
+        {
+            _mahjongPresenter.Mix();
         }
     }
 

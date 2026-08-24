@@ -1,5 +1,60 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &139558655120302062
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4653515958074314494}
+  - component: {fileID: 4201595149152653710}
+  m_Layer: 5
+  m_Name: Mohjang
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &4653515958074314494
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139558655120302062}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2866918509651305045}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &4201595149152653710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139558655120302062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac68c08e82ae7c94db895d1cd2355cd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boardRoot: {fileID: 7758653003858104976}
+  tilePrefab: {fileID: 3185496972091432345}
+  tileSize: {x: 235, y: 290}
+  layerOffsetX: 18
+  layerOffsetY: 22
+  mixDuration: 0.35
+  mixEase: 7
 --- !u!1 &801725453404025849
 GameObject:
   m_ObjectHideFlags: 0
@@ -419,7 +474,6 @@ GameObject:
   - component: {fileID: 7758653003858104976}
   - component: {fileID: 8599052847509872132}
   - component: {fileID: 4983427022863074334}
-  - component: {fileID: 3407702251277594698}
   m_Layer: 5
   m_Name: MahjongBoard
   m_TagString: Untagged
@@ -484,28 +538,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3407702251277594698
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4049076859389574347}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 395d4643346e35d45b245befb20fe870, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  boardRect: {fileID: 7758653003858104976}
-  tilePrefab: {fileID: 8310275691773641642}
-  tileSize: {x: 235, y: 290}
-  layerOffsetX: 18
-  layerOffsetY: 22
-  layer0TileCount: 18
-  layer1TileCount: 8
-  layer2TileCount: 3
-  randomSeed: 0
-  useRandomSeed: 1
 --- !u!1 &4131816979306997378
 GameObject:
   m_ObjectHideFlags: 0
@@ -744,6 +776,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5379991402115522697}
+  - {fileID: 4653515958074314494}
   m_Father: {fileID: 4528280000954137741}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -882,7 +915,7 @@ GameObject:
   - component: {fileID: 3886981242383688989}
   - component: {fileID: 6008020264644219954}
   - component: {fileID: 8223395696029112195}
-  - component: {fileID: 8310275691773641642}
+  - component: {fileID: 3185496972091432345}
   m_Layer: 5
   m_Name: MahjongTile
   m_TagString: Untagged
@@ -947,7 +980,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8310275691773641642
+--- !u!114 &3185496972091432345
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -956,14 +989,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5206851059384971526}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a001eb668ce7b37469703b03f44986aa, type: 3}
+  m_Script: {fileID: 11500000, guid: f761e08632e810942bff28624ad6475d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileImage: {fileID: 8223395696029112195}
-  activeColor: {r: 1, g: 1, b: 1, a: 1}
-  inactiveColor: {r: 0.6226415, g: 0.6226415, b: 0.6226415, a: 1}
-  activeAlpha: 1
-  inactiveAlpha: 1
+  background: {fileID: 8223395696029112195}
 --- !u!1 &6300989872347993467
 GameObject:
   m_ObjectHideFlags: 0
