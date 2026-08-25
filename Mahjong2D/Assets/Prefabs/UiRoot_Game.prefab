@@ -211,6 +211,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonHint: {fileID: 3903775259785341480}
+  imageColor: {fileID: 2931634449727818636}
+  colorActive: {r: 1, g: 1, b: 1, a: 1}
+  colorInactive: {r: 0.34117648, g: 0.34117648, b: 0.34117648, a: 1}
+  durationColor: 0.15
 --- !u!1 &1444742433907115631
 GameObject:
   m_ObjectHideFlags: 0
@@ -583,8 +587,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   background: {fileID: 3199706043366151641}
   transformShake: {fileID: 0}
+  colorActive: {r: 0, g: 0, b: 0, a: 0}
+  colorInactive: {r: 0, g: 0, b: 0, a: 0}
+  duraionActive: 0
   imageSelectDeselect: {fileID: 4500733451480225826}
   durationSelectDeselect: 0.1
+  selectScale: 1.04
+  durationSelectScale: 0.15
 --- !u!1 &3478193384141633939
 GameObject:
   m_ObjectHideFlags: 0
@@ -961,8 +970,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   background: {fileID: 1804112202606125457}
   transformShake: {fileID: 0}
+  colorActive: {r: 0, g: 0, b: 0, a: 0}
+  colorInactive: {r: 0, g: 0, b: 0, a: 0}
+  duraionActive: 0
   imageSelectDeselect: {fileID: 6576575958227029726}
   durationSelectDeselect: 0.1
+  selectScale: 1.04
+  durationSelectScale: 0.15
 --- !u!1 &4049076859389574347
 GameObject:
   m_ObjectHideFlags: 0
@@ -1464,8 +1478,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   background: {fileID: 3955308979192338560}
   transformShake: {fileID: 2459088438847253150}
+  colorActive: {r: 1, g: 1, b: 1, a: 1}
+  colorInactive: {r: 0.44705883, g: 0.44705883, b: 0.44705883, a: 1}
+  duraionActive: 0.2
   imageSelectDeselect: {fileID: 6907619536944862921}
   durationSelectDeselect: 0.1
+  selectScale: 1.04
+  durationSelectScale: 0.15
 --- !u!1 &5629827212694027018
 GameObject:
   m_ObjectHideFlags: 0
@@ -2283,6 +2302,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonMix: {fileID: 466802233664590291}
+  imageColor: {fileID: 3749323998549851371}
+  colorActive: {r: 1, g: 1, b: 1, a: 1}
+  colorInactive: {r: 0.34117648, g: 0.34117648, b: 0.34117648, a: 1}
+  durationColor: 0.15
 --- !u!1 &8174916951681610561
 GameObject:
   m_ObjectHideFlags: 0

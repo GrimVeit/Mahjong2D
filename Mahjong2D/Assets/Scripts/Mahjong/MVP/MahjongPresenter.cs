@@ -195,6 +195,31 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider, IMahjongInfo
         remove => view.OnPairRemoved -= value;
     }
 
+
+    public event Action OnStartHint
+    {
+        add => view.OnStartHint += value;
+        remove => view.OnStartHint -= value;
+    }
+
+    public event Action OnStopHint
+    {
+        add => view.OnStopHint += value;
+        remove => view.OnStopHint -= value;
+    }
+
+    public event Action OnStartMix
+    {
+        add => view.OnStartMix += value;
+        remove => view.OnStartMix -= value;
+    }
+
+    public event Action OnStopMix
+    {
+        add => view.OnStopMix += value;
+        remove => view.OnStopMix -= value;
+    }
+
     #endregion
 
     #region Input
@@ -236,4 +261,10 @@ public interface IMahjongProvider
 public interface IMahjongListener
 {
     public event Action<MahjongPairRemovedData> OnPairRemoved;
+
+    public event Action OnStartHint;
+    public event Action OnStopHint;
+
+    public event Action OnStartMix;
+    public event Action OnStopMix;
 }

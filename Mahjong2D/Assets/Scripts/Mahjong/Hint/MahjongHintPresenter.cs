@@ -18,6 +18,7 @@ public class MahjongHintPresenter
         ActivateEvents();
 
         _view.Initialize();
+        _model.Initialize();
     }
 
     public void Dispose()
@@ -25,15 +26,22 @@ public class MahjongHintPresenter
         DeactivateEvents();
 
         _view.Dispose();
+        _model.Dispose();
     }
 
     private void ActivateEvents()
     {
+        _model.OnActive += _view.Active;
+        _model.OnInactive += _view.Deactive;
+
         _view.OnClickHint += _model.Hint;
     }
 
     private void DeactivateEvents()
     {
+        _model.OnActive -= _view.Active;
+        _model.OnInactive -= _view.Deactive;
+
         _view.OnClickHint -= _model.Hint;
     }
 }

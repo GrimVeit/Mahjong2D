@@ -13,6 +13,11 @@ public class MahjongTile : MonoBehaviour, IPointerClickHandler
     [SerializeField] private Image background;
     [SerializeField] private RectTransform transformShake;
 
+    [Header("Color")]
+    [SerializeField] private Color colorActive;
+    [SerializeField] private Color colorInactive;
+    [SerializeField] private float duraionActive;
+
     [Header("Select")]
     [SerializeField] private Image imageSelectDeselect;
     [SerializeField] private float durationSelectDeselect;
@@ -20,6 +25,7 @@ public class MahjongTile : MonoBehaviour, IPointerClickHandler
     [SerializeField] private float selectScale = 1.04f;
     [SerializeField] private float durationSelectScale = 0.15f;
 
+    private Tween tweenActive;
     private Tween tweenSelect;
     private Tween tweenSelectScale;
     private Sequence sequenceHint;
@@ -41,35 +47,21 @@ public class MahjongTile : MonoBehaviour, IPointerClickHandler
     }
 
 
-    public void SetActiveVisual(
-        bool isActive)
+    public void SetActiveVisual(bool isActive)
     {
         if (background == null)
             return;
 
-
-        Color color =
-            background.color;
-
+        tweenActive?.Kill();
 
         if (isActive)
         {
-            color.r = 1f;
-            color.g = 1f;
-            color.b = 1f;
-            color.a = 1f;
+            background.DOColor(colorActive, duraionActive);
         }
         else
         {
-            color.r = 0.5f;
-            color.g = 0.5f;
-            color.b = 0.5f;
-            color.a = 1f;
+            background.DOColor(colorInactive, duraionActive);
         }
-
-
-        background.color =
-            color;
     }
 
 
@@ -105,7 +97,7 @@ public class MahjongTile : MonoBehaviour, IPointerClickHandler
             .SetEase(Ease.InOutQuad);
     }
 
-    public void ShowHint()
+    public void ShowHint(Action onComplete = null)
     {
         // Не запускаем новую анимацию, пока старая не закончилась
         if (sequenceHint != null && sequenceHint.IsActive() && sequenceHint.IsPlaying())
@@ -162,6 +154,7 @@ public class MahjongTile : MonoBehaviour, IPointerClickHandler
         {
             transformShake.localScale = Vector3.one;
             transformShake.localRotation = Quaternion.identity;
+            onComplete?.Invoke();
         });
     }
 

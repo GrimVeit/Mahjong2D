@@ -198,6 +198,8 @@ public class MahjongView : View
         if (parent != tileSecond.transform.parent)
             return;
 
+        OnStartHint?.Invoke();
+
         // Если это новый hint-сеанс — сохраняем настоящий исходный порядок.
         if (hintOriginalOrder == null)
         {
@@ -218,7 +220,7 @@ public class MahjongView : View
 
         // Запускаем анимацию.
         tileFirst.ShowHint();
-        tileSecond.ShowHint();
+        tileSecond.ShowHint(() => OnStopHint?.Invoke());
 
         // Запускаем новый таймер.
         hintRestoreTween = DOVirtual.DelayedCall(0.9f, RestoreHintOrder);
@@ -344,55 +346,47 @@ public class MahjongView : View
     // MIX
     // =========================================================
 
-    public void Mix(
-        IReadOnlyList<MahjongTileData> tiles)
+    public void Mix(IReadOnlyList<MahjongTileData> tiles)
     {
-        UpdateDrawingOrder(
-            tiles
-        );
+        OnStartMix?.Invoke();
 
+        UpdateDrawingOrder(tiles);
 
-        foreach (
-            MahjongTileData data
-            in tiles)
+        Sequence sequence = DOTween.Sequence();
+
+        foreach (MahjongTileData data in tiles)
         {
             if (data.IsRemoved)
                 continue;
 
-
-            if (
-                !tileViews.TryGetValue(
+            if (!tileViews.TryGetValue(
                     data.Id,
-                    out MahjongTile tile
-                )
-            )
+                    out MahjongTile tile))
             {
                 continue;
             }
 
-
             RectTransform rect =
                 tile.transform as RectTransform;
 
-
             Vector2 targetPosition =
-                CalculatePosition(
-                    data
-                );
-
+                CalculatePosition(data);
 
             rect.DOKill();
 
-
-            rect
-                .DOAnchorPos(
-                    targetPosition,
-                    mixDuration
-                )
-                .SetEase(
-                    mixEase
-                );
+            sequence.Join(
+                rect
+                    .DOAnchorPos(
+                        targetPosition,
+                        mixDuration)
+                    .SetEase(mixEase)
+            );
         }
+
+        sequence.OnComplete(() =>
+        {
+            OnStopMix?.Invoke();
+        });
     }
 
 
@@ -400,7 +394,7 @@ public class MahjongView : View
     // DRAWING ORDER
     // =========================================================
 
-   public void UpdateDrawingOrder(
+    public void UpdateDrawingOrder(
         IReadOnlyList<MahjongTileData> tiles)
     {
         List<MahjongTileData> sortedTiles =
@@ -608,6 +602,14 @@ public class MahjongView : View
 
     public event Action<MahjongPairRemovedData>
         OnPairRemoved;
+
+
+
+    public event Action OnStartHint;
+    public event Action OnStopHint;
+
+    public event Action OnStartMix;
+    public event Action OnStopMix;
 }
 
 public readonly struct MahjongPairRemovedData
