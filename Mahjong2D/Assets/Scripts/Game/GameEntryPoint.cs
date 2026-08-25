@@ -20,6 +20,7 @@ public class GameEntryPoint : SceneEntryPoint
 
     private MahjongPresenter _mahjongPresenter;
     private MahjongMatchPresenter _mahjongMatchPresenter;
+    private MahjongMixPresenter _mahjongMixPresenter;
 
     public override async UniTask Initialize(DIContainer container)
     {
@@ -52,13 +53,14 @@ public class GameEntryPoint : SceneEntryPoint
         );
 
         _mahjongPresenter = new MahjongPresenter(new MahjongModel(mahjongBoardGenerator), _viewContainer.GetView<MahjongView>());
-
         _mahjongMatchPresenter = new MahjongMatchPresenter(new MahjongMatchModel(_mahjongPresenter), _viewContainer.GetView<MahjongMatchView>());
+        _mahjongMixPresenter = new MahjongMixPresenter(new MahjongMixModel(_mahjongPresenter), _viewContainer.GetView<MahjongMixView>());
 
         _uIRoot.Initialize();
         _moneyVisualPresenter.Initialize();
         _mahjongPresenter.Initialize();
         _mahjongMatchPresenter.Initialize();
+        _mahjongMixPresenter.Initialize();
 
         return UniTask.CompletedTask;
     }
@@ -77,6 +79,7 @@ public class GameEntryPoint : SceneEntryPoint
         _moneyVisualPresenter?.Dispose();
         _mahjongPresenter?.Dispose();
         _mahjongMatchPresenter?.Dispose();
+        _mahjongMixPresenter?.Dispose();
     }
 
     #region Output
@@ -91,11 +94,6 @@ public class GameEntryPoint : SceneEntryPoint
         if (Input.GetKeyDown(KeyCode.LeftAlt))
         {
             _mahjongPresenter.GenerateBoard(sprites);
-        }
-
-        if (Input.GetKeyDown(KeyCode.RightAlt))
-        {
-            _mahjongPresenter.Mix();
         }
     }
 

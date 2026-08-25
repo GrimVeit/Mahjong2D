@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MahjongPresenter : IMahjongListener
+public class MahjongPresenter : IMahjongListener, IMahjongProvider
 {
     private readonly MahjongModel model;
     private readonly MahjongView view;
@@ -86,29 +86,6 @@ public class MahjongPresenter : IMahjongListener
 
         view.Dispose();
         model.Dispose();
-    }
-
-
-    // =========================================================
-    // PUBLIC API
-    // =========================================================
-
-    public void GenerateBoard(
-        List<Sprite> sprites)
-    {
-        model.GenerateBoard(
-            sprites
-        );
-
-        view.UpdateDrawingOrder(
-        model.Tiles
-    );
-    }
-
-
-    public void Mix()
-    {
-        model.Mix();
     }
 
 
@@ -208,6 +185,29 @@ public class MahjongPresenter : IMahjongListener
     }
 
     #endregion
+
+    #region Input
+
+    public void GenerateBoard(List<Sprite> sprites)
+    {
+        model.GenerateBoard(sprites);
+
+        view.UpdateDrawingOrder(model.Tiles);
+    }
+
+
+    public void Mix()
+    {
+        model.Mix();
+    }
+
+    #endregion
+}
+
+public interface IMahjongProvider
+{
+    public void GenerateBoard(List<Sprite> sprites);
+    public void Mix();
 }
 
 public interface IMahjongListener
