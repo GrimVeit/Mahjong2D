@@ -6,6 +6,10 @@ using UnityEngine.UI;
 
 public class MahjongTile : MonoBehaviour, IPointerClickHandler
 {
+    public Vector3 Position => transform.localPosition;
+    public Vector2 Size => transform.GetComponent<RectTransform>().rect.size;
+    public Sprite Sprite => background.sprite;
+
     [SerializeField] private Image background;
 
     [Header("Select")]

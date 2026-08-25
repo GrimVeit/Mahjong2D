@@ -249,6 +249,7 @@ public class MahjongModel
 
         firstSelectedTile = null;
 
+        OnPairTileRemoved?.Invoke(firstTile.Id, secondTile.Id);
 
         RemoveTile(firstTile);
         RemoveTile(secondTile);
@@ -577,6 +578,9 @@ public class MahjongModel
 
     public event Action<int>
         OnTileRemoved;
+
+    public event Action<int, int>
+        OnPairTileRemoved;
 
 
     public event Action<int, bool>

@@ -204,6 +204,21 @@ public class MahjongView : View
         );
     }
 
+    public void RemovePair(int tileIdFirst, int tileIdSecond)
+    {
+        if (!tileViews.TryGetValue(tileIdFirst,out MahjongTile tileFirst))
+        {
+            return;
+        }
+
+        if (!tileViews.TryGetValue(tileIdSecond, out MahjongTile tileSecond))
+        {
+            return;
+        }
+
+        OnPairRemoved?.Invoke(new MahjongPairRemovedData(tileFirst.Sprite, tileFirst.Size, tileFirst.Position, tileSecond.Position));
+    }
+
     public void RemoveTile(
         int tileId)
     {
@@ -553,7 +568,7 @@ public class MahjongView : View
         OnClickTile;
 
     public event Action<MahjongPairRemovedData>
-    OnPairRemoved;
+        OnPairRemoved;
 }
 
 public readonly struct MahjongPairRemovedData
@@ -562,16 +577,16 @@ public readonly struct MahjongPairRemovedData
 
     public Vector2 TileSize { get; }
 
-    public Vector2 FirstPosition { get; }
+    public Vector3 FirstPosition { get; }
 
-    public Vector2 SecondPosition { get; }
+    public Vector3 SecondPosition { get; }
 
 
     public MahjongPairRemovedData(
         Sprite sprite,
         Vector2 tileSize,
-        Vector2 firstPosition,
-        Vector2 secondPosition)
+        Vector3 firstPosition,
+        Vector3 secondPosition)
     {
         Sprite = sprite;
 

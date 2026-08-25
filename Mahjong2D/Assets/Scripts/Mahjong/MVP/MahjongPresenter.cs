@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MahjongPresenter
+public class MahjongPresenter : IMahjongListener
 {
     private readonly MahjongModel model;
     private readonly MahjongView view;
@@ -28,6 +28,9 @@ public class MahjongPresenter
 
         model.OnTileRemoved +=
             HandleTileRemoved;
+
+        model.OnPairTileRemoved +=
+            HandlePairRemoved;
 
         model.OnTileActiveChanged +=
             HandleTileActiveChanged;
@@ -61,6 +64,9 @@ public class MahjongPresenter
 
         model.OnTileRemoved -=
             HandleTileRemoved;
+
+        model.OnPairTileRemoved -=
+            HandlePairRemoved;
 
         model.OnTileActiveChanged -=
             HandleTileActiveChanged;
@@ -140,6 +146,16 @@ public class MahjongPresenter
         );
     }
 
+    private void HandlePairRemoved(
+        int tileIdFirst,
+        int tileIdSecond)
+    {
+        view.RemovePair(
+            tileIdFirst, 
+            tileIdSecond
+        );
+    }
+
 
     private void HandleTileActiveChanged(
         int tileId,
@@ -182,4 +198,19 @@ public class MahjongPresenter
             model.Tiles
         );
     }
+
+    #region Output
+
+    public event Action<MahjongPairRemovedData> OnPairRemoved
+    {
+        add => view.OnPairRemoved += value;
+        remove => view.OnPairRemoved -= value;
+    }
+
+    #endregion
+}
+
+public interface IMahjongListener
+{
+    public event Action<MahjongPairRemovedData> OnPairRemoved;
 }
