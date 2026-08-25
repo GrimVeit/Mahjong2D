@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MahjongPresenter : IMahjongListener, IMahjongProvider
+public class MahjongPresenter : IMahjongListener, IMahjongProvider, IMahjongInfo
 {
     private readonly MahjongModel model;
     private readonly MahjongView view;
@@ -28,6 +28,8 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider
 
         model.OnTileRemoved +=
             HandleTileRemoved;
+
+        model.OnTileHintSelected += view.HintTile;
 
         model.OnPairTileRemoved +=
             HandlePairRemoved;
@@ -64,6 +66,8 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider
 
         model.OnTileRemoved -=
             HandleTileRemoved;
+
+        model.OnTileHintSelected -= view.HintTile;
 
         model.OnPairTileRemoved -=
             HandlePairRemoved;
@@ -176,6 +180,13 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider
         );
     }
 
+    #region Info
+
+    public bool HasAvailableMoves() => model.HasAvailableMoves();
+    public bool HasRemainingTiles() => model.HasRemainingTiles();
+
+    #endregion
+
     #region Output
 
     public event Action<MahjongPairRemovedData> OnPairRemoved
@@ -201,13 +212,25 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider
         model.Mix();
     }
 
+    public void Hint()
+    {
+        model.Hint();
+    }
+
     #endregion
+}
+
+public interface IMahjongInfo
+{
+    public bool HasAvailableMoves();
+    public bool HasRemainingTiles();
 }
 
 public interface IMahjongProvider
 {
     public void GenerateBoard(List<Sprite> sprites);
     public void Mix();
+    public void Hint();
 }
 
 public interface IMahjongListener

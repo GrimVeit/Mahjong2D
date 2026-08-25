@@ -42,6 +42,9 @@ public class MahjongView : View
     private Ease mixEase =
         Ease.InOutQuad;
 
+    private readonly Dictionary<int, int> selectedTileOriginalIndices = new();
+    private List<Transform> hintOriginalOrder;
+    private Tween hintRestoreTween;
 
     private readonly Dictionary<int, MahjongTile> tileViews =
         new Dictionary<int, MahjongTile>();
@@ -122,7 +125,7 @@ public class MahjongView : View
     // =========================================================
 
     public void SelectTile(
-        int tileId)
+    int tileId)
     {
         if (
             !tileViews.TryGetValue(
@@ -134,13 +137,23 @@ public class MahjongView : View
             return;
         }
 
+        // Если этот тайл ещё не был поднят
+        if (!selectedTileOriginalIndices.ContainsKey(tileId))
+        {
+            selectedTileOriginalIndices.Add(
+                tileId,
+                tile.transform.GetSiblingIndex()
+            );
+        }
+
+        tile.transform.SetAsLastSibling();
 
         tile.Select();
     }
 
 
     public void UnselectTile(
-        int tileId)
+    int tileId)
     {
         if (
             !tileViews.TryGetValue(
@@ -152,57 +165,83 @@ public class MahjongView : View
             return;
         }
 
-
         tile.Unselect();
-    }
-
-
-    // =========================================================
-    // REMOVE
-    // =========================================================
-
-    public void NotifyPairRemoved(
-    MahjongTileData firstTile,
-    MahjongTileData secondTile)
-    {
-        if (
-            !tileViews.TryGetValue(
-                firstTile.Id,
-                out MahjongTile firstView))
-        {
-            return;
-        }
-
 
         if (
-            !tileViews.TryGetValue(
-                secondTile.Id,
-                out MahjongTile secondView))
+            selectedTileOriginalIndices.TryGetValue(
+                tileId,
+                out int originalIndex
+            )
+        )
         {
-            return;
-        }
-
-
-        RectTransform firstRect =
-            firstView.transform as RectTransform;
-
-        RectTransform secondRect =
-            secondView.transform as RectTransform;
-
-
-        MahjongPairRemovedData data =
-            new MahjongPairRemovedData(
-                firstTile.Sprite,
-                tileSize,
-                firstRect.position,
-                secondRect.position
+            tile.transform.SetSiblingIndex(
+                originalIndex
             );
 
-
-        OnPairRemoved?.Invoke(
-            data
-        );
+            selectedTileOriginalIndices.Remove(
+                tileId
+            );
+        }
     }
+
+
+    public void HintTile(int tileIdFirst, int tileIdSecond)
+    {
+        if (!tileViews.TryGetValue(tileIdFirst, out MahjongTile tileFirst))
+            return;
+
+        if (!tileViews.TryGetValue(tileIdSecond, out MahjongTile tileSecond))
+            return;
+
+        Transform parent = tileFirst.transform.parent;
+
+        if (parent != tileSecond.transform.parent)
+            return;
+
+        // Если это новый hint-сеанс — сохраняем настоящий исходный порядок.
+        if (hintOriginalOrder == null)
+        {
+            hintOriginalOrder = new List<Transform>(parent.childCount);
+
+            for (int i = 0; i < parent.childCount; i++)
+            {
+                hintOriginalOrder.Add(parent.GetChild(i));
+            }
+        }
+
+        // Отменяем предыдущий таймер восстановления.
+        hintRestoreTween?.Kill();
+
+        // Поднимаем нужные тайлы наверх.
+        tileFirst.transform.SetAsLastSibling();
+        tileSecond.transform.SetAsLastSibling();
+
+        // Запускаем анимацию.
+        tileFirst.ShowHint();
+        tileSecond.ShowHint();
+
+        // Запускаем новый таймер.
+        hintRestoreTween = DOVirtual.DelayedCall(0.9f, RestoreHintOrder);
+    }
+
+    private void RestoreHintOrder()
+    {
+        if (hintOriginalOrder == null)
+            return;
+
+        for (int i = 0; i < hintOriginalOrder.Count; i++)
+        {
+            if (hintOriginalOrder[i] != null)
+                hintOriginalOrder[i].SetSiblingIndex(i);
+        }
+
+        hintOriginalOrder.Clear();
+        hintOriginalOrder = null;
+
+        hintRestoreTween = null;
+    }
+
+
 
     public void RemovePair(int tileIdFirst, int tileIdSecond)
     {

@@ -21,6 +21,7 @@ public class GameEntryPoint : SceneEntryPoint
     private MahjongPresenter _mahjongPresenter;
     private MahjongMatchPresenter _mahjongMatchPresenter;
     private MahjongMixPresenter _mahjongMixPresenter;
+    private MahjongHintPresenter _mahjongHintPresenter;
 
     public override async UniTask Initialize(DIContainer container)
     {
@@ -55,12 +56,14 @@ public class GameEntryPoint : SceneEntryPoint
         _mahjongPresenter = new MahjongPresenter(new MahjongModel(mahjongBoardGenerator), _viewContainer.GetView<MahjongView>());
         _mahjongMatchPresenter = new MahjongMatchPresenter(new MahjongMatchModel(_mahjongPresenter), _viewContainer.GetView<MahjongMatchView>());
         _mahjongMixPresenter = new MahjongMixPresenter(new MahjongMixModel(_mahjongPresenter), _viewContainer.GetView<MahjongMixView>());
+        _mahjongHintPresenter = new MahjongHintPresenter(new MahjongHintModel(_mahjongPresenter), _viewContainer.GetView<MahjongHintView>());
 
         _uIRoot.Initialize();
         _moneyVisualPresenter.Initialize();
         _mahjongPresenter.Initialize();
         _mahjongMatchPresenter.Initialize();
         _mahjongMixPresenter.Initialize();
+        _mahjongHintPresenter.Initialize();
 
         return UniTask.CompletedTask;
     }
@@ -80,6 +83,7 @@ public class GameEntryPoint : SceneEntryPoint
         _mahjongPresenter?.Dispose();
         _mahjongMatchPresenter?.Dispose();
         _mahjongMixPresenter?.Dispose();
+        _mahjongHintPresenter?.Dispose();
     }
 
     #region Output

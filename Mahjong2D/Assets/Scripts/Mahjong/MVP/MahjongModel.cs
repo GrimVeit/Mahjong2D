@@ -148,6 +148,48 @@ public class MahjongModel
         OnBoardCleared?.Invoke();
     }
 
+    // =========================================================
+    // HINT
+    // =========================================================
+
+    public void Hint()
+    {
+        if (firstSelectedTile != null)
+            OnTileUnselected?.Invoke(firstSelectedTile.Id);
+
+        List<(int firstId, int secondId)> availablePairs = new();
+
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            MahjongTileData firstTile = tiles[i];
+
+            if (firstTile.IsRemoved || !firstTile.IsActive)
+                continue;
+
+            for (int j = i + 1; j < tiles.Count; j++)
+            {
+                MahjongTileData secondTile = tiles[j];
+
+                if (secondTile.IsRemoved || !secondTile.IsActive)
+                    continue;
+
+                if (firstTile.PairId != secondTile.PairId)
+                    continue;
+
+                availablePairs.Add((firstTile.Id, secondTile.Id));
+            }
+        }
+
+        // Нет доступных пар
+        if (availablePairs.Count == 0)
+            return;
+
+        // Выбираем случайную пару
+        var (firstId, secondId) = availablePairs[UnityEngine.Random.Range(0, availablePairs.Count)];
+
+        OnTileHintSelected?.Invoke(firstId, secondId);
+    }
+
 
     // =========================================================
     // SELECT
@@ -448,6 +490,9 @@ public class MahjongModel
 
     public void Mix()
     {
+        if(firstSelectedTile != null)
+            OnTileUnselected?.Invoke(firstSelectedTile.Id);
+
         int firstLayerCount = 0;
         int secondLayerCount = 0;
         int thirdLayerCount = 0;
@@ -567,6 +612,61 @@ public class MahjongModel
         }
     }
 
+    #region BOOLS
+
+    public bool HasAvailableMoves()
+    {
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            MahjongTileData firstTile = tiles[i];
+
+            if (firstTile.IsRemoved)
+                continue;
+
+            if (!firstTile.IsActive)
+                continue;
+
+
+            for (int j = i + 1; j < tiles.Count; j++)
+            {
+                MahjongTileData secondTile = tiles[j];
+
+                if (secondTile.IsRemoved)
+                    continue;
+
+                if (!secondTile.IsActive)
+                    continue;
+
+
+                if (firstTile.PairId != secondTile.PairId)
+                    continue;
+
+
+                return true;
+            }
+        }
+
+
+        return false;
+    }
+
+
+    public bool HasRemainingTiles()
+    {
+        foreach (MahjongTileData tile in tiles)
+        {
+            if (tile.IsRemoved)
+                continue;
+
+            return true;
+        }
+
+
+        return false;
+    }
+
+    #endregion
+
 
     // =========================================================
     // OUTPUT
@@ -593,6 +693,9 @@ public class MahjongModel
 
     public event Action<int>
         OnTileUnselected;
+
+    public event Action<int, int>
+        OnTileHintSelected;
 
 
     public event Action

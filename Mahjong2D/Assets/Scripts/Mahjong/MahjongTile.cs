@@ -11,13 +11,18 @@ public class MahjongTile : MonoBehaviour, IPointerClickHandler
     public Sprite Sprite => background.sprite;
 
     [SerializeField] private Image background;
+    [SerializeField] private RectTransform transformShake;
 
     [Header("Select")]
     [SerializeField] private Image imageSelectDeselect;
     [SerializeField] private float durationSelectDeselect;
 
-    private Tween tweenSelect;
+    [SerializeField] private float selectScale = 1.04f;
+    [SerializeField] private float durationSelectScale = 0.15f;
 
+    private Tween tweenSelect;
+    private Tween tweenSelectScale;
+    private Sequence sequenceHint;
 
     private int id;
 
@@ -75,16 +80,89 @@ public class MahjongTile : MonoBehaviour, IPointerClickHandler
     public void Select()
     {
         tweenSelect?.Kill();
+        tweenSelectScale?.Kill();
 
-        tweenSelect = imageSelectDeselect.DOFade(1, durationSelectDeselect);
+        tweenSelect = imageSelectDeselect
+            .DOFade(1f, durationSelectDeselect)
+            .SetEase(Ease.OutQuad);
+
+        tweenSelectScale = transform
+            .DOScale(Vector3.one * selectScale, durationSelectScale)
+            .SetEase(Ease.OutQuad);
     }
-
 
     public void Unselect()
     {
         tweenSelect?.Kill();
+        tweenSelectScale?.Kill();
 
-        tweenSelect = imageSelectDeselect.DOFade(0, durationSelectDeselect);
+        tweenSelect = imageSelectDeselect
+            .DOFade(0f, durationSelectDeselect)
+            .SetEase(Ease.OutQuad);
+
+        tweenSelectScale = transform
+            .DOScale(Vector3.one, durationSelectScale)
+            .SetEase(Ease.InOutQuad);
+    }
+
+    public void ShowHint()
+    {
+        // Не запускаем новую анимацию, пока старая не закончилась
+        if (sequenceHint != null && sequenceHint.IsActive() && sequenceHint.IsPlaying())
+            return;
+
+        transformShake.localScale = Vector3.one;
+        transformShake.localRotation = Quaternion.identity;
+
+        sequenceHint = DOTween.Sequence();
+
+        sequenceHint.Append(
+            transformShake
+                .DOScale(1.05f, 0.12f)
+                .SetEase(Ease.OutQuad)
+        );
+
+        sequenceHint.Append(
+            transformShake
+                .DOLocalRotate(new Vector3(0, 0, 7f), 0.10f)
+                .SetEase(Ease.InOutSine)
+        );
+
+        sequenceHint.Append(
+            transformShake
+                .DOLocalRotate(new Vector3(0, 0, -7f), 0.16f)
+                .SetEase(Ease.InOutSine)
+        );
+
+        sequenceHint.Append(
+            transformShake
+                .DOLocalRotate(new Vector3(0, 0, 5f), 0.14f)
+                .SetEase(Ease.InOutSine)
+        );
+
+        sequenceHint.Append(
+            transformShake
+                .DOLocalRotate(new Vector3(0, 0, -3f), 0.12f)
+                .SetEase(Ease.InOutSine)
+        );
+
+        sequenceHint.Append(
+            transformShake
+                .DOLocalRotate(Vector3.zero, 0.12f)
+                .SetEase(Ease.OutSine)
+        );
+
+        sequenceHint.Join(
+            transformShake
+                .DOScale(Vector3.one, 0.25f)
+                .SetEase(Ease.OutQuad)
+        );
+
+        sequenceHint.OnComplete(() =>
+        {
+            transformShake.localScale = Vector3.one;
+            transformShake.localRotation = Quaternion.identity;
+        });
     }
 
 
