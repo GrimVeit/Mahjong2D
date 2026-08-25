@@ -11,7 +11,7 @@ public class GameEntryPoint : SceneEntryPoint
 
     [Header("Generator")]
     [SerializeField] private MahjongBoardGenerator mahjongBoardGenerator;
-    [SerializeField] private List<Sprite> sprites = new List<Sprite>();
+    [SerializeField] private List<Sprite> sprites = new();
 
     private UIRoot_Game _uIRoot;
     private ViewContainer _viewContainer;
@@ -19,6 +19,7 @@ public class GameEntryPoint : SceneEntryPoint
     private MoneyVisualPresenter _moneyVisualPresenter;
 
     private MahjongPresenter _mahjongPresenter;
+    private MahjongMatchAnimation _mahjongMatchAnimation;
 
     public override async UniTask Initialize(DIContainer container)
     {
@@ -55,6 +56,8 @@ public class GameEntryPoint : SceneEntryPoint
         _uIRoot.Initialize();
         _moneyVisualPresenter.Initialize();
         _mahjongPresenter.Initialize();
+
+        _mahjongMatchAnimation = _viewContainer.GetView<MahjongMatchAnimation>();
 
         return UniTask.CompletedTask;
     }

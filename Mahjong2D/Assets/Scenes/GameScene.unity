@@ -397,9 +397,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layouts:
   - spriteCount: 26
-    firstLayerCount: 15
-    secondLayerCount: 7
-    thirdLayerCount: 4
+    firstLayerCount: 14
+    secondLayerCount: 10
+    thirdLayerCount: 2
 --- !u!1 &1828649614
 GameObject:
   m_ObjectHideFlags: 0
