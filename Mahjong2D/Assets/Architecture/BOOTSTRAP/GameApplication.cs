@@ -19,11 +19,15 @@ public sealed class GameApplication : IDisposable
     }
 
 
-    public UniTask Start()
+    public async UniTask Start()
     {
+        await UniTask.Yield(PlayerLoopTiming.Update);
+
+        await uiRoot.Initialize();
+
         var sceneService = GlobalContainer.Resolve<SceneService>();
 
-        return sceneService.ChangeScene(new SceneTransition(Scenes.Menu, LoadingType.Default));
+        await sceneService.ChangeScene(new SceneTransition(Scenes.Menu, LoadingType.Default));
     }
 
 

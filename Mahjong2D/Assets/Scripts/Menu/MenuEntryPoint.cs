@@ -13,6 +13,8 @@ public class MenuEntryPoint : SceneEntryPoint
     private VolumeSettingsPresenter _volumeSettingsPresenter;
     private MoneyVisualPresenter _moneyVisualPresenter;
 
+    private VideoPresenter _videoPresenter;
+
     private StateMachine_Menu _stateMachine;
 
     public override async UniTask Initialize(DIContainer container)
@@ -30,6 +32,10 @@ public class MenuEntryPoint : SceneEntryPoint
         _viewContainer.Initialize();
         container.RegisterInstance(_viewContainer);
 
+        _videoPresenter = new VideoPresenter(new VideoModel(), _viewContainer.GetView<VideoView>());
+        container.RegisterInstance<IVideoProvider>(_videoPresenter);
+        await _videoPresenter.Initialize();
+
         await base.Initialize(container);
 
         await OnSceneInitialized(container);
@@ -39,22 +45,8 @@ public class MenuEntryPoint : SceneEntryPoint
     {
         _uIRoot.SetSoundProvider(_soundPresenter);
 
-        _volumeSettingsPresenter = new VolumeSettingsPresenter(
-            new VolumeSettingsModel(
-                _storeSoundSettingsPresenter,
-                _storeSoundSettingsPresenter,
-                _storeSoundSettingsPresenter
-            ),
-            _viewContainer.GetView<VolumeSettingsView>()
-        );
-
-        _moneyVisualPresenter = new MoneyVisualPresenter(
-            new MoneyVisualModel(
-                _storeMoneyPresenter,
-                _storeMoneyPresenter
-            ),
-            _viewContainer.GetView<MoneyVisualView>()
-        );
+        _volumeSettingsPresenter = new VolumeSettingsPresenter(new VolumeSettingsModel(_storeSoundSettingsPresenter,_storeSoundSettingsPresenter,_storeSoundSettingsPresenter), _viewContainer.GetView<VolumeSettingsView>());
+        _moneyVisualPresenter = new MoneyVisualPresenter(new MoneyVisualModel(_storeMoneyPresenter,_storeMoneyPresenter),_viewContainer.GetView<MoneyVisualView>());
 
         _stateMachine = new StateMachine_Menu(container);
 

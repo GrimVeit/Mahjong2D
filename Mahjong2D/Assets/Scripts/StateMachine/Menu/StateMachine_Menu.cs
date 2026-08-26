@@ -14,20 +14,28 @@ public class StateMachine_Menu : IStateProvider
     {
         var root = container.Resolve<UIRoot_Menu>();
 
+        states[typeof(HoldOnStartState_Menu)] = new HoldOnStartState_Menu(this);
+
+        states[typeof(IntroVideoState_Menu)] = new IntroVideoState_Menu(this, root, container.Resolve<IVideoProvider>());
+        states[typeof(IntroStartState_Menu)] = new IntroStartState_Menu(this, root);
+
         states[typeof(MainState_Menu)] = new MainState_Menu(this, root);
         states[typeof(SettingsState_Menu)] = new SettingsState_Menu(this, root);
         states[typeof(WalletState_Menu)] = new WalletState_Menu(this, root);
         states[typeof(LeaderboardState_Menu)] = new LeaderboardState_Menu(this, root);
+
+        states[typeof(StoreChooseTypeState_Menu)] = new StoreChooseTypeState_Menu(this, root);
     }
 
     public void Initialize()
     {
-        SetState(GetState<MainState_Menu>());
+        SetState(GetState<IntroVideoState_Menu>());
     }
 
     public void Dispose()
     {
-
+        _currentState?.Exit();
+        _currentState = null;
     }
 
     public IState GetState<T>() where T : IState

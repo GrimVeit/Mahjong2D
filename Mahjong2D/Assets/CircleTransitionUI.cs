@@ -1,6 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
 public class CircleTransitionUI : MonoBehaviour
 {
@@ -8,19 +9,50 @@ public class CircleTransitionUI : MonoBehaviour
     [SerializeField] private Image transitionImage;
     [SerializeField] private CanvasGroup transitionCanvasGroup;
 
-    [Header("Animation")]
-    [SerializeField] private float duration = 0.6f;
-    [SerializeField] private Ease showEase = Ease.InOutCubic;
-    [SerializeField] private Ease hideEase = Ease.InOutCubic;
 
     [Header("Circle")]
     [SerializeField] private float maxRadius = 0.8f;
     [SerializeField] private float softness = 0.02f;
 
+    [Header("Show")]
+    [SerializeField] private float showDuration = 0.6f;
+    [SerializeField] private Ease showEase = Ease.InOutCubic;
+
+    [Tooltip("Угол картинки в самом начале открытия.")]
+    [SerializeField] private float showRotation = -18f;
+
+    [Tooltip(
+        "При достижении этого радиуса картинка полностью раскручена."
+    )]
+    [SerializeField] private float showRotationRadius = 0.25f;
+
+    [SerializeField] private Ease showRotationEase = Ease.OutCubic;
+
+
+    [Header("Hide")]
+    [SerializeField] private float hideDuration = 0.6f;
+    [SerializeField] private Ease hideEase = Ease.InOutCubic;
+
+    [Tooltip("Угол картинки в конце закрытия.")]
+    [SerializeField] private float hideRotation = -18f;
+
+    [Tooltip(
+        "Ниже этого радиуса начинается вращение картинки."
+    )]
+    [SerializeField] private float hideRotationRadius = 0.25f;
+
+    [SerializeField] private Ease hideRotationEase = Ease.InCubic;
+
+
+    // =========================================================
+    // INTERNAL
+    // =========================================================
+
     private Material material;
 
     private Tween radiusTween;
-    private Sequence fadeSequence;
+    private Tween fadeTween;
+    private Tween colorTween;
 
     private static readonly int Radius =
         Shader.PropertyToID("_Radius");
@@ -32,7 +64,11 @@ public class CircleTransitionUI : MonoBehaviour
         Shader.PropertyToID("_Aspect");
 
 
-    public void Initialize()
+    // =========================================================
+    // INITIALIZE
+    // =========================================================
+
+    public async UniTask Initialize()
     {
         if (transitionImage == null)
         {
@@ -44,62 +80,224 @@ public class CircleTransitionUI : MonoBehaviour
             return;
         }
 
-        material = Instantiate(
-            transitionImage.material
-        );
+        if (transitionImage.material == null)
+        {
+            Debug.LogError(
+                "[CircleTransitionUI] Transition Image has no material.",
+                this
+            );
 
+            return;
+        }
+
+        material = Instantiate(transitionImage.material);
         transitionImage.material = material;
 
-        material.SetFloat(
-            Softness,
-            softness
-        );
+        material.SetFloat(Softness, softness);
+
+        // Ждём кадр, чтобы RectTransform гарантированно
+        // имел актуальные размеры.
+        await UniTask.Yield();
 
         UpdateAspect();
 
+        // Начальное состояние:
+        // круг закрыт + картинка повернута.
         SetRadius(0f);
+        SetRotation(showRotation);
 
         transitionImage.raycastTarget = false;
+
+        if (transitionCanvasGroup != null)
+            transitionCanvasGroup.alpha = 0f;
+
+        await UniTask.CompletedTask;
     }
 
-    public void Show()
+
+    // =========================================================
+    // SHOW
+    // =========================================================
+
+    public async UniTask Show()
     {
-        radiusTween?.Kill();
-        fadeSequence?.Kill();
+        if (!IsReady())
+            return;
+
+        KillTweens();
+
+        float startRadius =
+            material.GetFloat(Radius);
 
         radiusTween = DOTween.To(
-                () => material.GetFloat(Radius),
-                value => SetRadius(value),
+                () => startRadius,
+                value =>
+                {
+                    SetRadius(value);
+
+                    float rotation =
+                        CalculateShowRotation(value);
+
+                    SetRotation(rotation);
+                },
                 maxRadius,
-                duration
+                showDuration
             )
             .SetEase(showEase);
 
-        fadeSequence = DOTween.Sequence();
-        fadeSequence.AppendInterval(0.3f).Append(transitionCanvasGroup.DOFade(1, duration / 2));
+        fadeTween =
+            transitionCanvasGroup
+                .DOFade(1f, showDuration / 2f)
+                .SetDelay(0.3f);
+
+        colorTween = transitionImage.DOColor(Color.white, showDuration);
+
+        await UniTask.Delay((int)(showDuration * 1000f));
     }
 
 
     // =========================================================
     // HIDE
-    // ���� �������� � ������
     // =========================================================
 
-    public void Hide()
+    public async UniTask Hide()
     {
-        radiusTween?.Kill();
-        fadeSequence?.Kill();
+        if (!IsReady())
+            return;
+
+        KillTweens();
+
+        float startRadius =
+            material.GetFloat(Radius);
 
         radiusTween = DOTween.To(
-                () => material.GetFloat(Radius),
-                value => SetRadius(value),
+                () => startRadius,
+                value =>
+                {
+                    SetRadius(value);
+
+                    float rotation =
+                        CalculateHideRotation(value);
+
+                    SetRotation(rotation);
+                },
                 0f,
-                duration
+                hideDuration
             )
             .SetEase(hideEase);
 
-        fadeSequence = DOTween.Sequence();
-        fadeSequence.Append(transitionCanvasGroup.DOFade(0, duration/2));
+        fadeTween =
+            transitionCanvasGroup
+                .DOFade(0f, hideDuration / 2f);
+
+        colorTween = transitionImage.DOColor(Color.black, showDuration);
+
+        await UniTask.Delay((int)(hideDuration * 1000f));
+    }
+
+
+    // =========================================================
+    // SHOW ROTATION
+    // =========================================================
+    //
+    // radius 0
+    //      ↓
+    // rotation = showRotation
+    //
+    // radius showRotationRadius
+    //      ↓
+    // rotation = 0
+    //
+    // radius > showRotationRadius
+    //      ↓
+    // rotation = 0
+    // =========================================================
+
+    private float CalculateShowRotation(float radius)
+    {
+        if (showRotationRadius <= 0f)
+            return 0f;
+
+        // Уже полностью раскручено.
+        if (radius >= showRotationRadius)
+            return 0f;
+
+        // 0 при radius = 0
+        // 1 при radius = showRotationRadius
+        float progress =
+            Mathf.InverseLerp(
+                0f,
+                showRotationRadius,
+                radius
+            );
+
+        // Применяем ease именно к вращению.
+        progress =
+            DOVirtual.EasedValue(
+                0f,
+                1f,
+                progress,
+                showRotationEase
+            );
+
+        // showRotation -> 0
+        return Mathf.Lerp(
+            showRotation,
+            0f,
+            progress
+        );
+    }
+
+
+    // =========================================================
+    // HIDE ROTATION
+    // =========================================================
+    //
+    // radius > hideRotationRadius
+    //      ↓
+    // rotation = 0
+    //
+    // radius hideRotationRadius
+    //      ↓
+    // rotation = 0
+    //
+    // radius 0
+    //      ↓
+    // rotation = hideRotation
+    // =========================================================
+
+    private float CalculateHideRotation(float radius)
+    {
+        if (hideRotationRadius <= 0f)
+            return hideRotation;
+
+        // Пока круг большой — вообще не вращаем.
+        if (radius >= hideRotationRadius)
+            return 0f;
+
+        // 0 при radius = hideRotationRadius
+        // 1 при radius = 0
+        float progress =
+            Mathf.InverseLerp(
+                hideRotationRadius,
+                0f,
+                radius
+            );
+
+        progress =
+            DOVirtual.EasedValue(
+                0f,
+                1f,
+                progress,
+                hideRotationEase
+            );
+
+        // 0 -> hideRotation
+        return Mathf.Lerp(
+            0f,
+            hideRotation,
+            progress
+        );
     }
 
 
@@ -120,7 +318,26 @@ public class CircleTransitionUI : MonoBehaviour
 
 
     // =========================================================
-    // ASPECT RATIO
+    // SET ROTATION
+    // =========================================================
+
+    private void SetRotation(float angle)
+    {
+        if (transitionImage == null)
+            return;
+
+        Vector3 rotation =
+            transitionImage.rectTransform.localEulerAngles;
+
+        rotation.z = angle;
+
+        transitionImage.rectTransform.localEulerAngles =
+            rotation;
+    }
+
+
+    // =========================================================
+    // ASPECT
     // =========================================================
 
     private void UpdateAspect()
@@ -151,12 +368,37 @@ public class CircleTransitionUI : MonoBehaviour
 
 
     // =========================================================
+    // HELPERS
+    // =========================================================
+
+    private bool IsReady()
+    {
+        return
+            material != null &&
+            transitionImage != null &&
+            transitionCanvasGroup != null;
+    }
+
+
+    private void KillTweens()
+    {
+        radiusTween?.Kill();
+        fadeTween?.Kill();
+        colorTween?.Kill();
+
+        radiusTween = null;
+        fadeTween = null;
+        colorTween = null;
+    }
+
+
+    // =========================================================
     // CLEANUP
     // =========================================================
 
     private void OnDestroy()
     {
-        radiusTween?.Kill();
+        KillTweens();
 
         if (material != null)
         {

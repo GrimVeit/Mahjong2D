@@ -8,24 +8,19 @@ public class UIRootView : MonoBehaviour
     [SerializeField] private CircleTransitionUI circleTransitionUI;
     [SerializeField] private Transform uiSceneContainer;
 
-    private void Awake()
+    public UniTask Initialize()
     {
-        circleTransitionUI.Hide();
-        circleTransitionUI.Initialize();
+        return circleTransitionUI.Initialize();
     }
 
-    public async UniTask ShowLoadingScreen(LoadingType loadingType)
+    public UniTask ShowLoadingScreen(LoadingType loadingType)
     {
-        circleTransitionUI.Show();
-
-        await UniTask.Delay(600, DelayType.UnscaledDeltaTime);
+       return circleTransitionUI.Show();
     }
 
-    public async UniTask HideLoadingScreen(LoadingType loadingType)
+    public UniTask HideLoadingScreen(LoadingType loadingType)
     {
-        circleTransitionUI?.Hide();
-
-        await UniTask.Delay(600, DelayType.UnscaledDeltaTime);
+        return circleTransitionUI.Hide();
     }
 
     public void AttachSceneUI(GameObject sceneUI, Camera camera)

@@ -18,6 +18,7 @@ public class MainState_Menu : IState
         _sceneRoot.OnClickSettings_Main += ChangeStateToSettings;
         _sceneRoot.OnClickWallet_Main += ChangeStateToWallet;
         _sceneRoot.OnClickLeaderboard_Main += ChangeStateToLeaderboard;
+        _sceneRoot.OnClickStore_Main += ChangeStateToStoreChooseType;
 
         _sceneRoot.ShowMainPanel();
     }
@@ -27,6 +28,7 @@ public class MainState_Menu : IState
         _sceneRoot.OnClickSettings_Main -= ChangeStateToSettings;
         _sceneRoot.OnClickWallet_Main -= ChangeStateToWallet;
         _sceneRoot.OnClickLeaderboard_Main -= ChangeStateToLeaderboard;
+        _sceneRoot.OnClickStore_Main -= ChangeStateToStoreChooseType;
 
         _sceneRoot.HideMainPanel();
     }
@@ -44,5 +46,10 @@ public class MainState_Menu : IState
     private void ChangeStateToLeaderboard()
     {
         _stateProvider.SetState(_stateProvider.GetState<LeaderboardState_Menu>());
+    }
+
+    private void ChangeStateToStoreChooseType()
+    {
+        _stateProvider.SetState(_stateProvider.GetState<StoreChooseTypeState_Menu>());
     }
 }

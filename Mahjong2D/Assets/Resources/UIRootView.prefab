@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: a700b18664e0825418c9457b68db4b8e, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -401,7 +401,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6549741126663006581}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -489,11 +489,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   transitionImage: {fileID: 8418507188555945378}
   transitionCanvasGroup: {fileID: 2418259264026049785}
-  duration: 0.6
-  showEase: 10
-  hideEase: 10
   maxRadius: 0.8
   softness: 0.02
+  showDuration: 0.8
+  showEase: 10
+  showRotation: 180
+  showRotationRadius: 0.3
+  showRotationEase: 9
+  hideDuration: 0.8
+  hideEase: 10
+  hideRotation: 180
+  hideRotationRadius: 0.3
+  hideRotationEase: 8
 --- !u!1 &8662009869315020129
 GameObject:
   m_ObjectHideFlags: 0
