@@ -1,11 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
-public class MahjongPresenter : IMahjongListener, IMahjongProvider, IMahjongInfo
+public class MahjongPresenter :
+    IMahjongListener,
+    IMahjongProvider,
+    IMahjongInfo
 {
     private readonly MahjongModel model;
     private readonly MahjongView view;
+
+
+    private const float GenerateTileDelay = 0.05f;
 
 
     public MahjongPresenter(
@@ -16,6 +23,10 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider, IMahjongInfo
         this.view = view;
     }
 
+
+    // =========================================================
+    // LIFETIME
+    // =========================================================
 
     public void Initialize()
     {
@@ -29,7 +40,8 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider, IMahjongInfo
         model.OnTileRemoved +=
             HandleTileRemoved;
 
-        model.OnTileHintSelected += view.HintTile;
+        model.OnTileHintSelected +=
+            view.HintTile;
 
         model.OnPairTileRemoved +=
             HandlePairRemoved;
@@ -49,6 +61,12 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider, IMahjongInfo
         model.OnMix +=
             HandleMix;
 
+        model.OnStartGenerate +=
+            HandleStartGenerate;
+
+        model.OnStopGenerate +=
+            HandleStopGenerate;
+
 
         view.Initialize();
         model.Initialize();
@@ -67,7 +85,8 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider, IMahjongInfo
         model.OnTileRemoved -=
             HandleTileRemoved;
 
-        model.OnTileHintSelected -= view.HintTile;
+        model.OnTileHintSelected -=
+            view.HintTile;
 
         model.OnPairTileRemoved -=
             HandlePairRemoved;
@@ -86,6 +105,12 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider, IMahjongInfo
 
         model.OnMix -=
             HandleMix;
+
+        model.OnStartGenerate -=
+            HandleStartGenerate;
+
+        model.OnStopGenerate -=
+            HandleStopGenerate;
 
 
         view.Dispose();
@@ -127,12 +152,13 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider, IMahjongInfo
         );
     }
 
+
     private void HandlePairRemoved(
         int tileIdFirst,
         int tileIdSecond)
     {
         view.RemovePair(
-            tileIdFirst, 
+            tileIdFirst,
             tileIdSecond
         );
     }
@@ -180,14 +206,36 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider, IMahjongInfo
         );
     }
 
-    #region Info
 
-    public bool HasAvailableMoves() => model.HasAvailableMoves();
-    public bool HasRemainingTiles() => model.HasRemainingTiles();
+    private void HandleStartGenerate()
+    {
+        
+    }
 
-    #endregion
 
-    #region Output
+    private void HandleStopGenerate()
+    {
+        view.UpdateDrawingOrder(
+            model.Tiles
+        );
+    }
+
+
+    // =========================================================
+    // INFO
+    // =========================================================
+
+    public bool HasAvailableMoves() =>
+        model.HasAvailableMoves();
+
+
+    public bool HasRemainingTiles() =>
+        model.HasRemainingTiles();
+
+
+    // =========================================================
+    // OUTPUT
+    // =========================================================
 
     public event Action<MahjongPairRemovedData> OnPairRemoved
     {
@@ -202,11 +250,13 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider, IMahjongInfo
         remove => view.OnStartHint -= value;
     }
 
+
     public event Action OnStopHint
     {
         add => view.OnStopHint += value;
         remove => view.OnStopHint -= value;
     }
+
 
     public event Action OnStartMix
     {
@@ -214,21 +264,39 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider, IMahjongInfo
         remove => view.OnStartMix -= value;
     }
 
+
     public event Action OnStopMix
     {
         add => view.OnStopMix += value;
         remove => view.OnStopMix -= value;
     }
 
-    #endregion
 
-    #region Input
-
-    public void GenerateBoard(List<Sprite> sprites)
+    public event Action OnStartGenerate
     {
-        model.GenerateBoard(sprites);
+        add => model.OnStartGenerate += value;
+        remove => model.OnStartGenerate -= value;
+    }
 
-        view.UpdateDrawingOrder(model.Tiles);
+
+    public event Action OnStopGenerate
+    {
+        add => model.OnStopGenerate += value;
+        remove => model.OnStopGenerate -= value;
+    }
+
+
+    // =========================================================
+    // PROVIDER
+    // =========================================================
+
+    public UniTask GenerateBoard(
+        List<Sprite> sprites)
+    {
+        return model.GenerateBoard(
+            sprites,
+            GenerateTileDelay
+        );
     }
 
 
@@ -237,12 +305,11 @@ public class MahjongPresenter : IMahjongListener, IMahjongProvider, IMahjongInfo
         model.Mix();
     }
 
+
     public void Hint()
     {
         model.Hint();
     }
-
-    #endregion
 }
 
 public interface IMahjongInfo
@@ -253,7 +320,7 @@ public interface IMahjongInfo
 
 public interface IMahjongProvider
 {
-    public void GenerateBoard(List<Sprite> sprites);
+    public UniTask GenerateBoard(List<Sprite> sprites);
     public void Mix();
     public void Hint();
 }
@@ -262,9 +329,15 @@ public interface IMahjongListener
 {
     public event Action<MahjongPairRemovedData> OnPairRemoved;
 
+
     public event Action OnStartHint;
     public event Action OnStopHint;
 
+
     public event Action OnStartMix;
     public event Action OnStopMix;
+
+
+    public event Action OnStartGenerate;
+    public event Action OnStopGenerate;
 }

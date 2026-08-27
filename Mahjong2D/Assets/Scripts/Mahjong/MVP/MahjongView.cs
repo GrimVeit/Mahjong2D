@@ -32,6 +32,14 @@ public class MahjongView : View
     [SerializeField]
     private float layerOffsetY = 22f;
 
+    [Header("Generate")]
+
+    [SerializeField]
+    private float generateDuration = 0.2f;
+
+    [SerializeField]
+    private Ease generateEase = Ease.OutBack;
+
 
     [Header("Mix")]
 
@@ -45,6 +53,7 @@ public class MahjongView : View
     private readonly Dictionary<int, int> selectedTileOriginalIndices = new();
     private List<Transform> hintOriginalOrder;
     private Tween hintRestoreTween;
+    private bool hintActive;
 
     private readonly Dictionary<int, MahjongTile> tileViews =
         new Dictionary<int, MahjongTile>();
@@ -81,7 +90,7 @@ public class MahjongView : View
     // =========================================================
 
     public void CreateTile(
-        MahjongTileData data)
+    MahjongTileData data)
     {
         MahjongTile tile =
             Instantiate(
@@ -117,6 +126,21 @@ public class MahjongView : View
         tile.SetActiveVisual(
             data.IsActive
         );
+
+
+        // =====================================================
+        // GENERATE ANIMATION
+        // =====================================================
+
+        rect.localScale =
+            Vector3.zero;
+
+
+        rect.DOScale(
+            Vector3.one,
+            generateDuration
+        )
+        .SetEase(generateEase);
     }
 
 
@@ -188,19 +212,30 @@ public class MahjongView : View
     public void HintTile(int tileIdFirst, int tileIdSecond)
     {
         if (!tileViews.TryGetValue(tileIdFirst, out MahjongTile tileFirst))
+        {
+
             return;
+        }
 
         if (!tileViews.TryGetValue(tileIdSecond, out MahjongTile tileSecond))
+        {
+
             return;
+        }
 
         Transform parent = tileFirst.transform.parent;
 
         if (parent != tileSecond.transform.parent)
+        {
             return;
+        }
+
+        hintActive = true;
 
         OnStartHint?.Invoke();
 
-        // Если это новый hint-сеанс — сохраняем настоящий исходный порядок.
+        // Если это новый hint-сеанс —
+        // сохраняем настоящий исходный порядок.
         if (hintOriginalOrder == null)
         {
             hintOriginalOrder = new List<Transform>(parent.childCount);
@@ -218,12 +253,34 @@ public class MahjongView : View
         tileFirst.transform.SetAsLastSibling();
         tileSecond.transform.SetAsLastSibling();
 
-        // Запускаем анимацию.
+        // Первый тайл.
         tileFirst.ShowHint();
-        tileSecond.ShowHint(() => OnStopHint?.Invoke());
 
-        // Запускаем новый таймер.
-        hintRestoreTween = DOVirtual.DelayedCall(0.9f, RestoreHintOrder);
+        // Второй тайл завершает Hint-сеанс.
+        tileSecond.ShowHint(() =>
+        {
+            StopHint();
+        });
+
+        // Запускаем новый таймер восстановления.
+        hintRestoreTween = DOVirtual.DelayedCall(
+            0.9f,
+            RestoreHintOrder
+        );
+    }
+
+    private void StopHint()
+    {
+        if (!hintActive)
+            return;
+
+        hintActive = false;
+
+        Debug.Log(
+            $"[HINT] STOP frame={Time.frameCount}"
+        );
+
+        OnStopHint?.Invoke();
     }
 
     private void RestoreHintOrder()
@@ -260,28 +317,27 @@ public class MahjongView : View
         OnPairRemoved?.Invoke(new MahjongPairRemovedData(tileFirst.Sprite, tileFirst.Size, tileFirst.Position, tileSecond.Position));
     }
 
-    public void RemoveTile(
-        int tileId)
+    public void RemoveTile(int tileId)
     {
-        if (
-            !tileViews.TryGetValue(
-                tileId,
-                out MahjongTile tile
-            )
-        )
+        if (!tileViews.TryGetValue(tileId, out MahjongTile tile))
         {
             return;
         }
 
+        // Если удаляется тайл во время Hint,
+        // Hint больше не может дождаться своего OnComplete,
+        // потому что объект сейчас будет уничтожен.
+        if (hintActive)
+        {
+            StopHint();
+        }
 
         tile.OnClick -=
             HandleTileClick;
 
-
         tileViews.Remove(
             tileId
         );
-
 
         Destroy(
             tile.gameObject
@@ -295,23 +351,23 @@ public class MahjongView : View
 
     public void ClearBoard()
     {
-        foreach (
-            MahjongTile tile
-            in tileViews.Values)
+        if (hintActive)
+        {
+            StopHint();
+        }
+
+        foreach (MahjongTile tile in tileViews.Values)
         {
             if (tile == null)
                 continue;
 
-
             tile.OnClick -=
                 HandleTileClick;
-
 
             Destroy(
                 tile.gameObject
             );
         }
-
 
         tileViews.Clear();
     }
@@ -346,13 +402,61 @@ public class MahjongView : View
     // MIX
     // =========================================================
 
+    //public void Mix(IReadOnlyList<MahjongTileData> tiles)
+    //{
+    //    UpdateDrawingOrder(tiles);
+
+    //    Debug.Log($"[Mix] START frame={Time.frameCount}");
+    //    OnStartMix?.Invoke();
+
+    //    Sequence sequence = DOTween.Sequence();
+
+    //    foreach (MahjongTileData data in tiles)
+    //    {
+    //        if (data.IsRemoved)
+    //            continue;
+
+    //        if (!tileViews.TryGetValue(
+    //                data.Id,
+    //                out MahjongTile tile))
+    //        {
+    //            continue;
+    //        }
+
+    //        RectTransform rect =
+    //            tile.transform as RectTransform;
+
+    //        Vector2 targetPosition =
+    //            CalculatePosition(data);
+
+    //        rect.DOKill();
+
+    //        sequence.Join(
+    //            rect
+    //                .DOAnchorPos(
+    //                    targetPosition,
+    //                    mixDuration)
+    //                .SetEase(mixEase)
+    //        );
+    //    }
+
+    //    sequence.OnComplete(() =>
+    //    {
+    //        Debug.Log($"[Mix] COMPLETE frame={Time.frameCount}");
+    //        OnStopMix?.Invoke();
+    //    });
+    //}
+
     public void Mix(IReadOnlyList<MahjongTileData> tiles)
     {
-        OnStartMix?.Invoke();
-
         UpdateDrawingOrder(tiles);
 
+        Debug.Log($"[Mix] START frame={Time.frameCount}");
+        OnStartMix?.Invoke();
+
         Sequence sequence = DOTween.Sequence();
+
+        int tweenCount = 0;
 
         foreach (MahjongTileData data in tiles)
         {
@@ -366,11 +470,9 @@ public class MahjongView : View
                 continue;
             }
 
-            RectTransform rect =
-                tile.transform as RectTransform;
+            RectTransform rect = tile.transform as RectTransform;
 
-            Vector2 targetPosition =
-                CalculatePosition(data);
+            Vector2 targetPosition = CalculatePosition(data);
 
             rect.DOKill();
 
@@ -381,10 +483,23 @@ public class MahjongView : View
                         mixDuration)
                     .SetEase(mixEase)
             );
+
+            tweenCount++;
+        }
+
+        if (tweenCount == 0)
+        {
+            Debug.Log($"[Mix] NO TWEENS -> COMPLETE frame={Time.frameCount}");
+
+            OnStopMix?.Invoke();
+            sequence.Kill();
+
+            return;
         }
 
         sequence.OnComplete(() =>
         {
+            Debug.Log($"[Mix] COMPLETE frame={Time.frameCount}");
             OnStopMix?.Invoke();
         });
     }

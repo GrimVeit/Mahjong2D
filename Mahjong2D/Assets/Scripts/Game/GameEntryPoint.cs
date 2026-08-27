@@ -23,6 +23,8 @@ public class GameEntryPoint : SceneEntryPoint
     private MahjongMixPresenter _mahjongMixPresenter;
     private MahjongHintPresenter _mahjongHintPresenter;
 
+    private StateMachine_Game _stateMachine;
+
     #region ENTRY
 
     public override async UniTask Initialize(DIContainer container)
@@ -40,6 +42,8 @@ public class GameEntryPoint : SceneEntryPoint
         _viewContainer.Initialize();
         container.RegisterInstance(_viewContainer);
 
+        container.RegisterInstance("MahjongSprites", sprites);
+
         await base.Initialize(container);
 
         await OnSceneInitialized(container);
@@ -54,6 +58,14 @@ public class GameEntryPoint : SceneEntryPoint
         return UniTask.CompletedTask;
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            _mahjongPresenter.GenerateBoard(sprites);
+        }
+    }
+
     public override async UniTask ShutDown()
     {
         await OnSceneShuttingDown();
@@ -65,6 +77,7 @@ public class GameEntryPoint : SceneEntryPoint
         _mahjongMatchPresenter?.Dispose();
         _mahjongMixPresenter?.Dispose();
         _mahjongHintPresenter?.Dispose();
+        _stateMachine?.Dispose();
     }
 
     #endregion
@@ -80,9 +93,17 @@ public class GameEntryPoint : SceneEntryPoint
         );
 
         _mahjongPresenter = new MahjongPresenter(new MahjongModel(mahjongBoardGenerator), _viewContainer.GetView<MahjongView>());
+        container.RegisterInstance<IMahjongProvider>(_mahjongPresenter);
+        container.RegisterInstance<IMahjongListener>(_mahjongPresenter);
+        container.RegisterInstance<IMahjongInfo>(_mahjongPresenter);
+
         _mahjongMatchPresenter = new MahjongMatchPresenter(new MahjongMatchModel(_mahjongPresenter), _viewContainer.GetView<MahjongMatchView>());
+        container.RegisterInstance<IMahjongMatchListener>(_mahjongMatchPresenter);
+
         _mahjongMixPresenter = new MahjongMixPresenter(new MahjongMixModel(_mahjongPresenter, _mahjongPresenter), _viewContainer.GetView<MahjongMixView>());
         _mahjongHintPresenter = new MahjongHintPresenter(new MahjongHintModel(_mahjongPresenter, _mahjongPresenter), _viewContainer.GetView<MahjongHintView>());
+
+        _stateMachine = new StateMachine_Game(container);
 
         _uIRoot.Initialize();
         _moneyVisualPresenter.Initialize();
@@ -96,6 +117,8 @@ public class GameEntryPoint : SceneEntryPoint
 
     protected override UniTask OnSceneInitialized(DIContainer container)
     {
+        _stateMachine.Initialize();
+
         return UniTask.CompletedTask;
     }
 }

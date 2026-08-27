@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using Spine.Unity;
+using System;
 
 public class MahjongMatchView : View
 {
@@ -174,6 +175,8 @@ public class MahjongMatchView : View
         // =========================================================
         // MAIN SEQUENCE
         // =========================================================
+
+        OnStartMatch?.Invoke();
 
         Sequence sequence =
             DOTween.Sequence();
@@ -642,6 +645,15 @@ public class MahjongMatchView : View
             Destroy(
                 card.gameObject
             );
+
+            OnEndMatch?.Invoke();
         });
     }
+
+    #region Output
+
+    public event Action OnStartMatch;
+    public event Action OnEndMatch;
+
+    #endregion
 }

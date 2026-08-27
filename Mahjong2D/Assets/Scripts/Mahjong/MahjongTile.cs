@@ -101,7 +101,10 @@ public class MahjongTile : MonoBehaviour, IPointerClickHandler
     {
         // Не запускаем новую анимацию, пока старая не закончилась
         if (sequenceHint != null && sequenceHint.IsActive() && sequenceHint.IsPlaying())
+        {
+            onComplete?.Invoke();
             return;
+        }
 
         transformShake.localScale = Vector3.one;
         transformShake.localRotation = Quaternion.identity;
@@ -154,6 +157,7 @@ public class MahjongTile : MonoBehaviour, IPointerClickHandler
         {
             transformShake.localScale = Vector3.one;
             transformShake.localRotation = Quaternion.identity;
+
             onComplete?.Invoke();
         });
     }

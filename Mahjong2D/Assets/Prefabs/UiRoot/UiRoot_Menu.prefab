@@ -1345,7 +1345,7 @@ MonoBehaviour:
   from: {x: 0, y: 200, z: 0}
   to: {x: 0, y: 0, z: 0}
   canvasGroup: {fileID: 3931817394355638870}
-  duration: 0.2
+  duration: 0.3
   buttonExit: {fileID: 3510228116798283056}
 --- !u!1 &2341871530626644402
 GameObject:
