@@ -1,18 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class StoreSessionModel : MonoBehaviour
+public class StoreSessionModel
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public bool IsFirstLaunch { get; private set; } = true;
 
-    // Update is called once per frame
-    void Update()
+    public void CompleteFirstLaunch()
     {
-        
+        IsFirstLaunch = false;
     }
 }

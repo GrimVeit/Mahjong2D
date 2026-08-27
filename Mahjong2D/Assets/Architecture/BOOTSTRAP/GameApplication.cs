@@ -25,15 +25,19 @@ public sealed class GameApplication : IDisposable
 
         await uiRoot.Initialize();
 
-        var sceneService = GlobalContainer.Resolve<SceneService>();
-
-        await sceneService.ChangeScene(new SceneTransition(Scenes.Menu, LoadingType.Default));
+        var sceneService = GlobalContainer.Resolve<ISceneService>();
+        await sceneService.ChangeSceneAsync(new SceneTransition(Scenes.Menu, LoadingType.Default));
     }
 
 
     private void RegisterServices()
     {
-        GlobalContainer.RegisterFactory(container => new SceneService(container)).AsSingle();
+        var sceneService = new SceneService(GlobalContainer);
+        GlobalContainer.RegisterInstance<ISceneService>(sceneService);
+
+        var storeSessionPresenter = new StoreSessionPresenter(new StoreSessionModel());
+        GlobalContainer.RegisterInstance<ISessionInfoProvider>(storeSessionPresenter);
+        GlobalContainer.RegisterInstance<ISessionProvider>(storeSessionPresenter);
     }
 
 
@@ -43,15 +47,11 @@ public sealed class GameApplication : IDisposable
 
         if (uiRootPrefab == null)
         {
-            throw new InvalidOperationException(
-                "UIRootView prefab was not found in Assets/Resources."
-            );
+            throw new InvalidOperationException("UIRootView prefab was not found in Assets/Resources.");
         }
 
         uiRoot = Object.Instantiate(uiRootPrefab);
-
         Object.DontDestroyOnLoad(uiRoot.gameObject);
-
         GlobalContainer.RegisterInstance(uiRoot);
     }
 

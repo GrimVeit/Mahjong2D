@@ -1,20 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class MainState_Menu : IState
 {
     private readonly IStateProvider _stateProvider;
     private readonly UIRoot_Menu _sceneRoot;
+    private readonly ISceneService _sceneService;
 
-    public MainState_Menu(IStateProvider stateProvider, UIRoot_Menu sceneRoot)
+    public MainState_Menu(IStateProvider stateProvider, UIRoot_Menu sceneRoot, ISceneService sceneService)
     {
         _stateProvider = stateProvider;
         _sceneRoot = sceneRoot;
+        _sceneService = sceneService;
     }
 
     public void Enter()
     {
+        _sceneRoot.OnClickPlay_Main += ChangeSceneToGame;
         _sceneRoot.OnClickSettings_Main += ChangeStateToSettings;
         _sceneRoot.OnClickWallet_Main += ChangeStateToWallet;
         _sceneRoot.OnClickLeaderboard_Main += ChangeStateToLeaderboard;
@@ -25,6 +24,7 @@ public class MainState_Menu : IState
 
     public void Exit()
     {
+        _sceneRoot.OnClickPlay_Main -= ChangeSceneToGame;
         _sceneRoot.OnClickSettings_Main -= ChangeStateToSettings;
         _sceneRoot.OnClickWallet_Main -= ChangeStateToWallet;
         _sceneRoot.OnClickLeaderboard_Main -= ChangeStateToLeaderboard;
@@ -51,5 +51,10 @@ public class MainState_Menu : IState
     private void ChangeStateToStoreChooseType()
     {
         _stateProvider.SetState(_stateProvider.GetState<StoreChooseTypeState_Menu>());
+    }
+
+    private void ChangeSceneToGame()
+    {
+        _sceneService.ChangeScene(new SceneTransition(Scenes.Game, LoadingType.Default));
     }
 }

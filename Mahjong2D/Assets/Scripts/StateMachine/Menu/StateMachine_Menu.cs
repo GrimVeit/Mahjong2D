@@ -13,13 +13,16 @@ public class StateMachine_Menu : IStateProvider
     public StateMachine_Menu(DIContainer container)
     {
         var root = container.Resolve<UIRoot_Menu>();
+        var sessionInfo = container.Resolve<ISessionInfoProvider>();
 
-        states[typeof(HoldOnStartState_Menu)] = new HoldOnStartState_Menu(this);
+        states[typeof(HoldOnStartState_Menu)] = new HoldOnStartState_Menu(this, sessionInfo, root);
+
+        states[typeof(CheckSessionState_Menu)] = new CheckSessionState_Menu(this, sessionInfo, container.Resolve<ISessionProvider>());
 
         states[typeof(IntroVideoState_Menu)] = new IntroVideoState_Menu(this, root, container.Resolve<IVideoProvider>());
         states[typeof(IntroStartState_Menu)] = new IntroStartState_Menu(this, root);
 
-        states[typeof(MainState_Menu)] = new MainState_Menu(this, root);
+        states[typeof(MainState_Menu)] = new MainState_Menu(this, root, container.Resolve<ISceneService>());
         states[typeof(SettingsState_Menu)] = new SettingsState_Menu(this, root);
         states[typeof(WalletState_Menu)] = new WalletState_Menu(this, root);
         states[typeof(LeaderboardState_Menu)] = new LeaderboardState_Menu(this, root);
@@ -29,7 +32,7 @@ public class StateMachine_Menu : IStateProvider
 
     public void Initialize()
     {
-        SetState(GetState<IntroVideoState_Menu>());
+        SetState(GetState<HoldOnStartState_Menu>());
     }
 
     public void Dispose()

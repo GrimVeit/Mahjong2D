@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +9,7 @@ public class MainPanel_Menu : MoveFadePanel
     [SerializeField] private Button buttonWallet;
     [SerializeField] private Button buttonStore;
     [SerializeField] private Button buttonLeaderboard;
+    [SerializeField] private Button buttonPlay;
 
     public override void Initialize()
     {
@@ -20,6 +19,7 @@ public class MainPanel_Menu : MoveFadePanel
         buttonLeaderboard.onClick.AddListener(ClickLeaderboard);
         buttonStore.onClick.AddListener(ClickStore);
         buttonWallet.onClick.AddListener(ClickWallet);
+        buttonPlay.onClick.AddListener(ClickPlay);
     }
 
     public override void Dispose()
@@ -30,6 +30,7 @@ public class MainPanel_Menu : MoveFadePanel
         buttonLeaderboard.onClick.RemoveListener(ClickLeaderboard);
         buttonStore.onClick.RemoveListener(ClickStore);
         buttonWallet.onClick.RemoveListener(ClickWallet);
+        buttonPlay.onClick.AddListener(ClickPlay);
     }
 
     #region Output
@@ -38,6 +39,7 @@ public class MainPanel_Menu : MoveFadePanel
     public event Action OnClickWallet;
     public event Action OnClickLeaderboard;
     public event Action OnClickStore;
+    public event Action OnClickPlay;
 
     private void ClickSettings()
     {
@@ -57,6 +59,11 @@ public class MainPanel_Menu : MoveFadePanel
     private void ClickStore()
     {
         OnClickStore?.Invoke();
+    }
+
+    private void ClickPlay()
+    {
+        OnClickPlay?.Invoke();
     }
 
     #endregion

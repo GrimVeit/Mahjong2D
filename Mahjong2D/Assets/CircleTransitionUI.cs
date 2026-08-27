@@ -148,7 +148,7 @@ public class CircleTransitionUI : MonoBehaviour
         fadeTween =
             transitionCanvasGroup
                 .DOFade(1f, showDuration / 2f)
-                .SetDelay(0.3f);
+                .SetDelay(0.4f);
 
         colorTween = transitionImage.DOColor(Color.white, showDuration);
 

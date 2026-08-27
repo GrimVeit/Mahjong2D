@@ -5,7 +5,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneService
+public class SceneService : ISceneService
 {
     private ISceneEntry currentScene;
     private bool isTransitioning;
@@ -17,7 +17,12 @@ public class SceneService
         globalContainer = container;
     }
 
-    public async UniTask<bool> ChangeScene(SceneTransition transition)
+    public void ChangeScene(SceneTransition transition)
+    {
+        ChangeSceneAsync(transition).Forget(Debug.LogException);
+    }
+
+    public async UniTask<bool> ChangeSceneAsync(SceneTransition transition)
     {
         // Защита от повторного запуска transition
         if (isTransitioning)
@@ -30,6 +35,8 @@ public class SceneService
 
         try
         {
+            await BeforeUnloadCurrentScene();
+
             await ShowLoading(transition.Loading);
 
             await UnloadCurrentScene();
@@ -94,6 +101,14 @@ public class SceneService
         currentScene = null;
     }
 
+    private async UniTask BeforeUnloadCurrentScene()
+    {
+        if (currentScene == null)
+            return;
+
+        await currentScene.BeforeShutdown();
+    }
+
     private async UniTask ShowLoading(LoadingType type)
     {
         if (type == LoadingType.None)
@@ -113,4 +128,10 @@ public class SceneService
 
         await uiRoot.HideLoadingScreen(type);
     }
+}
+
+public interface ISceneService
+{
+    void ChangeScene(SceneTransition transition);
+    UniTask<bool> ChangeSceneAsync(SceneTransition transition);
 }

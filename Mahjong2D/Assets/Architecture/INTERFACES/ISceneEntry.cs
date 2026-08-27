@@ -7,5 +7,6 @@ using UnityEngine;
 public interface ISceneEntry
 {
     UniTask Initialize(DIContainer container);
+    UniTask BeforeShutdown();
     UniTask ShutDown();
 }

@@ -15,9 +15,6 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
     [Header("Scene sounds")]
     [SerializeField] private List<Sound> sounds = new();
 
-    // TRANSACTION
-    protected SceneService SceneService { get; private set; }
-
     // SOUND
     protected StoreSoundSettingsPresenter _storeSoundSettingsPresenter;
     protected SoundPresenter _soundPresenter;
@@ -27,8 +24,6 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
 
     public virtual async UniTask Initialize(DIContainer container)
     {
-        SceneService = container.Resolve<SceneService>();
-
         // -------------------------------------------------
         // SOUND SETTINGS
         // -------------------------------------------------
@@ -105,8 +100,6 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
         _soundPresenter?.Dispose();
         _storeSoundSettingsPresenter?.Dispose();
 
-        SceneService = null;
-
         await OnBaseShutdown();
     }
 
@@ -146,6 +139,8 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
     // LIFECYCLE HOOKS
     // -----------------------------------------------------
 
+    public virtual UniTask BeforeShutdown()
+        => UniTask.CompletedTask;
     protected virtual UniTask OnBaseInitialized(DIContainer container)
         => UniTask.CompletedTask;
 

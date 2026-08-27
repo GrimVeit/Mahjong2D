@@ -23,6 +23,8 @@ public class GameEntryPoint : SceneEntryPoint
     private MahjongMixPresenter _mahjongMixPresenter;
     private MahjongHintPresenter _mahjongHintPresenter;
 
+    #region ENTRY
+
     public override async UniTask Initialize(DIContainer container)
     {
         _uIRoot = Instantiate(uIRoot);
@@ -42,6 +44,30 @@ public class GameEntryPoint : SceneEntryPoint
 
         await OnSceneInitialized(container);
     }
+
+    public override UniTask BeforeShutdown()
+    {
+        base.BeforeShutdown();
+
+        _uIRoot.Dispose();
+
+        return UniTask.CompletedTask;
+    }
+
+    public override async UniTask ShutDown()
+    {
+        await OnSceneShuttingDown();
+        await base.ShutDown();
+
+        _uIRoot?.Dispose();
+        _moneyVisualPresenter?.Dispose();
+        _mahjongPresenter?.Dispose();
+        _mahjongMatchPresenter?.Dispose();
+        _mahjongMixPresenter?.Dispose();
+        _mahjongHintPresenter?.Dispose();
+    }
+
+    #endregion
 
     protected override UniTask OnBaseInitialized(DIContainer container)
     {
@@ -72,49 +98,4 @@ public class GameEntryPoint : SceneEntryPoint
     {
         return UniTask.CompletedTask;
     }
-
-    public override async UniTask ShutDown()
-    {
-        await OnSceneShuttingDown();
-        await base.ShutDown();
-
-        _uIRoot?.Dispose();
-        _moneyVisualPresenter?.Dispose();
-        _mahjongPresenter?.Dispose();
-        _mahjongMatchPresenter?.Dispose();
-        _mahjongMixPresenter?.Dispose();
-        _mahjongHintPresenter?.Dispose();
-    }
-
-    #region Output
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            GoToGame();
-        }
-
-        if (Input.GetKeyDown(KeyCode.LeftAlt))
-        {
-            _mahjongPresenter.GenerateBoard(sprites);
-        }
-    }
-
-    private void GoToGame()
-    {
-        GoToGame_UniTask().Forget(Debug.LogException);
-    }
-
-    private async UniTask GoToGame_UniTask()
-    {
-        await SceneService.ChangeScene(
-            new SceneTransition(
-                Scenes.Menu,
-                LoadingType.Game
-            )
-        );
-    }
-
-    #endregion
 }

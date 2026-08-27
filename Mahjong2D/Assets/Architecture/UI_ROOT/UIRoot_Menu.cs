@@ -68,6 +68,7 @@ public class UIRoot_Menu : UIRoot
         mainPanel.OnClickWallet += ClickWallet_Main;
         mainPanel.OnClickStore += ClickStore_Main;
         mainPanel.OnClickLeaderboard += ClickLeaderboard_Main;
+        mainPanel.OnClickPlay += ClickPlay_Main;
 
         settingsPanel.OnClickExit += ClickExit_Settings;
         walletPanel.OnClickExit += ClickExit_Wallet;
@@ -86,6 +87,7 @@ public class UIRoot_Menu : UIRoot
         mainPanel.OnClickWallet -= ClickWallet_Main;
         mainPanel.OnClickStore -= ClickStore_Main;
         mainPanel.OnClickLeaderboard -= ClickLeaderboard_Main;
+        mainPanel.OnClickPlay -= ClickPlay_Main;
 
         settingsPanel.OnClickExit -= ClickExit_Settings;
         walletPanel.OnClickExit -= ClickExit_Wallet;
@@ -224,10 +226,18 @@ public class UIRoot_Menu : UIRoot
 
     #region Output_Main
 
+    public event Action OnClickPlay_Main;
     public event Action OnClickSettings_Main;
     public event Action OnClickWallet_Main;
     public event Action OnClickStore_Main;
     public event Action OnClickLeaderboard_Main;
+
+    private void ClickPlay_Main()
+    {
+        _soundProvider?.PlayOneShot("Click");
+
+        OnClickPlay_Main?.Invoke();
+    }
 
     private void ClickSettings_Main()
     {

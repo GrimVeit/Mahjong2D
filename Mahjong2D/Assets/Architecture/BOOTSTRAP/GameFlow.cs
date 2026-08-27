@@ -24,7 +24,7 @@ public class GameFlow
 
     private async void LoadInitialScene()
     {
-        await sceneService.ChangeScene(
+        await sceneService.ChangeSceneAsync(
             new SceneTransition(
                 Scenes.Menu,
                 LoadingType.Default

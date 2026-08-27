@@ -17,6 +17,8 @@ public class MenuEntryPoint : SceneEntryPoint
 
     private StateMachine_Menu _stateMachine;
 
+    #region ENTRY
+
     public override async UniTask Initialize(DIContainer container)
     {
         _uIRoot = Instantiate(uIRoot);
@@ -41,6 +43,27 @@ public class MenuEntryPoint : SceneEntryPoint
         await OnSceneInitialized(container);
     }
 
+    public override UniTask BeforeShutdown()
+    {
+        base.BeforeShutdown();
+
+        _uIRoot.Dispose();
+
+        return UniTask.CompletedTask;
+    }
+
+    public override async UniTask ShutDown()
+    {
+        await OnSceneShuttingDown();
+        await base.ShutDown();
+
+        _volumeSettingsPresenter?.Dispose();
+        _moneyVisualPresenter?.Dispose();
+        _stateMachine?.Dispose();
+    }
+
+    #endregion
+
     protected override UniTask OnBaseInitialized(DIContainer container)
     {
         _uIRoot.SetSoundProvider(_soundPresenter);
@@ -63,42 +86,4 @@ public class MenuEntryPoint : SceneEntryPoint
 
         return UniTask.CompletedTask;
     }
-
-    public override async UniTask ShutDown()
-    {
-        await OnSceneShuttingDown();
-        await base.ShutDown();
-
-        _uIRoot.Dispose();
-        _volumeSettingsPresenter?.Dispose();
-        _moneyVisualPresenter?.Dispose();
-        _stateMachine?.Dispose();
-    }
-
-    #region Output
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            GoToGame();
-        }
-    }
-
-    private void GoToGame()
-    {
-        GoToGame_UniTask().Forget(Debug.LogException);
-    }
-
-    private async UniTask GoToGame_UniTask()
-    {
-        await SceneService.ChangeScene(
-            new SceneTransition(
-                Scenes.Game,
-                LoadingType.Game
-            )
-        );
-    }
-
-    #endregion
 }
