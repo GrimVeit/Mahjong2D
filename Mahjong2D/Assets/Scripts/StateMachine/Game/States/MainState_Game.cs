@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class MainState_Game : IState
 {
     private readonly IStateProvider _stateProvider;
@@ -11,6 +7,9 @@ public class MainState_Game : IState
     private readonly IMahjongMatchListener _mahjongMatchListener;
     private readonly IMahjongInfo _mahjongInfo;
 
+    private readonly ITimerListener _timerListener;
+    private readonly ITimerProvider _timerProvider;
+
     private int _activeMatches;
 
     public MainState_Game(
@@ -18,7 +17,9 @@ public class MainState_Game : IState
         ISceneService sceneService,
         UIRoot_Game sceneRoot,
         IMahjongMatchListener mahjongMatchListener,
-        IMahjongInfo mahjongInfo)
+        IMahjongInfo mahjongInfo,
+        ITimerListener timerListener,
+        ITimerProvider timerProvider)
     {
         _stateProvider = stateProvider;
         _sceneService = sceneService;
@@ -26,12 +27,15 @@ public class MainState_Game : IState
 
         _mahjongMatchListener = mahjongMatchListener;
         _mahjongInfo = mahjongInfo;
+        _timerListener = timerListener;
+        _timerProvider = timerProvider;
     }
 
     public void Enter()
     {
         _activeMatches = 0;
 
+        _timerListener.OnStopTimer += ChangeSceneToLoseVideo;
         _mahjongMatchListener.OnStartMatch += OnStartMatch;
         _mahjongMatchListener.OnEndMatch += OnEndMatch;
 
@@ -39,10 +43,13 @@ public class MainState_Game : IState
 
         _sceneRoot.ShowMainHeaderPanel();
         _sceneRoot.ShowMainFooterPanel();
+        _timerProvider.ResetTimer();
+        _timerProvider.ActivateTimer(10, TimerDirection.Backward);
     }
 
     public void Exit()
     {
+        _timerListener.OnStopTimer -= ChangeSceneToLoseVideo;
         _mahjongMatchListener.OnStartMatch -= OnStartMatch;
         _mahjongMatchListener.OnEndMatch -= OnEndMatch;
 
@@ -50,6 +57,8 @@ public class MainState_Game : IState
 
         _sceneRoot.HideMainHeaderPanel();
         _sceneRoot.HideMainFooterPanel();
+        _sceneRoot.HideMainPanel();
+        _timerProvider.DeactivateTimer();
     }
 
     private void OnStartMatch()
@@ -83,18 +92,22 @@ public class MainState_Game : IState
     }
 
 
+    #region OUTPUT
+
     private void ChangeSceneToWinVideo()
+    {
+        _stateProvider.SetState(_stateProvider.GetState<WinVideoState_Game>());
+    }
+
+    private void ChangeSceneToLoseVideo()
     {
         _stateProvider.SetState(_stateProvider.GetState<WinVideoState_Game>());
     }
 
     private void ChangeSceneToMenu()
     {
-        _sceneService.ChangeScene(
-            new SceneTransition(
-                Scenes.Menu,
-                LoadingType.Default
-            )
-        );
+        _sceneService.ChangeScene(new SceneTransition(Scenes.Menu,LoadingType.Default));
     }
+
+    #endregion
 }

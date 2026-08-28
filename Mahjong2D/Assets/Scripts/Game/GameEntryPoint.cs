@@ -23,6 +23,9 @@ public class GameEntryPoint : SceneEntryPoint
     private MahjongMixPresenter _mahjongMixPresenter;
     private MahjongHintPresenter _mahjongHintPresenter;
 
+    private TimerPresenter _timerPresenter_Game;
+    private TimerVisualPresenter _timerVisualPresenter_Game;
+
     private StateMachine_Game _stateMachine;
 
     #region ENTRY
@@ -77,6 +80,10 @@ public class GameEntryPoint : SceneEntryPoint
         _mahjongMatchPresenter?.Dispose();
         _mahjongMixPresenter?.Dispose();
         _mahjongHintPresenter?.Dispose();
+
+        _timerPresenter_Game?.Dispose();
+        _timerVisualPresenter_Game?.Dispose();
+
         _stateMachine?.Dispose();
     }
 
@@ -103,6 +110,13 @@ public class GameEntryPoint : SceneEntryPoint
         _mahjongMixPresenter = new MahjongMixPresenter(new MahjongMixModel(_mahjongPresenter, _mahjongPresenter), _viewContainer.GetView<MahjongMixView>());
         _mahjongHintPresenter = new MahjongHintPresenter(new MahjongHintModel(_mahjongPresenter, _mahjongPresenter), _viewContainer.GetView<MahjongHintView>());
 
+        _timerPresenter_Game = new TimerPresenter(new TimerModel());
+        container.RegisterInstance<ITimerInfo>(_timerPresenter_Game);
+        container.RegisterInstance<ITimerListener>(_timerPresenter_Game);
+        container.RegisterInstance<ITimerProvider>(_timerPresenter_Game);
+
+        _timerVisualPresenter_Game = new TimerVisualPresenter(new TimerVisualModel(_timerPresenter_Game, _timerPresenter_Game), _viewContainer.GetView<TimerVisualView_CurrentAndElapsedTime>());
+
         _stateMachine = new StateMachine_Game(container);
 
         _uIRoot.Initialize();
@@ -111,6 +125,9 @@ public class GameEntryPoint : SceneEntryPoint
         _mahjongMatchPresenter.Initialize();
         _mahjongMixPresenter.Initialize();
         _mahjongHintPresenter.Initialize();
+
+        _timerPresenter_Game.Initialize();
+        _timerVisualPresenter_Game.Initialize();
 
         return UniTask.CompletedTask;
     }
