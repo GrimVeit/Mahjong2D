@@ -18,8 +18,11 @@ public class StateMachine_Game : IStateProvider
         states[typeof(MahjongGenerateState_Game)] = new MahjongGenerateState_Game(this, container.Resolve<IMahjongProvider>(), container.Resolve<List<Sprite>>("MahjongSprites"), root);
         states[typeof(MainState_Game)] = new MainState_Game(this, sceneService, root, container.Resolve<IMahjongMatchListener>(), container.Resolve<IMahjongInfo>(), container.Resolve<ITimerListener>(), container.Resolve<ITimerProvider>());
 
-        states[typeof(WinVideoState_Game)] = new WinVideoState_Game(this, root);
+        states[typeof(WinVideoState_Game)] = new WinVideoState_Game(this, root, container.Resolve<ILevelProvider>());
         states[typeof(WinState_Game)] = new WinState_Game(sceneService, root);
+
+        states[typeof(LoseVideoState_Game)] = new LoseVideoState_Game(this, root);
+        states[typeof(LoseState_Game)] = new LoseState_Game(sceneService, root);
     }
 
     public void Initialize()

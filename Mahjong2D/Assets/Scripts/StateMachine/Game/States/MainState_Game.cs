@@ -44,7 +44,7 @@ public class MainState_Game : IState
         _sceneRoot.ShowMainHeaderPanel();
         _sceneRoot.ShowMainFooterPanel();
         _timerProvider.ResetTimer();
-        _timerProvider.ActivateTimer(10, TimerDirection.Backward);
+        _timerProvider.ActivateTimer(90, TimerDirection.Backward);
     }
 
     public void Exit()
@@ -101,7 +101,7 @@ public class MainState_Game : IState
 
     private void ChangeSceneToLoseVideo()
     {
-        _stateProvider.SetState(_stateProvider.GetState<WinVideoState_Game>());
+        _stateProvider.SetState(_stateProvider.GetState<LoseVideoState_Game>());
     }
 
     private void ChangeSceneToMenu()

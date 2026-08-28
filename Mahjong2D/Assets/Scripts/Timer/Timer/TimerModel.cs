@@ -1,5 +1,4 @@
 using System;
-using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
@@ -21,7 +20,7 @@ public class TimerModel
     /// Backward:
     /// 20 -> 19 -> 18 -> ...
     /// </summary>
-    public int CurrentTime => _currentTime;
+    public int CurrentTime => _currentTime; 
 
     /// <summary>
     /// Сколько секунд прошло с момента запуска таймера.

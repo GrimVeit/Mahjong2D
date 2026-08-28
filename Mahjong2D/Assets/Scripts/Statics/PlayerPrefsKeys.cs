@@ -11,4 +11,7 @@ public static class PlayerPrefsKeys
 
     //MONEY
     public const string MONEY_BALANCE = "money.balance";
+
+    //LEVEL
+    public const string LEVEL = "level.number";
 }

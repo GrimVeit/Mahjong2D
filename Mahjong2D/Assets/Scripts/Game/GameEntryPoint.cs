@@ -16,6 +16,8 @@ public class GameEntryPoint : SceneEntryPoint
     private UIRoot_Game _uIRoot;
     private ViewContainer _viewContainer;
 
+    private StoreMovesPresenter _storeMovesPresenter;
+
     private MoneyVisualPresenter _moneyVisualPresenter;
 
     private MahjongPresenter _mahjongPresenter;
@@ -25,6 +27,8 @@ public class GameEntryPoint : SceneEntryPoint
 
     private TimerPresenter _timerPresenter_Game;
     private TimerVisualPresenter _timerVisualPresenter_Game;
+
+    private LevelVisualPresenter _levelVisualPresenter;
 
     private StateMachine_Game _stateMachine;
 
@@ -74,6 +78,7 @@ public class GameEntryPoint : SceneEntryPoint
         await OnSceneShuttingDown();
         await base.ShutDown();
 
+        _storeMovesPresenter?.Dispose();
         _uIRoot?.Dispose();
         _moneyVisualPresenter?.Dispose();
         _mahjongPresenter?.Dispose();
@@ -84,6 +89,8 @@ public class GameEntryPoint : SceneEntryPoint
         _timerPresenter_Game?.Dispose();
         _timerVisualPresenter_Game?.Dispose();
 
+        _levelVisualPresenter?.Dispose();
+
         _stateMachine?.Dispose();
     }
 
@@ -91,6 +98,12 @@ public class GameEntryPoint : SceneEntryPoint
 
     protected override UniTask OnBaseInitialized(DIContainer container)
     {
+        _storeMovesPresenter = new StoreMovesPresenter(new StoreMovesModel());
+
+        container.RegisterInstance<IMovesEventsProvider>(_storeMovesPresenter);
+        container.RegisterInstance<IMovesInfoProvider>(_storeMovesPresenter);
+        container.RegisterInstance<IMovesProvider>(_storeMovesPresenter);
+
         _moneyVisualPresenter = new MoneyVisualPresenter(
             new MoneyVisualModel(
                 _storeMoneyPresenter,
@@ -117,8 +130,11 @@ public class GameEntryPoint : SceneEntryPoint
 
         _timerVisualPresenter_Game = new TimerVisualPresenter(new TimerVisualModel(_timerPresenter_Game, _timerPresenter_Game), _viewContainer.GetView<TimerVisualView_CurrentAndElapsedTime>());
 
+        _levelVisualPresenter = new LevelVisualPresenter(new LevelVisualModel(_storeLevelPresenter), _viewContainer.GetView<LevelVisualView>());
+
         _stateMachine = new StateMachine_Game(container);
 
+        _storeMovesPresenter.Initialize();
         _uIRoot.Initialize();
         _moneyVisualPresenter.Initialize();
         _mahjongPresenter.Initialize();
@@ -128,6 +144,8 @@ public class GameEntryPoint : SceneEntryPoint
 
         _timerPresenter_Game.Initialize();
         _timerVisualPresenter_Game.Initialize();
+
+        _levelVisualPresenter.Initialize();
 
         return UniTask.CompletedTask;
     }

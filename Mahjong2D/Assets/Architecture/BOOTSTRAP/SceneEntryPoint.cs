@@ -22,49 +22,34 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
     // MONEY
     protected StoreMoneyPresenter _storeMoneyPresenter;
 
+    //LEVEL
+    protected StoreLevelPresenter _storeLevelPresenter;
+
     public virtual async UniTask Initialize(DIContainer container)
     {
         // -------------------------------------------------
         // SOUND SETTINGS
         // -------------------------------------------------
 
-        _storeSoundSettingsPresenter = new StoreSoundSettingsPresenter(
-            new StoreSoundSettingsModel(
+        _storeSoundSettingsPresenter = new StoreSoundSettingsPresenter(new StoreSoundSettingsModel(
                 PlayerPrefsKeys.AUDIO_VOLUME_SOUND,
                 PlayerPrefsKeys.AUDIO_VOLUME_MUSIC,
                 PlayerPrefsKeys.AUDIO_MUTED
             )
         );
 
-        container.RegisterInstance<ISoundSettingsEventsProvider>(
-            _storeSoundSettingsPresenter
-        );
-
-        container.RegisterInstance<ISoundSettingsInfoProvider>(
-            _storeSoundSettingsPresenter
-        );
-
-        container.RegisterInstance<ISoundSettingsProvider>(
-            _storeSoundSettingsPresenter
-        );
-
+        container.RegisterInstance<ISoundSettingsEventsProvider>(_storeSoundSettingsPresenter);
+        container.RegisterInstance<ISoundSettingsInfoProvider>(_storeSoundSettingsPresenter);
+        container.RegisterInstance<ISoundSettingsProvider>(_storeSoundSettingsPresenter);
         _storeSoundSettingsPresenter.Initialize();
 
         // -------------------------------------------------
         // SOUND
         // -------------------------------------------------
 
-        _soundPresenter = new SoundPresenter(
-            new SoundModel(
-                sounds,
-                _storeSoundSettingsPresenter,
-                _storeSoundSettingsPresenter
-            )
-        );
+        _soundPresenter = new SoundPresenter(new SoundModel(sounds, _storeSoundSettingsPresenter, _storeSoundSettingsPresenter));
 
-        container.RegisterInstance<ISoundProvider>(
-            _soundPresenter
-        );
+        container.RegisterInstance<ISoundProvider>(_soundPresenter);
 
         _soundPresenter.Initialize();
 
@@ -72,25 +57,24 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
         // MONEY
         // -------------------------------------------------
 
-        _storeMoneyPresenter = new StoreMoneyPresenter(
-            new StoreMoneyModel(
-                PlayerPrefsKeys.MONEY_BALANCE
-            )
-        );
+        _storeMoneyPresenter = new StoreMoneyPresenter(new StoreMoneyModel(PlayerPrefsKeys.MONEY_BALANCE));
 
-        container.RegisterInstance<IMoneyEventsProvider>(
-            _storeMoneyPresenter
-        );
-
-        container.RegisterInstance<IMoneyInfoProvider>(
-            _storeMoneyPresenter
-        );
-
-        container.RegisterInstance<IMoneyProvider>(
-            _storeMoneyPresenter
-        );
-
+        container.RegisterInstance<IMoneyEventsProvider>(_storeMoneyPresenter);
+        container.RegisterInstance<IMoneyInfoProvider>(_storeMoneyPresenter);
+        container.RegisterInstance<IMoneyProvider>(_storeMoneyPresenter);
         _storeMoneyPresenter.Initialize();
+
+        // -------------------------------------------------
+        // LEVEL
+        // -------------------------------------------------
+
+        _storeLevelPresenter = new StoreLevelPresenter(new StoreLevelModel(PlayerPrefsKeys.LEVEL));
+
+        container.RegisterInstance<ILevelEventsProvider>(_storeLevelPresenter);
+        container.RegisterInstance<ILevelInfoProvider>(_storeLevelPresenter);
+        container.RegisterInstance<ILevelProvider>(_storeLevelPresenter);
+
+        _storeLevelPresenter.Initialize();
 
         await OnBaseInitialized(container);
     }
@@ -99,6 +83,7 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
     {
         _soundPresenter?.Dispose();
         _storeSoundSettingsPresenter?.Dispose();
+        _storeLevelPresenter?.Dispose();
 
         await OnBaseShutdown();
     }
@@ -160,5 +145,6 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
     {
         _storeSoundSettingsPresenter?.Dispose();
         _storeMoneyPresenter?.Dispose();
+        _storeLevelPresenter?.Dispose();
     }
 }

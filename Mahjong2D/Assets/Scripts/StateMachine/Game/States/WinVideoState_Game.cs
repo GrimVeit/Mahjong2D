@@ -1,18 +1,18 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 
 public class WinVideoState_Game : AsyncState
 {
     private readonly IStateProvider _stateProvider;
     private readonly UIRoot_Game _sceneRoot;
+    private readonly ILevelProvider _levelProvider;
 
-    public WinVideoState_Game(IStateProvider stateProvider, UIRoot_Game sceneRoot)
+    public WinVideoState_Game(IStateProvider stateProvider, UIRoot_Game sceneRoot, ILevelProvider levelProvider)
     {
         _stateProvider = stateProvider;
         _sceneRoot = sceneRoot;
+        _levelProvider = levelProvider;
     }
 
     protected override async UniTask EnterAsync(CancellationToken token)
@@ -25,6 +25,7 @@ public class WinVideoState_Game : AsyncState
 
         await UniTask.Delay(2900, cancellationToken: token);
 
+        _levelProvider.IncreaseLevel();
         _sceneRoot.HideWinVideoPanel();
 
         ChangeStateToWin();
