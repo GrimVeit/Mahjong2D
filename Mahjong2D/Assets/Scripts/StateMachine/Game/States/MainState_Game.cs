@@ -78,8 +78,14 @@ public class MainState_Game : IState
 
         if (!_mahjongInfo.HasRemainingTiles())
         {
-            ChangeSceneToMenu();
+            ChangeSceneToWinVideo();
         }
+    }
+
+
+    private void ChangeSceneToWinVideo()
+    {
+        _stateProvider.SetState(_stateProvider.GetState<WinVideoState_Game>());
     }
 
     private void ChangeSceneToMenu()
