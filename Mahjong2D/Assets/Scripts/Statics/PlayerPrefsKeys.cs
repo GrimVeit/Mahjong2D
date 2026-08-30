@@ -14,4 +14,6 @@ public static class PlayerPrefsKeys
 
     //LEVEL
     public const string LEVEL = "level.number";
+
+    public const string BACKGROUNDS = "store.background";
 }

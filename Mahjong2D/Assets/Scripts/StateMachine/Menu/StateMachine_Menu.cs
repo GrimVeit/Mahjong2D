@@ -27,7 +27,8 @@ public class StateMachine_Menu : IStateProvider
         states[typeof(WalletState_Menu)] = new WalletState_Menu(this, root);
         states[typeof(LeaderboardState_Menu)] = new LeaderboardState_Menu(this, root);
 
-        states[typeof(StoreChooseTypeState_Menu)] = new StoreChooseTypeState_Menu(this, root);
+        states[typeof(StoreChooseTypeState_Menu)] = new StoreChooseTypeState_Menu(this, root, container.Resolve<IBookPageProvider>());
+        states[typeof(StoreBackgroundState_Menu)] = new StoreBackgroundState_Menu(this, root);
     }
 
     public void Initialize()

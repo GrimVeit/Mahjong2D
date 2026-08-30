@@ -17,6 +17,7 @@ public class GameEntryPoint : SceneEntryPoint
     private ViewContainer _viewContainer;
 
     private StoreMovesPresenter _storeMovesPresenter;
+    private MovesVisualPresenter _movesVisualPresenter;
 
     private MoneyVisualPresenter _moneyVisualPresenter;
 
@@ -65,20 +66,13 @@ public class GameEntryPoint : SceneEntryPoint
         return UniTask.CompletedTask;
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.LeftAlt))
-        {
-            _mahjongPresenter.GenerateBoard(sprites);
-        }
-    }
-
     public override async UniTask ShutDown()
     {
         await OnSceneShuttingDown();
         await base.ShutDown();
 
         _storeMovesPresenter?.Dispose();
+        _movesVisualPresenter?.Dispose();
         _uIRoot?.Dispose();
         _moneyVisualPresenter?.Dispose();
         _mahjongPresenter?.Dispose();
@@ -104,6 +98,8 @@ public class GameEntryPoint : SceneEntryPoint
         container.RegisterInstance<IMovesInfoProvider>(_storeMovesPresenter);
         container.RegisterInstance<IMovesProvider>(_storeMovesPresenter);
 
+        _movesVisualPresenter = new MovesVisualPresenter(new MovesVisualModel(_storeMovesPresenter), _viewContainer.GetView<MovesVisualView>());
+
         _moneyVisualPresenter = new MoneyVisualPresenter(
             new MoneyVisualModel(
                 _storeMoneyPresenter,
@@ -112,7 +108,7 @@ public class GameEntryPoint : SceneEntryPoint
             _viewContainer.GetView<MoneyVisualView>()
         );
 
-        _mahjongPresenter = new MahjongPresenter(new MahjongModel(mahjongBoardGenerator), _viewContainer.GetView<MahjongView>());
+        _mahjongPresenter = new MahjongPresenter(new MahjongModel(mahjongBoardGenerator, _storeMovesPresenter), _viewContainer.GetView<MahjongView>());
         container.RegisterInstance<IMahjongProvider>(_mahjongPresenter);
         container.RegisterInstance<IMahjongListener>(_mahjongPresenter);
         container.RegisterInstance<IMahjongInfo>(_mahjongPresenter);
@@ -135,6 +131,7 @@ public class GameEntryPoint : SceneEntryPoint
         _stateMachine = new StateMachine_Game(container);
 
         _storeMovesPresenter.Initialize();
+        _movesVisualPresenter.Initialize();
         _uIRoot.Initialize();
         _moneyVisualPresenter.Initialize();
         _mahjongPresenter.Initialize();

@@ -396,10 +396,46 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layouts:
-  - spriteCount: 26
-    firstLayerCount: 14
-    secondLayerCount: 10
+  - spriteCount: 12
+    firstLayerCount: 8
+    secondLayerCount: 4
+    thirdLayerCount: 0
+  - spriteCount: 14
+    firstLayerCount: 8
+    secondLayerCount: 4
     thirdLayerCount: 2
+  - spriteCount: 16
+    firstLayerCount: 8
+    secondLayerCount: 6
+    thirdLayerCount: 2
+  - spriteCount: 18
+    firstLayerCount: 10
+    secondLayerCount: 6
+    thirdLayerCount: 2
+  - spriteCount: 20
+    firstLayerCount: 10
+    secondLayerCount: 6
+    thirdLayerCount: 4
+  - spriteCount: 22
+    firstLayerCount: 10
+    secondLayerCount: 8
+    thirdLayerCount: 4
+  - spriteCount: 24
+    firstLayerCount: 10
+    secondLayerCount: 8
+    thirdLayerCount: 6
+  - spriteCount: 26
+    firstLayerCount: 12
+    secondLayerCount: 8
+    thirdLayerCount: 6
+  - spriteCount: 28
+    firstLayerCount: 12
+    secondLayerCount: 10
+    thirdLayerCount: 6
+  - spriteCount: 30
+    firstLayerCount: 12
+    secondLayerCount: 10
+    thirdLayerCount: 8
 --- !u!1 &1828649614
 GameObject:
   m_ObjectHideFlags: 0

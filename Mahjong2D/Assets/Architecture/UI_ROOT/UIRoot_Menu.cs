@@ -19,6 +19,7 @@ public class UIRoot_Menu : UIRoot
 
     [Header("Store")]
     [SerializeField] private StoreChooseTypePanel_Menu storeChooseTypePanel;
+    [SerializeField] private StoreBackgroundPanel_Menu storeBackgroundPanel;
 
     public override void Initialize()
     {
@@ -35,6 +36,7 @@ public class UIRoot_Menu : UIRoot
         leaderboardPanel.Initialize();
 
         storeChooseTypePanel.Initialize();
+        storeBackgroundPanel.Initialize();
 
         ActivateEvents();
     }
@@ -54,6 +56,7 @@ public class UIRoot_Menu : UIRoot
         leaderboardPanel.Dispose();
 
         storeChooseTypePanel.Dispose();
+        storeBackgroundPanel.Dispose();
 
         HideMainPanel();
 
@@ -74,9 +77,12 @@ public class UIRoot_Menu : UIRoot
         walletPanel.OnClickExit += ClickExit_Wallet;
         leaderboardPanel.OnClickExit += ClickExit_Leader;
 
+        //store
         storeChooseTypePanel.OnClickExit += ClickExit_StoreChooseType;
         storeChooseTypePanel.OnClickBackgrounds += ClickBackgrounds_StoreChooseType;
         storeChooseTypePanel.OnClickCards += ClickCards_StoreChooseType;
+
+        storeBackgroundPanel.OnClickExit += ClickExit_StoreBackground;
     }
 
     private void DeactivateEvents()
@@ -96,6 +102,8 @@ public class UIRoot_Menu : UIRoot
         storeChooseTypePanel.OnClickExit -= ClickExit_StoreChooseType;
         storeChooseTypePanel.OnClickBackgrounds -= ClickBackgrounds_StoreChooseType;
         storeChooseTypePanel.OnClickCards -= ClickCards_StoreChooseType;
+
+        storeBackgroundPanel.OnClickExit -= ClickExit_StoreBackground;
     }
 
     #region Input
@@ -202,6 +210,17 @@ public class UIRoot_Menu : UIRoot
     public void HideStoreChooseTypePanel()
     {
         HidePanel(storeChooseTypePanel);
+    }
+
+
+    public void ShowStoreBackgroundPanel()
+    {
+        ShowPanel(storeBackgroundPanel);
+    }
+
+    public void HideStoreBackgroundPanel()
+    {
+        HidePanel(storeBackgroundPanel);
     }
 
     #endregion
@@ -333,6 +352,19 @@ public class UIRoot_Menu : UIRoot
         _soundProvider?.PlayOneShot("Click");
 
         OnClickCards_StoreChooseType?.Invoke();
+    }
+
+    #endregion
+
+    #region StoreBackground
+
+    public event Action OnClickExit_StoreBackground;
+
+    private void ClickExit_StoreBackground()
+    {
+        _soundProvider?.PlayOneShot("Click");
+
+        OnClickExit_StoreBackground?.Invoke();
     }
 
     #endregion

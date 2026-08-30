@@ -579,7 +579,6 @@ MonoBehaviour:
   - {fileID: 3048553894568737450}
   textsLevel_Level:
   - {fileID: 2753020726294552924}
-  textsLevelSecond: []
   textsLevelSecond_Arrow:
   - {fileID: 3852337537702079021}
 --- !u!1 &1484094594375117940
@@ -1192,7 +1191,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 21
+  m_text: ...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e357760702250984e959af48f44cfa15, type: 2}
   m_sharedMaterial: {fileID: 1708949988898548949, guid: e357760702250984e959af48f44cfa15, type: 2}
@@ -2279,6 +2278,7 @@ RectTransform:
   - {fileID: 4653515958074314494}
   - {fileID: 2450304270068227218}
   - {fileID: 2841440937263916164}
+  - {fileID: 7598072163368721808}
   m_Father: {fileID: 4528280000954137741}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2876,7 +2876,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 80900
+  m_text: ...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e357760702250984e959af48f44cfa15, type: 2}
   m_sharedMaterial: {fileID: 1708949988898548949, guid: e357760702250984e959af48f44cfa15, type: 2}
@@ -3728,7 +3728,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Level 17
+  m_text: Level ...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e357760702250984e959af48f44cfa15, type: 2}
   m_sharedMaterial: {fileID: 1708949988898548949, guid: e357760702250984e959af48f44cfa15, type: 2}
@@ -5270,7 +5270,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 3:42
+  m_text: ...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e357760702250984e959af48f44cfa15, type: 2}
   m_sharedMaterial: {fileID: 1708949988898548949, guid: e357760702250984e959af48f44cfa15, type: 2}
@@ -5801,7 +5801,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: +80
+  m_text: +...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e357760702250984e959af48f44cfa15, type: 2}
   m_sharedMaterial: {fileID: 1708949988898548949, guid: e357760702250984e959af48f44cfa15, type: 2}
@@ -6086,7 +6086,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Level 16 \u2192"
+  m_text: "Level ... \u2192"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e357760702250984e959af48f44cfa15, type: 2}
   m_sharedMaterial: {fileID: 1708949988898548949, guid: e357760702250984e959af48f44cfa15, type: 2}
@@ -6355,6 +6355,56 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   visuals:
   - {fileID: 2021802444221596670}
+--- !u!1 &8685419295301653464
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7598072163368721808}
+  - component: {fileID: 3259898278405800583}
+  m_Layer: 5
+  m_Name: Moves
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7598072163368721808
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8685419295301653464}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2866918509651305045}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &3259898278405800583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8685419295301653464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5042cfaaa42b7e4e83017b96308cac8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textMovesCount:
+  - {fileID: 4051437287730456110}
 --- !u!1 &8738423967973651328
 GameObject:
   m_ObjectHideFlags: 0

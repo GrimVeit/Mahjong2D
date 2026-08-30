@@ -885,7 +885,7 @@ public class MahjongBoardGenerator : MonoBehaviour
     [Serializable]
     private class MahjongLayoutSettings
     {
-        [Header("Unique Sprites")]
+        [Header("ALL COUNT")]
 
         [Min(1)]
         [SerializeField]
