@@ -68,7 +68,7 @@ public sealed class StoreBackgroundPresenter : IBackgroundProvider, IBackgroundI
 
     #region Listener
 
-    public event Action<Background, bool> OnOpenBackground
+    public event Action<Background> OnOpenBackground
     {
         add => _model.OnOpenBackground += value;
         remove => _model.OnOpenBackground -= value;
@@ -106,7 +106,7 @@ public interface IBackgroundInfoProvider
 
 public interface IBackgroundListener
 {
-    event Action<Background, bool> OnOpenBackground;
+    event Action<Background> OnOpenBackground;
     event Action<Background> OnSelectBackground;
 }
 

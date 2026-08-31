@@ -175,6 +175,15 @@ MonoBehaviour:
     isLoop: 1
     isPlayAwake: 1
     audioType: 1
+  backgroundDatas:
+  - {fileID: 11400000, guid: ca72b562650db2d4db24398c406486c6, type: 2}
+  - {fileID: 11400000, guid: 4b51c2cc270b5f14193bd620841e9ad6, type: 2}
+  - {fileID: 11400000, guid: cc51c96c7c6020145b8c53779c02b8c1, type: 2}
+  - {fileID: 11400000, guid: 38b9a313e34af4e42ac763d1e31a270a, type: 2}
+  - {fileID: 11400000, guid: e7cb230cbf484ed408b1f66fa0363313, type: 2}
+  - {fileID: 11400000, guid: 1a4249610f8631d45a66cb71b12b8d1a, type: 2}
+  - {fileID: 11400000, guid: b973a37502ff0c941a819ee7918c11e5, type: 2}
+  - {fileID: 11400000, guid: d82ac4a6a9ecd3044b3fa59201cd342c, type: 2}
   uIRoot: {fileID: 5499485385716780466, guid: 13040dadc2e07d648b608502b86daa51, type: 3}
   mahjongBoardGenerator: {fileID: 1631780863}
   sprites:

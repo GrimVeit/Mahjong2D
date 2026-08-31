@@ -18,6 +18,8 @@ public class MenuEntryPoint : SceneEntryPoint
     private BookPagesPresenter _bookPagesPresenter;
     private BookPagesControlPresenter _bookPagesControlPresenter;
 
+    private BackgroundShopVisualPresenter _backgroundShopVisualPresenter;
+
     private StateMachine_Menu _stateMachine;
 
     #region ENTRY
@@ -66,6 +68,8 @@ public class MenuEntryPoint : SceneEntryPoint
         _bookPagesPresenter?.Dispose();
         _bookPagesControlPresenter?.Dispose(); 
 
+        _backgroundShopVisualPresenter?.Dispose();
+
         _stateMachine?.Dispose();
     }
 
@@ -79,8 +83,9 @@ public class MenuEntryPoint : SceneEntryPoint
         container.RegisterInstance<IBookPageEventsProvider>(_bookPagesPresenter);
         container.RegisterInstance<IBookPageInfoProvider>(_bookPagesPresenter);
         container.RegisterInstance<IBookPageProvider>(_bookPagesPresenter);
-
         _bookPagesControlPresenter = new BookPagesControlPresenter(new BookPagesControlModel(_bookPagesPresenter, _bookPagesPresenter, _bookPagesPresenter), _viewContainer.GetView<BookPagesControlView>());
+
+        _backgroundShopVisualPresenter = new BackgroundShopVisualPresenter(new BackgroundShopVisualModel(_storeBackgroundPresenter, _storeBackgroundPresenter, _storeBackgroundPresenter, _storeMoneyPresenter), _viewContainer.GetView<BackgroundShopVisualView>());
 
         _volumeSettingsPresenter = new VolumeSettingsPresenter(new VolumeSettingsModel(_storeSoundSettingsPresenter,_storeSoundSettingsPresenter,_storeSoundSettingsPresenter), _viewContainer.GetView<VolumeSettingsView>());
         _moneyVisualPresenter = new MoneyVisualPresenter(new MoneyVisualModel(_storeMoneyPresenter,_storeMoneyPresenter),_viewContainer.GetView<MoneyVisualView>());
@@ -93,6 +98,8 @@ public class MenuEntryPoint : SceneEntryPoint
 
         _bookPagesPresenter.Initialize();
         _bookPagesControlPresenter.Initialize();
+
+        _backgroundShopVisualPresenter.Initialize();
 
         return UniTask.CompletedTask;
     }

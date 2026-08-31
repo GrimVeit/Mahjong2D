@@ -16,6 +16,8 @@ public class GameEntryPoint : SceneEntryPoint
     private UIRoot_Game _uIRoot;
     private ViewContainer _viewContainer;
 
+    private BackgroundVisualPresenter _backgroundVisualPresenter;
+
     private StoreMovesPresenter _storeMovesPresenter;
     private MovesVisualPresenter _movesVisualPresenter;
 
@@ -71,6 +73,7 @@ public class GameEntryPoint : SceneEntryPoint
         await OnSceneShuttingDown();
         await base.ShutDown();
 
+        _backgroundVisualPresenter?.Dispose();
         _storeMovesPresenter?.Dispose();
         _movesVisualPresenter?.Dispose();
         _uIRoot?.Dispose();
@@ -92,6 +95,8 @@ public class GameEntryPoint : SceneEntryPoint
 
     protected override UniTask OnBaseInitialized(DIContainer container)
     {
+        _backgroundVisualPresenter = new BackgroundVisualPresenter(_storeBackgroundPresenter, _viewContainer.GetView<BackgroundVisualView>());
+
         _storeMovesPresenter = new StoreMovesPresenter(new StoreMovesModel());
 
         container.RegisterInstance<IMovesEventsProvider>(_storeMovesPresenter);
@@ -130,6 +135,7 @@ public class GameEntryPoint : SceneEntryPoint
 
         _stateMachine = new StateMachine_Game(container);
 
+        _backgroundVisualPresenter.Initialize();
         _storeMovesPresenter.Initialize();
         _movesVisualPresenter.Initialize();
         _uIRoot.Initialize();

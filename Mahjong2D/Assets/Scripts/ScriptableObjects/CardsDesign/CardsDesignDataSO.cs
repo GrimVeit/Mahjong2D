@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "BackgroundData", menuName = "Game/Background Data")]
-public sealed class BackgroundDataSO : ScriptableObject
+[CreateAssetMenu(fileName = "CardsDesignData", menuName = "Game/Cards Design Data")]
+public sealed class CardsDesignDataSO : ScriptableObject
 {
     public int Index => index;
     public string Name => nameBack;
@@ -13,4 +13,3 @@ public sealed class BackgroundDataSO : ScriptableObject
     [SerializeField] private Sprite sprite;
     [SerializeField] private int price;
 }
-

@@ -14,6 +14,7 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
 {
     [Header("Scene sounds")]
     [SerializeField] private List<Sound> sounds = new();
+    [SerializeField] private List<BackgroundDataSO> backgroundDatas = new();
 
     // SOUND
     protected StoreSoundSettingsPresenter _storeSoundSettingsPresenter;
@@ -24,6 +25,9 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
 
     //LEVEL
     protected StoreLevelPresenter _storeLevelPresenter;
+
+    //BACKGROUND
+    protected StoreBackgroundPresenter _storeBackgroundPresenter;
 
     public virtual async UniTask Initialize(DIContainer container)
     {
@@ -73,8 +77,19 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
         container.RegisterInstance<ILevelEventsProvider>(_storeLevelPresenter);
         container.RegisterInstance<ILevelInfoProvider>(_storeLevelPresenter);
         container.RegisterInstance<ILevelProvider>(_storeLevelPresenter);
-
         _storeLevelPresenter.Initialize();
+
+
+        // -------------------------------------------------
+        // BACKGROUND
+        // -------------------------------------------------
+
+        _storeBackgroundPresenter = new StoreBackgroundPresenter(new StoreBackgroundModel(backgroundDatas));
+
+        container.RegisterInstance<IBackgroundInfoProvider>(_storeBackgroundPresenter);
+        container.RegisterInstance<IBackgroundListener>(_storeBackgroundPresenter);
+        container.RegisterInstance<IBackgroundProvider>(_storeBackgroundPresenter);
+        _storeBackgroundPresenter.Initialize();
 
         await OnBaseInitialized(container);
     }
@@ -84,6 +99,7 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
         _soundPresenter?.Dispose();
         _storeSoundSettingsPresenter?.Dispose();
         _storeLevelPresenter?.Dispose();
+        _storeBackgroundPresenter?.Dispose();
 
         await OnBaseShutdown();
     }
@@ -146,5 +162,6 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
         _storeSoundSettingsPresenter?.Dispose();
         _storeMoneyPresenter?.Dispose();
         _storeLevelPresenter?.Dispose();
+        _storeBackgroundPresenter?.Dispose();
     }
 }
