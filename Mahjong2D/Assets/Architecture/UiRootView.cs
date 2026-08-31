@@ -5,22 +5,41 @@ using UnityEngine;
 public class UIRootView : MonoBehaviour
 {
     [SerializeField] private Canvas canvas;
+    [SerializeField] private FadePanel fadeBlackPanel;
     [SerializeField] private CircleTransitionUI circleTransitionUI;
     [SerializeField] private Transform uiSceneContainer;
 
     public UniTask Initialize()
     {
+        fadeBlackPanel.Initialize();
+
         return circleTransitionUI.Initialize();
     }
 
-    public UniTask ShowLoadingScreen(LoadingType loadingType)
+    public async UniTask ShowLoadingScreen(LoadingType loadingType)
     {
-       return circleTransitionUI.Show();
+        if(loadingType == LoadingType.Black)
+        {
+            fadeBlackPanel.Show();
+
+            await UniTask.Delay(100);
+        }
+        else
+        {
+            await circleTransitionUI.Show();
+        }
     }
 
-    public UniTask HideLoadingScreen(LoadingType loadingType)
+    public async UniTask HideLoadingScreen(LoadingType loadingType)
     {
-        return circleTransitionUI.Hide();
+        if (loadingType == LoadingType.Black)
+        {
+            fadeBlackPanel.Hide();
+        }
+        else
+        {
+            await circleTransitionUI.Hide();
+        }
     }
 
     public void AttachSceneUI(GameObject sceneUI, Camera camera)

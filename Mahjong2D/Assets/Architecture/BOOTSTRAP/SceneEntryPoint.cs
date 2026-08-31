@@ -15,6 +15,7 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
     [Header("Scene sounds")]
     [SerializeField] private List<Sound> sounds = new();
     [SerializeField] private List<BackgroundDataSO> backgroundDatas = new();
+    [SerializeField] private List<CardsDesignDataSO> cardsDesignDatas = new();
 
     // SOUND
     protected StoreSoundSettingsPresenter _storeSoundSettingsPresenter;
@@ -28,6 +29,9 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
 
     //BACKGROUND
     protected StoreBackgroundPresenter _storeBackgroundPresenter;
+
+    //CARD DESIGN
+    protected StoreCardsDesignPresenter _storeCardsDesignPresenter;
 
     public virtual async UniTask Initialize(DIContainer container)
     {
@@ -91,6 +95,18 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
         container.RegisterInstance<IBackgroundProvider>(_storeBackgroundPresenter);
         _storeBackgroundPresenter.Initialize();
 
+
+        // -------------------------------------------------
+        // CARD DESIGNS
+        // -------------------------------------------------
+
+        _storeCardsDesignPresenter = new StoreCardsDesignPresenter(new StoreCardsDesignModel(cardsDesignDatas));
+
+        container.RegisterInstance<ICardDesignInfoProvider>(_storeCardsDesignPresenter);
+        container.RegisterInstance<ICardDesignListener>(_storeCardsDesignPresenter);
+        container.RegisterInstance<ICardDesignProvider>(_storeCardsDesignPresenter);
+        _storeCardsDesignPresenter.Initialize();
+
         await OnBaseInitialized(container);
     }
 
@@ -100,6 +116,7 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
         _storeSoundSettingsPresenter?.Dispose();
         _storeLevelPresenter?.Dispose();
         _storeBackgroundPresenter?.Dispose();
+        _storeCardsDesignPresenter?.Dispose();
 
         await OnBaseShutdown();
     }
@@ -163,5 +180,6 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
         _storeMoneyPresenter?.Dispose();
         _storeLevelPresenter?.Dispose();
         _storeBackgroundPresenter?.Dispose();
+        _storeCardsDesignPresenter?.Dispose();
     }
 }

@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 80
+  m_text: ...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ae0abb67b4dc7ff4b92958042df4e5f5, type: 2}
   m_sharedMaterial: {fileID: -6797017745940695459, guid: ae0abb67b4dc7ff4b92958042df4e5f5, type: 2}
@@ -275,7 +275,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Alchemist
+  m_text: ...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ae0abb67b4dc7ff4b92958042df4e5f5, type: 2}
   m_sharedMaterial: {fileID: -6797017745940695459, guid: ae0abb67b4dc7ff4b92958042df4e5f5, type: 2}

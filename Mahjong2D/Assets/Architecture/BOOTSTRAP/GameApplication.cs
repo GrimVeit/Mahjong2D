@@ -26,7 +26,7 @@ public sealed class GameApplication : IDisposable
         await uiRoot.Initialize();
 
         var sceneService = GlobalContainer.Resolve<ISceneService>();
-        await sceneService.ChangeSceneAsync(new SceneTransition(Scenes.Menu, LoadingType.Default));
+        await sceneService.ChangeSceneAsync(new SceneTransition(Scenes.Menu, LoadingType.None));
     }
 
 

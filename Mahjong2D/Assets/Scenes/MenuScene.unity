@@ -321,6 +321,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1a4249610f8631d45a66cb71b12b8d1a, type: 2}
   - {fileID: 11400000, guid: b973a37502ff0c941a819ee7918c11e5, type: 2}
   - {fileID: 11400000, guid: d82ac4a6a9ecd3044b3fa59201cd342c, type: 2}
+  cardsDesignDatas:
+  - {fileID: 11400000, guid: aa06d03cf2a2d5a499a7e14c3b6b8122, type: 2}
+  - {fileID: 11400000, guid: 3aed1ff049ee45d42871adad9cb18ea4, type: 2}
+  - {fileID: 11400000, guid: c8ab7a43d2cf8de49aa2c7a7141b7266, type: 2}
+  - {fileID: 11400000, guid: 164eedb92099ab342a1d92fb811675a2, type: 2}
   uIRoot: {fileID: 6798139332153747493, guid: 44fab8f28d003b54f891a96e5d7c8605, type: 3}
 --- !u!1 &1049314513
 GameObject:

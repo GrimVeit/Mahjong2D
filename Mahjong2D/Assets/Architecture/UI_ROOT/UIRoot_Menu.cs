@@ -20,6 +20,7 @@ public class UIRoot_Menu : UIRoot
     [Header("Store")]
     [SerializeField] private StoreChooseTypePanel_Menu storeChooseTypePanel;
     [SerializeField] private StoreBackgroundPanel_Menu storeBackgroundPanel;
+    [SerializeField] private StoreCardDesignPanel_Menu storeCardDesignPanel;
 
     public override void Initialize()
     {
@@ -37,6 +38,7 @@ public class UIRoot_Menu : UIRoot
 
         storeChooseTypePanel.Initialize();
         storeBackgroundPanel.Initialize();
+        storeCardDesignPanel.Initialize();
 
         ActivateEvents();
     }
@@ -57,6 +59,7 @@ public class UIRoot_Menu : UIRoot
 
         storeChooseTypePanel.Dispose();
         storeBackgroundPanel.Dispose();
+        storeCardDesignPanel.Dispose();
 
         HideMainPanel();
 
@@ -83,6 +86,8 @@ public class UIRoot_Menu : UIRoot
         storeChooseTypePanel.OnClickCards += ClickCards_StoreChooseType;
 
         storeBackgroundPanel.OnClickExit += ClickExit_StoreBackground;
+
+        storeCardDesignPanel.OnClickExit += ClickExit_StoreDesign;
     }
 
     private void DeactivateEvents()
@@ -104,6 +109,8 @@ public class UIRoot_Menu : UIRoot
         storeChooseTypePanel.OnClickCards -= ClickCards_StoreChooseType;
 
         storeBackgroundPanel.OnClickExit -= ClickExit_StoreBackground;
+
+        storeCardDesignPanel.OnClickExit -= ClickExit_StoreDesign;
     }
 
     #region Input
@@ -221,6 +228,17 @@ public class UIRoot_Menu : UIRoot
     public void HideStoreBackgroundPanel()
     {
         HidePanel(storeBackgroundPanel);
+    }
+
+
+    public void ShowStoreCardDesignPanel()
+    {
+        ShowPanel(storeCardDesignPanel);
+    }
+
+    public void HideStoreCardDesignPanel()
+    {
+        HidePanel(storeCardDesignPanel);
     }
 
     #endregion
@@ -365,6 +383,19 @@ public class UIRoot_Menu : UIRoot
         _soundProvider?.PlayOneShot("Click");
 
         OnClickExit_StoreBackground?.Invoke();
+    }
+
+    #endregion
+
+    #region StoreDesign
+
+    public event Action OnClickExit_StoreDesign;
+
+    private void ClickExit_StoreDesign()
+    {
+        _soundProvider?.PlayOneShot("Click");
+
+        OnClickExit_StoreDesign?.Invoke();
     }
 
     #endregion

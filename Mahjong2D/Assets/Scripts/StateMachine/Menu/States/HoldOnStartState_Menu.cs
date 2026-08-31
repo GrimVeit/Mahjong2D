@@ -24,7 +24,7 @@ public class HoldOnStartState_Menu : AsyncState
             await UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: token);
         }
 
-        await UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: token);
+        await UniTask.Delay(TimeSpan.FromSeconds(0.1f), cancellationToken: token);
 
         ChangeStateToIntro();
     }

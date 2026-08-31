@@ -33,6 +33,16 @@ public class VideoView : View
             return;
         }
 
+        PrepareAsync(
+            videoPlay,
+            destroyCancellationToken
+        ).Forget();
+    }
+
+    private async UniTask PrepareAsync(
+        VideoPlay videoPlay,
+        CancellationToken cancellationToken)
+    {
         var vp = videoPlay.VideoPlayer;
 
         videoPlay.Image.texture = videoPlay.Texture;
@@ -42,7 +52,17 @@ public class VideoView : View
         vp.frame = 0;
         vp.time = 0;
 
+        vp.sendFrameReadyEvents = true;
+
         vp.Prepare();
+
+        await UniTask.WaitUntil(
+            () => vp.isPrepared,
+            cancellationToken: cancellationToken
+        );
+
+        vp.frame = 0;
+        vp.time = 0;
     }
 
     public void Play(string id, Action onComplete = null)
@@ -61,17 +81,48 @@ public class VideoView : View
             return;
         }
 
+        StartCoroutine(
+            PlayRoutine(videoPlay, onComplete)
+        );
+    }
+
+    private IEnumerator PlayRoutine(
+        VideoPlay videoPlay,
+        Action onComplete)
+    {
         var vp = videoPlay.VideoPlayer;
 
         videoPlay.Image.texture = videoPlay.Texture;
+
+        // Главное:
+        // RawImage скрыт, пока первый нормальный кадр
+        // реально не попадёт в RenderTexture.
         videoPlay.Image.enabled = false;
 
-        vp.Stop();
+        // Если видео ещё не подготовлено,
+        // сначала ждём подготовку.
+        if (!vp.isPrepared)
+        {
+            vp.Prepare();
+
+            yield return new WaitUntil(
+                () => vp.isPrepared
+            );
+        }
+
+        // Ставим видео в начало.
         vp.frame = 0;
         vp.time = 0;
 
-        vp.loopPointReached -= OnVideoEnd;
-        vp.loopPointReached += OnVideoEnd;
+        bool firstFrameReady = false;
+
+        void OnFrameReady(VideoPlayer player, long frame)
+        {
+            if (frame == 0)
+            {
+                firstFrameReady = true;
+            }
+        }
 
         void OnVideoEnd(VideoPlayer player)
         {
@@ -79,33 +130,29 @@ public class VideoView : View
             onComplete?.Invoke();
         }
 
-        StartVideo();
+        vp.sendFrameReadyEvents = true;
 
-        void StartVideo()
-        {
-            StartCoroutine(StartRoutine());
-        }
+        vp.frameReady += OnFrameReady;
 
-        IEnumerator StartRoutine()
-        {
-            vp.frame = 0;
+        vp.loopPointReached -= OnVideoEnd;
+        vp.loopPointReached += OnVideoEnd;
 
-            // Запускаем VideoPlayer, чтобы Unity отрендерила первый кадр
-            vp.Play();
+        // Запускаем видео.
+        vp.Play();
 
-            yield return null;
+        // Ждём именно реального первого кадра,
+        // а не просто следующий кадр Unity.
+        yield return new WaitUntil(
+            () => firstFrameReady
+        );
 
-            // Останавливаемся на первом кадре
-            vp.Pause();
+        vp.frameReady -= OnFrameReady;
 
-            yield return null;
+        // Теперь RenderTexture содержит первый кадр видео.
+        // Только после этого показываем RawImage.
+        videoPlay.Image.enabled = true;
 
-            // Теперь первый кадр уже находится в RenderTexture
-            videoPlay.Image.enabled = true;
-
-            // Продолжаем воспроизведение
-            vp.Play();
-        }
+        // Видео уже играет и продолжает воспроизведение.
     }
 
     public void Stop(string id)
@@ -115,20 +162,27 @@ public class VideoView : View
         if (videoPlay == null || videoPlay.VideoPlayer == null)
             return;
 
-        videoPlay.VideoPlayer.Stop();
-        videoPlay.VideoPlayer.frame = 0;
-        videoPlay.VideoPlayer.time = 0;
+        var vp = videoPlay.VideoPlayer;
 
+        // Сначала скрываем изображение,
+        // чтобы пользователь не увидел старый/переходный кадр.
         videoPlay.Image.enabled = false;
+
+        vp.Stop();
+
+        vp.frame = 0;
+        vp.time = 0;
     }
 }
+
 
 [Serializable]
 public class VideoPlayers
 {
     [SerializeField] private List<VideoPlay> videoPlays = new();
 
-    public async UniTask Initialize(CancellationToken cancellationToken)
+    public async UniTask Initialize(
+        CancellationToken cancellationToken)
     {
         var prepareTasks = new List<UniTask>();
 
@@ -147,7 +201,10 @@ public class VideoPlayers
             }
 
             prepareTasks.Add(
-                PrepareVideo(videoPlay, cancellationToken)
+                PrepareVideo(
+                    videoPlay,
+                    cancellationToken
+                )
             );
         }
 
@@ -166,25 +223,31 @@ public class VideoPlayers
         videoPlay.Image.texture = videoPlay.Texture;
         videoPlay.Image.enabled = false;
 
+        vp.sendFrameReadyEvents = true;
+
         vp.Stop();
         vp.frame = 0;
         vp.time = 0;
 
-        // Запускаем подготовку
         vp.Prepare();
 
-        // Ждём, пока VideoPlayer полностью подготовится
         await UniTask.WaitUntil(
             () => vp.isPrepared,
             cancellationToken: cancellationToken
         );
+
+        vp.frame = 0;
+        vp.time = 0;
     }
 
     public VideoPlay GetVideoPlayById(string id)
     {
-        return videoPlays.FirstOrDefault(data => data.Id == id);
+        return videoPlays.FirstOrDefault(
+            data => data.Id == id
+        );
     }
 }
+
 
 [Serializable]
 public class VideoPlay
@@ -201,3 +264,5 @@ public class VideoPlay
     public Texture Texture => texture;
     public bool IsAwakePrepare => isAwakePrepare;
 }
+
+

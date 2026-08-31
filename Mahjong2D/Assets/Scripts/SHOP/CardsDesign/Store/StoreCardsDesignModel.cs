@@ -7,49 +7,49 @@ using UnityEngine;
 
 public sealed class StoreCardsDesignModel
 {
-    public event Action<Background> OnOpenBackground;
-    public event Action<Background> OnSelectBackground;
+    public event Action<CardsDesign> OnOpenCardDessign;
+    public event Action<CardsDesign> OnSelectCardDesign;
 
-    private readonly Dictionary<int, Background> _backgrounds;
+    private readonly Dictionary<int, CardsDesign> _cardsDesigns;
 
     private readonly string _filePath;
-    private readonly string _selectedBackgroundKey;
+    private readonly string _selectedCardsDesignKey;
     private readonly string _xorKey;
 
-    private int _currentBackgroundIndex;
+    private int _currentCardDesignIndex;
 
-    public Background CurrentBackground => _backgrounds.TryGetValue(_currentBackgroundIndex, out var background) ? background : null;
+    public CardsDesign CurrentCardDesign => _cardsDesigns.TryGetValue(_currentCardDesignIndex, out var background) ? background : null;
     
-    public StoreCardsDesignModel(IEnumerable<BackgroundDataSO> data, string saveFileName = "Backgrounds.json", string selectedBackgroundKey = PlayerPrefsKeys.BACKGROUNDS, string xorKey = "cx4xnm69ut4k7v1pzjbyejilnu7c3p5h8dudvqth")
+    public StoreCardsDesignModel(IEnumerable<CardsDesignDataSO> data, string saveFileName = "CardsDesigns.json", string selectedDesignKey = PlayerPrefsKeys.CARDS_DESIGNS, string xorKey = "cx4xnm69ut4k7v1pzjbyejilnu7c3p5h8dudvqth")
     {
-        _backgrounds = new Dictionary<int, Background>();
+        _cardsDesigns = new Dictionary<int, CardsDesign>();
 
         _filePath = Path.Combine(Application.persistentDataPath, saveFileName);
 
-        _selectedBackgroundKey = selectedBackgroundKey;
+        _selectedCardsDesignKey = selectedDesignKey;
         _xorKey = xorKey;
 
-        foreach (var backgroundData in data)
+        foreach (var designData in data)
         {
-            if (backgroundData == null)
+            if (designData == null)
                 continue;
 
-            if (_backgrounds.ContainsKey(backgroundData.Index))
+            if (_cardsDesigns.ContainsKey(designData.Index))
             {
                 Debug.LogError(
-                    $"Duplicate background index: {backgroundData.Index}"
+                    $"Duplicate background index: {designData.Index}"
                 );
 
                 continue;
             }
 
-            _backgrounds.Add(
-                backgroundData.Index,
-                new Background(
-                    backgroundData.Index,
-                    backgroundData.Name,
-                    backgroundData.Sprite,
-                    backgroundData.Price,
+            _cardsDesigns.Add(
+                designData.Index,
+                new CardsDesign(
+                    designData.Index,
+                    designData.Name,
+                    designData.Sprite,
+                    designData.Price,
                     false
                 )
             );
@@ -62,21 +62,20 @@ public sealed class StoreCardsDesignModel
     {
         Load();
 
-        int defaultIndex = GetDefaultBackgroundIndex();
+        int defaultIndex = GetDefaultDesignIndex();
 
-        // Базовый фон всегда должен быть открыт.
-        if (_backgrounds.TryGetValue(defaultIndex, out var defaultBackground))
-            defaultBackground.Open();
+        if (_cardsDesigns.TryGetValue(defaultIndex, out var defaultDesign))
+            defaultDesign.Open();
 
-        _currentBackgroundIndex = PlayerPrefs.GetInt(_selectedBackgroundKey, defaultIndex);
+        _currentCardDesignIndex = PlayerPrefs.GetInt(_selectedCardsDesignKey, defaultIndex);
 
         // Если выбранный фон отсутствует — используем дефолтный.
-        if (!_backgrounds.ContainsKey(_currentBackgroundIndex))
-            _currentBackgroundIndex = defaultIndex;
+        if (!_cardsDesigns.ContainsKey(_currentCardDesignIndex))
+            _currentCardDesignIndex = defaultIndex;
 
-        foreach (var item in _backgrounds)
+        foreach (var item in _cardsDesigns)
         {
-            Debug.Log($"BACKGROUND INDEX - {item.Key}, IS OPEN - {item.Value.IsOpened}");
+            Debug.Log($"CARDS DESIGN INDEX - {item.Key}, IS OPEN - {item.Value.IsOpened}");
         }
     }
 
@@ -84,11 +83,7 @@ public sealed class StoreCardsDesignModel
     {
         Save();
 
-        PlayerPrefs.SetInt(
-            _selectedBackgroundKey,
-            _currentBackgroundIndex
-        );
-
+        PlayerPrefs.SetInt(_selectedCardsDesignKey, _currentCardDesignIndex);
         PlayerPrefs.Save();
     }
 
@@ -96,81 +91,78 @@ public sealed class StoreCardsDesignModel
 
     #region INPUT
 
-    public void OpenBackground(int index)
+    public void OpenCardDesign(int index)
     {
-        if (!_backgrounds.TryGetValue(index, out var background))
+        if (!_cardsDesigns.TryGetValue(index, out var design))
         {
-            Debug.LogError(
-                $"Background not found: {index}"
-            );
-
+            Debug.LogError($"Card design not found: {index}");
             return;
         }
 
-        if (background.IsOpened)
+        if (design.IsOpened)
             return;
 
-        background.Open();
+        design.Open();
 
-        OnOpenBackground?.Invoke(background);
+        OnOpenCardDessign?.Invoke(design);
     }
 
-    public void SelectBackground(int index)
+    public void SelectCardDesign(int index)
     {
-        if (!_backgrounds.TryGetValue(index, out var background))
+        if (!_cardsDesigns.TryGetValue(index, out var design))
         {
             Debug.LogError(
-                $"Background not found: {index}"
+                $"Card design not found: {index}"
             );
 
             return;
         }
 
-        if (!background.IsOpened)
+        if (!design.IsOpened)
             return;
 
-        if (_currentBackgroundIndex == index)
+        if (_currentCardDesignIndex == index)
             return;
 
-        _currentBackgroundIndex = index;
+        _currentCardDesignIndex = index;
 
-        OnSelectBackground?.Invoke(background);
+        OnSelectCardDesign?.Invoke(design);
     }
 
     #endregion
 
     #region INFO
 
-    public Background GetBackground(int index)
+    public CardsDesign GetCardDesign(int index)
     {
-        return _backgrounds.TryGetValue(index, out var background) ? background : null;
+        return _cardsDesigns.TryGetValue(index, out var background) ? background : null;
     }
 
-    public IReadOnlyList<Background> GetBackgrounds()
+    public IReadOnlyList<CardsDesign> GetCardDesigns()
     {
-        return _backgrounds.Values
+        return _cardsDesigns.Values
             .OrderBy(background => background.Index)
             .ToList();
     }
 
-    public Background GetCurrentBackground()
+    public CardsDesign GetCurrentCardDesign()
     {
-        return CurrentBackground;
+        return CurrentCardDesign;
     }
 
-    public int GetCurrentBackgroundIndex()
+    public int GetCurrentCardDesignIndex()
     {
-        return _currentBackgroundIndex;
+        return _currentCardDesignIndex;
     }
 
-    public bool IsBackgroundOpened(int index)
+    public bool IsCardDesignOpened(int index)
     {
-        return _backgrounds.TryGetValue(index, out var background) && background.IsOpened;
+        return _cardsDesigns.TryGetValue(index, out var background) && background.IsOpened;
     }
 
-    public bool IsBackgroundSelected(int index)
+    public bool IsCardDesignSelected(int index)
     {
-        return _currentBackgroundIndex == index;
+        return _currentCardDesignIndex == index;
     }
 
     #endregion
@@ -187,7 +179,7 @@ public sealed class StoreCardsDesignModel
             string encrypted = File.ReadAllText(_filePath);
             string json = Xor(encrypted, _xorKey);
 
-            var wrapper = JsonUtility.FromJson<BackgroundSaveWrapper>(json);
+            var wrapper = JsonUtility.FromJson<CardsDesignSaveWrapper>(json);
 
             if (wrapper?.Entries == null)
                 throw new Exception("Invalid save data.");
@@ -197,7 +189,7 @@ public sealed class StoreCardsDesignModel
                 if (entry == null)
                     continue;
 
-                if (!_backgrounds.TryGetValue(entry.Index, out var background))
+                if (!_cardsDesigns.TryGetValue(entry.Index, out var background))
                     continue;
 
                 if (entry.IsOpened)
@@ -214,12 +206,12 @@ public sealed class StoreCardsDesignModel
 
     private void Save()
     {
-        var wrapper = new BackgroundSaveWrapper();
+        var wrapper = new CardsDesignSaveWrapper();
 
-        foreach (var background in _backgrounds.Values)
+        foreach (var background in _cardsDesigns.Values)
         {
             wrapper.Entries.Add(
-                new BackgroundSaveEntry
+                new CardsDesignSaveEntry
                 {
                     Index = background.Index,
                     IsOpened = background.IsOpened
@@ -252,33 +244,33 @@ public sealed class StoreCardsDesignModel
 
     #region DEFAULT
 
-    private int GetDefaultBackgroundIndex()
+    private int GetDefaultDesignIndex()
     {
-        if (_backgrounds.Count == 0)
+        if (_cardsDesigns.Count == 0)
             return 0;
 
-        return _backgrounds.Keys.Min();
+        return _cardsDesigns.Keys.Min();
     }
 
     private void ResetToDefaultState()
     {
-        int defaultIndex = GetDefaultBackgroundIndex();
+        int defaultIndex = GetDefaultDesignIndex();
 
         // Закрываем абсолютно все фоны.
-        foreach (var background in _backgrounds.Values)
+        foreach (var design in _cardsDesigns.Values)
         {
-            background.Close();
+            design.Close();
         }
 
         // Открываем только базовый.
-        if (_backgrounds.TryGetValue(defaultIndex, out var defaultBackground))
-            defaultBackground.Open();
+        if (_cardsDesigns.TryGetValue(defaultIndex, out var defaultDesign))
+            defaultDesign.Open();
 
         // Выбираем базовый.
-        _currentBackgroundIndex = defaultIndex;
+        _currentCardDesignIndex = defaultIndex;
 
         // Сбрасываем сохранённый выбор.
-        PlayerPrefs.SetInt(_selectedBackgroundKey, defaultIndex);
+        PlayerPrefs.SetInt(_selectedCardsDesignKey, defaultIndex);
         PlayerPrefs.Save();
     }
 
@@ -289,7 +281,7 @@ public sealed class StoreCardsDesignModel
 [Serializable]
 public sealed class CardsDesignSaveWrapper
 {
-    public List<BackgroundSaveEntry> Entries = new();
+    public List<CardsDesignSaveEntry> Entries = new();
 }
 
 [Serializable]

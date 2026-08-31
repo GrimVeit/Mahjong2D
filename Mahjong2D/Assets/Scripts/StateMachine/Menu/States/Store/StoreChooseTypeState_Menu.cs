@@ -45,6 +45,6 @@ public class StoreChooseTypeState_Menu : IState
 
     private void ChangeStateToStoreCards()
     {
-
+        _stateProvider.SetState(_stateProvider.GetState<StoreCardDesignState_Menu>());
     }
 }

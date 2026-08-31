@@ -5,6 +5,7 @@ using UnityEngine;
 public enum LoadingType
 {
     None,
+    Black,
     Default,
     Menu,
     Game

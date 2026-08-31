@@ -29,6 +29,7 @@ public class StateMachine_Menu : IStateProvider
 
         states[typeof(StoreChooseTypeState_Menu)] = new StoreChooseTypeState_Menu(this, root, container.Resolve<IBookPageProvider>());
         states[typeof(StoreBackgroundState_Menu)] = new StoreBackgroundState_Menu(this, root);
+        states[typeof(StoreCardDesignState_Menu)] = new StoreCardDesignState_Menu(this, root);
     }
 
     public void Initialize()

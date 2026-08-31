@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StoreBackgroundPanel_Menu : MoveFadePanel
+public class StoreCardDesignPanel_Menu : MoveFadePanel
 {
     [SerializeField] private Button buttonExit;
 

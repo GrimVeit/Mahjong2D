@@ -111,6 +111,8 @@ public class CircleTransitionUI : MonoBehaviour
         if (transitionCanvasGroup != null)
             transitionCanvasGroup.alpha = 0f;
 
+        transitionImage.color = Color.black;
+
         await UniTask.CompletedTask;
     }
 

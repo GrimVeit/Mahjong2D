@@ -190,138 +190,137 @@ public class BackgroundShopVisualView : View
     #endregion
 
 
+}
 
+[Serializable]
+public class BuyDisplay
+{
+    [Header("References")]
+    [SerializeField] private Transform transformMoney;
+    [SerializeField] private Transform transformBuy;
+    [SerializeField] private Button buttonBuy;
 
-    [Serializable]
-    private class BuyDisplay
+    [Header("Hide")]
+    [SerializeField] private Transform transformZero;
+
+    [Header("Show")]
+    [SerializeField] private Transform transformLeft;
+    [SerializeField] private Transform transformRight;
+
+    [Header("Animation")]
+    [SerializeField] private float duration = 0.35f;
+    [SerializeField] private Ease ease = Ease.OutCubic;
+
+    private bool isShow = false;
+
+    private Sequence sequence;
+
+    public void Initialize()
     {
-        [Header("References")]
-        [SerializeField] private Transform transformMoney;
-        [SerializeField] private Transform transformBuy;
-        [SerializeField] private Button buttonBuy;
+        buttonBuy.onClick.AddListener(ClickBuy);
 
-        [Header("Hide")]
-        [SerializeField] private Transform transformZero;
-
-        [Header("Show")]
-        [SerializeField] private Transform transformLeft;
-        [SerializeField] private Transform transformRight;
-
-        [Header("Animation")]
-        [SerializeField] private float duration = 0.35f;
-        [SerializeField] private Ease ease = Ease.OutCubic;
-
-        private bool isShow = false;
-
-        private Sequence sequence;
-
-        public void Initialize()
-        {
-            buttonBuy.onClick.AddListener(ClickBuy);
-
-            HideImmediate();
-        }
-
-        public void Dispose()
-        {
-            sequence?.Kill();
-
-            buttonBuy.onClick.RemoveListener(ClickBuy);
-        }
-
-        public void Show()
-        {
-            if(isShow) return;
-
-            isShow = true;
-
-            sequence?.Kill();
-
-            buttonBuy.interactable = true;
-
-            // Начальное состояние:
-            // монеты в центре, кнопка скрыта и немного "готова" к появлению.
-            transformMoney.localPosition = transformZero.localPosition;
-
-            transformBuy.localPosition = transformZero.localPosition;
-            transformBuy.localScale = Vector3.zero;
-
-            sequence = DOTween.Sequence();
-
-            // Монеты уезжают влево.
-            sequence.Join(
-                transformMoney
-                    .DOLocalMove(transformLeft.localPosition, duration)
-                    .SetEase(ease)
-            );
-
-            // Кнопка появляется и одновременно выезжает вправо.
-            sequence.Insert(
-                0f,
-                transformBuy
-                    .DOLocalMove(transformRight.localPosition, duration)
-                    .SetEase(ease)
-            );
-
-            sequence.Insert(
-                0f,
-                transformBuy
-                    .DOScale(1, duration)
-                    .SetEase(Ease.OutBack)
-            );
-        }
-
-        public void Hide()
-        {
-            if (!isShow) return;
-
-            isShow = false;
-
-            sequence?.Kill();
-
-            buttonBuy.interactable = false;
-
-            sequence = DOTween.Sequence();
-
-            // Монеты возвращаются в центр.
-            sequence.Join(
-                transformMoney
-                    .DOLocalMove(transformZero.localPosition, duration)
-                    .SetEase(ease)
-            );
-
-            // Кнопка возвращается в центр и исчезает.
-            sequence.Join(
-                transformBuy
-                    .DOLocalMove(transformZero.localPosition, duration)
-                    .SetEase(ease)
-            );
-
-            sequence.Join(
-                transformBuy
-                    .DOScale(Vector3.zero, duration)
-                    .SetEase(Ease.InBack)
-            );
-        }
-
-        private void HideImmediate()
-        {
-            buttonBuy.interactable = false;
-
-            transformMoney.localPosition = transformZero.localPosition;
-            transformBuy.localPosition = transformZero.localPosition;
-            transformBuy.localScale = Vector3.zero;
-        }
-
-        #region Output
-
-        public event Action OnClickBuy;
-
-        private void ClickBuy()
-        {
-            OnClickBuy?.Invoke();
-        }
-
-        #endregion
+        HideImmediate();
     }
+
+    public void Dispose()
+    {
+        sequence?.Kill();
+
+        buttonBuy.onClick.RemoveListener(ClickBuy);
+    }
+
+    public void Show()
+    {
+        if (isShow) return;
+
+        isShow = true;
+
+        sequence?.Kill();
+
+        buttonBuy.interactable = true;
+
+        // Начальное состояние:
+        // монеты в центре, кнопка скрыта и немного "готова" к появлению.
+        transformMoney.localPosition = transformZero.localPosition;
+
+        transformBuy.localPosition = transformZero.localPosition;
+        transformBuy.localScale = Vector3.zero;
+
+        sequence = DOTween.Sequence();
+
+        // Монеты уезжают влево.
+        sequence.Join(
+            transformMoney
+                .DOLocalMove(transformLeft.localPosition, duration)
+                .SetEase(ease)
+        );
+
+        // Кнопка появляется и одновременно выезжает вправо.
+        sequence.Insert(
+            0f,
+            transformBuy
+                .DOLocalMove(transformRight.localPosition, duration)
+                .SetEase(ease)
+        );
+
+        sequence.Insert(
+            0f,
+            transformBuy
+                .DOScale(1, duration)
+                .SetEase(Ease.OutBack)
+        );
+    }
+
+    public void Hide()
+    {
+        if (!isShow) return;
+
+        isShow = false;
+
+        sequence?.Kill();
+
+        buttonBuy.interactable = false;
+
+        sequence = DOTween.Sequence();
+
+        // Монеты возвращаются в центр.
+        sequence.Join(
+            transformMoney
+                .DOLocalMove(transformZero.localPosition, duration)
+                .SetEase(ease)
+        );
+
+        // Кнопка возвращается в центр и исчезает.
+        sequence.Join(
+            transformBuy
+                .DOLocalMove(transformZero.localPosition, duration)
+                .SetEase(ease)
+        );
+
+        sequence.Join(
+            transformBuy
+                .DOScale(Vector3.zero, duration)
+                .SetEase(Ease.InBack)
+        );
+    }
+
+    private void HideImmediate()
+    {
+        buttonBuy.interactable = false;
+
+        transformMoney.localPosition = transformZero.localPosition;
+        transformBuy.localPosition = transformZero.localPosition;
+        transformBuy.localScale = Vector3.zero;
+    }
+
+    #region Output
+
+    public event Action OnClickBuy;
+
+    private void ClickBuy()
+    {
+        OnClickBuy?.Invoke();
+    }
+
+    #endregion
 }
