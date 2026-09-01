@@ -579,6 +579,7 @@ MonoBehaviour:
   - {fileID: 3048553894568737450}
   textsLevel_Level:
   - {fileID: 2753020726294552924}
+  - {fileID: 8961688125947722823}
   textsLevelSecond_Arrow:
   - {fileID: 3852337537702079021}
 --- !u!1 &1484094594375117940
@@ -3162,7 +3163,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Level 17
+  m_text: Level ...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e357760702250984e959af48f44cfa15, type: 2}
   m_sharedMaterial: {fileID: 1708949988898548949, guid: e357760702250984e959af48f44cfa15, type: 2}
@@ -4496,7 +4497,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 21
+  m_text: ...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e357760702250984e959af48f44cfa15, type: 2}
   m_sharedMaterial: {fileID: 1708949988898548949, guid: e357760702250984e959af48f44cfa15, type: 2}
@@ -5037,7 +5038,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 80900
+  m_text: ...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e357760702250984e959af48f44cfa15, type: 2}
   m_sharedMaterial: {fileID: 1708949988898548949, guid: e357760702250984e959af48f44cfa15, type: 2}
@@ -6455,6 +6456,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textMovesCount:
   - {fileID: 4051437287730456110}
+  - {fileID: 6264361248735289970}
 --- !u!1 &8738423967973651328
 GameObject:
   m_ObjectHideFlags: 0

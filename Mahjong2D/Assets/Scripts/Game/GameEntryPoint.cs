@@ -11,10 +11,12 @@ public class GameEntryPoint : SceneEntryPoint
 
     [Header("Generator")]
     [SerializeField] private MahjongBoardGenerator mahjongBoardGenerator;
-    [SerializeField] private List<Sprite> sprites = new();
+    [SerializeField] private List<MahjongTilesGroupSO> tilesSpritesGroup = new();
 
     private UIRoot_Game _uIRoot;
     private ViewContainer _viewContainer;
+
+    private StoreMahjongTilesPresenter _storeMahjongTilesPresenter;
 
     private BackgroundVisualPresenter _backgroundVisualPresenter;
 
@@ -51,8 +53,6 @@ public class GameEntryPoint : SceneEntryPoint
         _viewContainer = _uIRoot.GetComponent<ViewContainer>();
         _viewContainer.Initialize();
         container.RegisterInstance(_viewContainer);
-
-        container.RegisterInstance("MahjongSprites", sprites);
 
         await base.Initialize(container);
 
@@ -95,6 +95,9 @@ public class GameEntryPoint : SceneEntryPoint
 
     protected override UniTask OnBaseInitialized(DIContainer container)
     {
+        _storeMahjongTilesPresenter = new StoreMahjongTilesPresenter(new StoreMahjongTilesModel(tilesSpritesGroup));
+        container.RegisterInstance<IMahjongTilesSpritesProvider>(_storeMahjongTilesPresenter);
+
         _backgroundVisualPresenter = new BackgroundVisualPresenter(_storeBackgroundPresenter, _viewContainer.GetView<BackgroundVisualView>());
 
         _storeMovesPresenter = new StoreMovesPresenter(new StoreMovesModel());

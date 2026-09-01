@@ -10,6 +10,8 @@ public class MainState_Game : IState
     private readonly ITimerListener _timerListener;
     private readonly ITimerProvider _timerProvider;
 
+    private readonly ILevelInfoProvider _levelInfoProvider;
+
     private int _activeMatches;
 
     public MainState_Game(
@@ -19,7 +21,8 @@ public class MainState_Game : IState
         IMahjongMatchListener mahjongMatchListener,
         IMahjongInfo mahjongInfo,
         ITimerListener timerListener,
-        ITimerProvider timerProvider)
+        ITimerProvider timerProvider,
+        ILevelInfoProvider levelInfoProvider)
     {
         _stateProvider = stateProvider;
         _sceneService = sceneService;
@@ -29,6 +32,7 @@ public class MainState_Game : IState
         _mahjongInfo = mahjongInfo;
         _timerListener = timerListener;
         _timerProvider = timerProvider;
+        _levelInfoProvider = levelInfoProvider;
     }
 
     public void Enter()
@@ -44,7 +48,7 @@ public class MainState_Game : IState
         _sceneRoot.ShowMainHeaderPanel();
         _sceneRoot.ShowMainFooterPanel();
         _timerProvider.ResetTimer();
-        _timerProvider.ActivateTimer(90, TimerDirection.Backward);
+        _timerProvider.ActivateTimer(MahjongTimerHelper.GetTime(_levelInfoProvider.Level + 1), TimerDirection.Backward);
     }
 
     public void Exit()

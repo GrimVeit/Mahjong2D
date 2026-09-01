@@ -13,10 +13,11 @@ public class StateMachine_Game : IStateProvider
     {
         var root = container.Resolve<UIRoot_Game>();
         var sceneService = container.Resolve<ISceneService>();
+        var levelInfo = container.Resolve<ILevelInfoProvider>();
 
         states[typeof(HoldOnStartState_Game)] = new HoldOnStartState_Game(this, root);
-        states[typeof(MahjongGenerateState_Game)] = new MahjongGenerateState_Game(this, container.Resolve<IMahjongProvider>(), container.Resolve<List<Sprite>>("MahjongSprites"), root);
-        states[typeof(MainState_Game)] = new MainState_Game(this, sceneService, root, container.Resolve<IMahjongMatchListener>(), container.Resolve<IMahjongInfo>(), container.Resolve<ITimerListener>(), container.Resolve<ITimerProvider>());
+        states[typeof(MahjongGenerateState_Game)] = new MahjongGenerateState_Game(this, container.Resolve<IMahjongProvider>(), root, levelInfo, container.Resolve<IMahjongTilesSpritesProvider>(), container.Resolve<ICardDesignInfoProvider>());
+        states[typeof(MainState_Game)] = new MainState_Game(this, sceneService, root, container.Resolve<IMahjongMatchListener>(), container.Resolve<IMahjongInfo>(), container.Resolve<ITimerListener>(), container.Resolve<ITimerProvider>(), levelInfo);
 
         states[typeof(WinVideoState_Game)] = new WinVideoState_Game(this, root, container.Resolve<ILevelProvider>());
         states[typeof(WinState_Game)] = new WinState_Game(sceneService, root);

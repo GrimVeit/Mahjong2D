@@ -191,20 +191,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 164eedb92099ab342a1d92fb811675a2, type: 2}
   uIRoot: {fileID: 5499485385716780466, guid: 13040dadc2e07d648b608502b86daa51, type: 3}
   mahjongBoardGenerator: {fileID: 1631780863}
-  sprites:
-  - {fileID: 21300000, guid: 4a032c59e1a062d4fb34b960d29227ba, type: 3}
-  - {fileID: 21300000, guid: 5800938175365aa41af924e5a51b41b8, type: 3}
-  - {fileID: 21300000, guid: a58fc4874e15dc643ba812f7056c82a7, type: 3}
-  - {fileID: 21300000, guid: ca9ca6ef2951d6649bc966399ca38f79, type: 3}
-  - {fileID: 21300000, guid: be5e23e2738bddf4daeedca036c3b1f9, type: 3}
-  - {fileID: 21300000, guid: 86c9fa5b27f97d64b9a17863961b2c07, type: 3}
-  - {fileID: 21300000, guid: f70ac3c2292a55d489679a0250b69ecb, type: 3}
-  - {fileID: 21300000, guid: e1b1d7ae25de726408801986dbd898c6, type: 3}
-  - {fileID: 21300000, guid: c4e0dee12f02a114080a4fc89135d8f4, type: 3}
-  - {fileID: 21300000, guid: 38e281d75f440be4b914cc2fec78d409, type: 3}
-  - {fileID: 21300000, guid: 2eb260759b3729744b38371a0c6792a5, type: 3}
-  - {fileID: 21300000, guid: b40e7812cd2c37342ab0ee153acf90a2, type: 3}
-  - {fileID: 21300000, guid: cef99f84adc85854dbdb5ecae6a649ea, type: 3}
+  tilesSpritesGroup:
+  - {fileID: 11400000, guid: 670a3870ac465034cab8b43b5198f630, type: 2}
+  - {fileID: 11400000, guid: 2bb71f3bfea083a48a5c72e52f539247, type: 2}
+  - {fileID: 11400000, guid: a5c1f1acf3b73e74cb24e6c008282da2, type: 2}
+  - {fileID: 11400000, guid: 2fc0cb9de1c0efd43824153d921392ac, type: 2}
 --- !u!1 &495547365
 GameObject:
   m_ObjectHideFlags: 0
@@ -410,6 +401,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layouts:
+  - spriteCount: 8
+    firstLayerCount: 8
+    secondLayerCount: 0
+    thirdLayerCount: 0
+  - spriteCount: 10
+    firstLayerCount: 8
+    secondLayerCount: 2
+    thirdLayerCount: 0
   - spriteCount: 12
     firstLayerCount: 8
     secondLayerCount: 4
