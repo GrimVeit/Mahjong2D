@@ -113,6 +113,7 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
     public virtual async UniTask ShutDown()
     {
         _soundPresenter?.Dispose();
+        _storeMoneyPresenter?.Dispose();
         _storeSoundSettingsPresenter?.Dispose();
         _storeLevelPresenter?.Dispose();
         _storeBackgroundPresenter?.Dispose();

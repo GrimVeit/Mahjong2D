@@ -29,6 +29,8 @@ public class GameEntryPoint : SceneEntryPoint
     private MahjongMatchPresenter _mahjongMatchPresenter;
     private MahjongMixPresenter _mahjongMixPresenter;
     private MahjongHintPresenter _mahjongHintPresenter;
+    private MahjongScorePresenter _mahjongScorePresenter;
+    private MahjongRewardPresenter _mahjongRewardPresenter;
 
     private TimerPresenter _timerPresenter_Game;
     private TimerVisualPresenter _timerVisualPresenter_Game;
@@ -82,6 +84,8 @@ public class GameEntryPoint : SceneEntryPoint
         _mahjongMatchPresenter?.Dispose();
         _mahjongMixPresenter?.Dispose();
         _mahjongHintPresenter?.Dispose();
+        _mahjongScorePresenter?.Dispose();
+        _mahjongRewardPresenter?.Dispose();
 
         _timerPresenter_Game?.Dispose();
         _timerVisualPresenter_Game?.Dispose();
@@ -134,6 +138,12 @@ public class GameEntryPoint : SceneEntryPoint
 
         _timerVisualPresenter_Game = new TimerVisualPresenter(new TimerVisualModel(_timerPresenter_Game, _timerPresenter_Game), _viewContainer.GetView<TimerVisualView_CurrentAndElapsedTime>());
 
+        _mahjongScorePresenter = new MahjongScorePresenter(new MahjongScoreModel(_timerPresenter_Game, _storeLevelPresenter), _viewContainer.GetView<MahjongScoreView>());
+        container.RegisterInstance<IMahjongScoreProvider>(_mahjongScorePresenter);
+
+        _mahjongRewardPresenter = new MahjongRewardPresenter(new MahjongRewardModel(_timerPresenter_Game, _storeLevelPresenter, _storeMoneyPresenter), _viewContainer.GetView<MahjongRewardView>());
+        container.RegisterInstance<IMahjongRewardProvider>(_mahjongRewardPresenter);
+
         _levelVisualPresenter = new LevelVisualPresenter(new LevelVisualModel(_storeLevelPresenter), _viewContainer.GetView<LevelVisualView>());
 
         _stateMachine = new StateMachine_Game(container);
@@ -147,6 +157,8 @@ public class GameEntryPoint : SceneEntryPoint
         _mahjongMatchPresenter.Initialize();
         _mahjongMixPresenter.Initialize();
         _mahjongHintPresenter.Initialize();
+        _mahjongScorePresenter.Initialize();
+        _mahjongRewardPresenter.Initialize();
 
         _timerPresenter_Game.Initialize();
         _timerVisualPresenter_Game.Initialize();
