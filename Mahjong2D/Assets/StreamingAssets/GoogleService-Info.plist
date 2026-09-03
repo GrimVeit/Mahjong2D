@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>964161670265-3cd8o4cton77p4h9o25bvgbofa3be8i4.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.964161670265-3cd8o4cton77p4h9o25bvgbofa3be8i4</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB2p7FV6XsAYZ2BVclK_fExsv2Z_ANJeXM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>964161670265</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.test.mahjong</string>
+	<key>PROJECT_ID</key>
+	<string>mahjong2d-cbd24</string>
+	<key>STORAGE_BUCKET</key>
+	<string>mahjong2d-cbd24.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:964161670265:ios:ebfc043c88528c6a2218a8</string>
+	<key>DATABASE_URL</key>
+	<string>https://mahjong2d-cbd24-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+</dict>
+</plist>

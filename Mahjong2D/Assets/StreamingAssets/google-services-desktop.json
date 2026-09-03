@@ -1,0 +1,37 @@
+{
+  "project_info": {
+    "project_number": "964161670265",
+    "firebase_url": "https://mahjong2d-cbd24-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "mahjong2d-cbd24",
+    "storage_bucket": "mahjong2d-cbd24.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:964161670265:ios:ebfc043c88528c6a2218a8",
+        "android_client_info": {
+          "package_name": "com.test.mahjong"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2p7FV6XsAYZ2BVclK_fExsv2Z_ANJeXM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 0
+        },
+        "appinvite_service": {
+          "status": 1
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "964161670265-3cd8o4cton77p4h9o25bvgbofa3be8i4.apps.googleusercontent.com"
+        }
+      ]
+    }
+  ],
+  "configuration_version": "1"
+}

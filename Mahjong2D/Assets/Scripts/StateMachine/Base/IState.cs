@@ -21,7 +21,7 @@ public abstract class AsyncState : IState
         EnterAsync(_cts.Token).Forget();
     }
 
-    public void Exit()
+    public virtual void Exit()
     {
         _cts?.Cancel();
     }

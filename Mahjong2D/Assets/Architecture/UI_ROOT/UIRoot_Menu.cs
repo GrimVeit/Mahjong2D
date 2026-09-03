@@ -7,6 +7,11 @@ public class UIRoot_Menu : UIRoot
 {
     [Header("Background")]
     [SerializeField] private BackgroundPanel_Menu backgroundPanel;
+
+    [Header("Registration")]
+    [SerializeField] private RegistrationPanel_Menu registrationPanel;
+    [SerializeField] private RegistrationLoadingPanel_Menu registrationLoadingPanel;
+
     [Header("Intro")]
     [SerializeField] private IntroVideoPanel_Menu introVideoPanel;
     [SerializeField] private IntroStartPanel introStartPanel;
@@ -28,6 +33,9 @@ public class UIRoot_Menu : UIRoot
 
         backgroundPanel.Initialize();
 
+        registrationPanel.Initialize();
+        registrationLoadingPanel.Initialize();
+
         introVideoPanel.Initialize();
         introStartPanel.Initialize();
 
@@ -48,6 +56,9 @@ public class UIRoot_Menu : UIRoot
         DeactivateEvents();
 
         backgroundPanel.Dispose();
+
+        registrationPanel.Dispose();
+        registrationLoadingPanel.Dispose();
 
         introVideoPanel.Dispose();
         introStartPanel.Dispose();
@@ -125,6 +136,32 @@ public class UIRoot_Menu : UIRoot
     public void HideBackgroundPanel()
     {
         HidePanel(backgroundPanel);
+    }
+
+    #endregion
+
+    #region Registration
+
+    public void ShowRegistrationPanel()
+    {
+        ShowPanel(registrationPanel);
+    }
+
+    public void HideRegistrationPanel()
+    {
+        HidePanel(registrationPanel);
+    }
+
+
+
+    public void ShowRegistrationLoadingPanel()
+    {
+        ShowPanel(registrationLoadingPanel);
+    }
+
+    public void HideRegistrationLoadingPanel()
+    {
+        HidePanel(registrationLoadingPanel);
     }
 
     #endregion

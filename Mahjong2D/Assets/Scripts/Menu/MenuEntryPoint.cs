@@ -1,5 +1,7 @@
 using BaCon;
 using Cysharp.Threading.Tasks;
+using Firebase.Auth;
+using Firebase.Database;
 using UnityEngine;
 
 public class MenuEntryPoint : SceneEntryPoint
@@ -9,6 +11,13 @@ public class MenuEntryPoint : SceneEntryPoint
 
     private UIRoot_Menu _uIRoot;
     private ViewContainer _viewContainer;
+
+    private FirebaseAuthenticationPresenter _firebaseAuthenticationPresenter;
+    private FirebaseDatabasePresenter _firebaseDatabasePresenter;
+
+    private AuthenticationDescriptionPresenter _authenticationDescriptionPresenter;
+
+    private ProfileNicknameInputPresenter _profileNicknameInputPresenter;
 
     private VolumeSettingsPresenter _volumeSettingsPresenter;
     private MoneyVisualPresenter _moneyVisualPresenter;
@@ -66,6 +75,8 @@ public class MenuEntryPoint : SceneEntryPoint
         _volumeSettingsPresenter?.Dispose();
         _moneyVisualPresenter?.Dispose();
 
+        _authenticationDescriptionPresenter?.Dispose();
+        _profileNicknameInputPresenter?.Dispose();
         _bookPagesPresenter?.Dispose();
         _bookPagesControlPresenter?.Dispose(); 
 
@@ -79,6 +90,22 @@ public class MenuEntryPoint : SceneEntryPoint
 
     protected override UniTask OnBaseInitialized(DIContainer container)
     {
+        FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(false);
+        FirebaseAuth firebaseAuth = FirebaseAuth.DefaultInstance;
+        FirebaseDatabase database = FirebaseDatabase.DefaultInstance;
+
+        _firebaseAuthenticationPresenter = new FirebaseAuthenticationPresenter(new FirebaseAuthenticationModel(firebaseAuth));
+        container.RegisterInstance<IAuthenticationInfoProvider>(_firebaseAuthenticationPresenter);
+        container.RegisterInstance<IAuthenticationProvider>(_firebaseAuthenticationPresenter);
+
+        _firebaseDatabasePresenter = new FirebaseDatabasePresenter(new FirebaseDatabaseModel(database, _firebaseAuthenticationPresenter));
+        container.RegisterInstance<IPlayerDatabaseProvider>(_firebaseDatabasePresenter);
+
+
+        _authenticationDescriptionPresenter = new AuthenticationDescriptionPresenter(new AuthenticationDescriptionModel(_firebaseAuthenticationPresenter), _viewContainer.GetView<AuthenticationDescriptionView>());
+
+        _profileNicknameInputPresenter = new ProfileNicknameInputPresenter(new ProfileNicknameInputModel(_storePlayerProfilePresenter), _viewContainer.GetView<ProfileNicknameInputView>());
+
         _uIRoot.SetSoundProvider(_soundPresenter);
 
         _bookPagesPresenter = new BookPagesPresenter(new BookPagesModel(2), _viewContainer.GetView<BookPagesView>());
@@ -99,6 +126,8 @@ public class MenuEntryPoint : SceneEntryPoint
         _volumeSettingsPresenter.Initialize();
         _moneyVisualPresenter.Initialize();
 
+        _authenticationDescriptionPresenter.Initialize();
+        _profileNicknameInputPresenter.Initialize();
         _bookPagesPresenter.Initialize();
         _bookPagesControlPresenter.Initialize();
 

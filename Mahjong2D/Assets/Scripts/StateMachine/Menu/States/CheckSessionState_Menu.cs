@@ -7,17 +7,19 @@ public class CheckSessionState_Menu : IState
     private readonly IStateProvider _stateProvider;
     private readonly ISessionInfoProvider _sessionInfoProvider;
     private readonly ISessionProvider _sessionProvider;
+    private readonly IAuthenticationInfoProvider _authenticationInfoProvider;
 
-    public CheckSessionState_Menu(IStateProvider stateProvider, ISessionInfoProvider sessionInfoProvider, ISessionProvider sessionProvider)
+    public CheckSessionState_Menu(IStateProvider stateProvider, ISessionInfoProvider sessionInfoProvider, ISessionProvider sessionProvider, IAuthenticationInfoProvider authenticationInfoProvider)
     {
         _stateProvider = stateProvider;
         _sessionInfoProvider = sessionInfoProvider;
         _sessionProvider = sessionProvider;
+        _authenticationInfoProvider = authenticationInfoProvider;
     }
 
     public void Enter()
     {
-        if (_sessionInfoProvider.IsFirstLaunch)
+        if (_sessionInfoProvider.IsFirstLaunch || !_authenticationInfoProvider.IsAuthorized)
         {
             _sessionProvider.CompleteFirstLaunch();
 
@@ -41,6 +43,6 @@ public class CheckSessionState_Menu : IState
 
     private void ChangeStateToMain()
     {
-        _stateProvider.SetState(_stateProvider.GetState<MainState_Menu>());
+        _stateProvider.SetState(_stateProvider.GetState<Registration_StartMainState_Menu>());
     }
 }

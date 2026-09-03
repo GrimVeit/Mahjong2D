@@ -18,4 +18,7 @@ public static class PlayerPrefsKeys
     //SHOP
     public const string BACKGROUNDS = "store.background";
     public const string CARDS_DESIGNS = "store.cards_design";
+
+    //PROFILE
+    public const string NICKNAME = "profile.nickname";
 }

@@ -23,6 +23,8 @@ public class ScaleEffect_Fade : UIEffect
 
     public override void ResetEffect()
     {
+        isActive = false;
+
         tween?.Kill();
 
         scaleElement.localScale = Vector3.zero;
@@ -30,6 +32,8 @@ public class ScaleEffect_Fade : UIEffect
 
     public override void PlayShow(Action onComplete = null)
     {
+        isActive = true;
+
         tween?.Kill();
 
         scaleElement.localScale = Vector3.zero;
@@ -42,6 +46,8 @@ public class ScaleEffect_Fade : UIEffect
 
     public override void PlayHide(Action onComplete = null)
     {
+        isActive = false;
+
         tween?.Kill();
 
         tween = scaleElement

@@ -33,6 +33,9 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
     //CARD DESIGN
     protected StoreCardsDesignPresenter _storeCardsDesignPresenter;
 
+    //PROFILE
+    protected StorePlayerProfilePresenter _storePlayerProfilePresenter;
+
     public virtual async UniTask Initialize(DIContainer container)
     {
         // -------------------------------------------------
@@ -107,6 +110,17 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
         container.RegisterInstance<ICardDesignProvider>(_storeCardsDesignPresenter);
         _storeCardsDesignPresenter.Initialize();
 
+        // -------------------------------------------------
+        // PROFILE
+        // -------------------------------------------------
+
+        _storePlayerProfilePresenter = new StorePlayerProfilePresenter(new StorePlayerProfileModel(PlayerPrefsKeys.NICKNAME));
+
+        container.RegisterInstance<IPlayerProfileEventsProvider>(_storePlayerProfilePresenter);
+        container.RegisterInstance<IPlayerProfileInfoProvider>(_storePlayerProfilePresenter);
+        container.RegisterInstance<IPlayerProfileProvider>(_storePlayerProfilePresenter);
+        _storePlayerProfilePresenter.Initialize();
+
         await OnBaseInitialized(container);
     }
 
@@ -118,6 +132,7 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
         _storeLevelPresenter?.Dispose();
         _storeBackgroundPresenter?.Dispose();
         _storeCardsDesignPresenter?.Dispose();
+        _storePlayerProfilePresenter?.Dispose();
 
         await OnBaseShutdown();
     }
@@ -182,5 +197,6 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
         _storeLevelPresenter?.Dispose();
         _storeBackgroundPresenter?.Dispose();
         _storeCardsDesignPresenter?.Dispose();
+        _storePlayerProfilePresenter?.Dispose();
     }
 }
