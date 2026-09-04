@@ -5,7 +5,7 @@ public static class MahjongTileCountHelper
     private const int StartTileCount = 4;
     private const int TileIncreasePerGroup = 1;
     private const int LevelsPerGroup = 5;
-    private const int MaxTileCount = 15;
+    private const int MaxTileCount = 27;
 
     public static int GetTileCount(int level)
     {

@@ -692,54 +692,126 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layouts:
-  - spriteCount: 8
+  - NAME: 8
+    spriteCount: 8
     firstLayerCount: 8
     secondLayerCount: 0
     thirdLayerCount: 0
-  - spriteCount: 10
+  - NAME: 10
+    spriteCount: 10
     firstLayerCount: 8
     secondLayerCount: 2
     thirdLayerCount: 0
-  - spriteCount: 12
-    firstLayerCount: 8
+  - NAME: 12
+    spriteCount: 12
+    firstLayerCount: 10
+    secondLayerCount: 2
+    thirdLayerCount: 0
+  - NAME: 14
+    spriteCount: 14
+    firstLayerCount: 10
     secondLayerCount: 4
     thirdLayerCount: 0
-  - spriteCount: 14
-    firstLayerCount: 8
+  - NAME: 16
+    spriteCount: 16
+    firstLayerCount: 12
+    secondLayerCount: 4
+    thirdLayerCount: 0
+  - NAME: 18
+    spriteCount: 18
+    firstLayerCount: 12
     secondLayerCount: 4
     thirdLayerCount: 2
-  - spriteCount: 16
-    firstLayerCount: 8
+  - NAME: 20
+    spriteCount: 20
+    firstLayerCount: 14
+    secondLayerCount: 4
+    thirdLayerCount: 2
+  - NAME: 22
+    spriteCount: 22
+    firstLayerCount: 14
     secondLayerCount: 6
     thirdLayerCount: 2
-  - spriteCount: 18
-    firstLayerCount: 10
+  - NAME: 24
+    spriteCount: 24
+    firstLayerCount: 16
     secondLayerCount: 6
     thirdLayerCount: 2
-  - spriteCount: 20
-    firstLayerCount: 10
+  - NAME: 26
+    spriteCount: 26
+    firstLayerCount: 16
     secondLayerCount: 6
     thirdLayerCount: 4
-  - spriteCount: 22
-    firstLayerCount: 10
+  - NAME: 28
+    spriteCount: 28
+    firstLayerCount: 18
+    secondLayerCount: 6
+    thirdLayerCount: 4
+  - NAME: 30
+    spriteCount: 30
+    firstLayerCount: 18
     secondLayerCount: 8
     thirdLayerCount: 4
-  - spriteCount: 24
-    firstLayerCount: 10
+  - NAME: 32
+    spriteCount: 32
+    firstLayerCount: 20
     secondLayerCount: 8
-    thirdLayerCount: 6
-  - spriteCount: 26
-    firstLayerCount: 12
-    secondLayerCount: 8
-    thirdLayerCount: 6
-  - spriteCount: 28
-    firstLayerCount: 12
+    thirdLayerCount: 4
+  - NAME: 34
+    spriteCount: 34
+    firstLayerCount: 20
     secondLayerCount: 10
+    thirdLayerCount: 4
+  - NAME: 36
+    spriteCount: 36
+    firstLayerCount: 20
+    secondLayerCount: 12
+    thirdLayerCount: 4
+  - NAME: 38
+    spriteCount: 38
+    firstLayerCount: 20
+    secondLayerCount: 12
     thirdLayerCount: 6
-  - spriteCount: 30
-    firstLayerCount: 12
-    secondLayerCount: 10
+  - NAME: 40
+    spriteCount: 40
+    firstLayerCount: 20
+    secondLayerCount: 14
+    thirdLayerCount: 6
+  - NAME: 42
+    spriteCount: 42
+    firstLayerCount: 20
+    secondLayerCount: 14
     thirdLayerCount: 8
+  - NAME: 44
+    spriteCount: 44
+    firstLayerCount: 20
+    secondLayerCount: 16
+    thirdLayerCount: 8
+  - NAME: 46
+    spriteCount: 46
+    firstLayerCount: 20
+    secondLayerCount: 16
+    thirdLayerCount: 10
+  - NAME: 48
+    spriteCount: 48
+    firstLayerCount: 20
+    secondLayerCount: 18
+    thirdLayerCount: 10
+  - NAME: 50
+    spriteCount: 50
+    firstLayerCount: 20
+    secondLayerCount: 18
+    thirdLayerCount: 12
+  - NAME: 52
+    spriteCount: 52
+    firstLayerCount: 20
+    secondLayerCount: 20
+    thirdLayerCount: 12
+  - NAME: 54
+    spriteCount: 54
+    firstLayerCount: 20
+    secondLayerCount: 20
+    thirdLayerCount: 14
 --- !u!1 &1828649614
 GameObject:
   m_ObjectHideFlags: 0

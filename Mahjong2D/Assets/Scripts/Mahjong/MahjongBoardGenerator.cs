@@ -885,6 +885,7 @@ public class MahjongBoardGenerator : MonoBehaviour
     [Serializable]
     private class MahjongLayoutSettings
     {
+        [SerializeField] private string NAME;
         [Header("ALL COUNT")]
 
         [Min(1)]

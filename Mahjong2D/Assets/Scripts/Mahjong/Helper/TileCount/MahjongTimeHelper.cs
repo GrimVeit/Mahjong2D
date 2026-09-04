@@ -2,10 +2,10 @@ using UnityEngine;
 
 public static class MahjongTimerHelper
 {
-    private const int StartTime = 45;
-    private const int TimeIncreasePerGroup = 5;
+    private const int StartTime = 35;
+    private const int TimeIncreasePerGroup = 3;
     private const int LevelsPerGroup = 5;
-    private const int MaxTime = 100;
+    private const int MaxTime = 75;
 
     public static int GetTime(int level)
     {

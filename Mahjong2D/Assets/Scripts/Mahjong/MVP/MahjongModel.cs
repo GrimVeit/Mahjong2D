@@ -18,7 +18,10 @@ public class MahjongModel
 
     public IReadOnlyList<MahjongTileData> Tiles => tiles;
 
-    public MahjongModel(MahjongBoardGenerator generator, IMovesProvider movesProvider, ISoundProvider soundProvider)
+    public MahjongModel(
+        MahjongBoardGenerator generator,
+        IMovesProvider movesProvider,
+        ISoundProvider soundProvider)
     {
         _generator = generator;
         _movesProvider = movesProvider;
@@ -81,32 +84,21 @@ public class MahjongModel
 
 
         // =====================================================
-        // CREATE PAIRS
+        // GENERATE SMART PAIRS
         // =====================================================
 
-        List<int> pairIds =
-            new List<int>();
+        List<int> pairIds;
 
-
-        for (
-            int pairId = 0;
-            pairId < sprites.Count;
-            pairId++)
+        if (!TryGeneratePlayablePairs(
+                positions,
+                out pairIds))
         {
-            //  аждый PairId встречаетс€ ровно 2 раза.
+            Debug.LogWarning(
+                "[Mahjong] Could not create a playable pair distribution."
+            );
 
-            pairIds.Add(pairId);
-            pairIds.Add(pairId);
+            return;
         }
-
-
-        // =====================================================
-        // SHUFFLE PAIRS
-        // =====================================================
-
-        Shuffle(
-            pairIds
-        );
 
 
         // =====================================================
@@ -234,58 +226,484 @@ public class MahjongModel
 
 
     // =========================================================
-    // HINT
+    // SMART PAIR GENERATION
     // =========================================================
 
-    public void Hint()
+    private bool TryGeneratePlayablePairs(
+        List<MahjongTilePosition> positions,
+        out List<int> pairIds)
     {
-        if (firstSelectedTile != null) OnTileUnselected?.Invoke(firstSelectedTile.Id);
+        pairIds = null;
 
-        firstSelectedTile = null;
+        const int maxAttempts = 100;
 
-        List<(int firstId, int secondId)> availablePairs = new();
-
-
-        for (int i = 0;i < tiles.Count;i++)
+        for (
+            int attempt = 0;
+            attempt < maxAttempts;
+            attempt++)
         {
-            MahjongTileData firstTile = tiles[i];
+            List<int> remainingIndices =
+                new List<int>();
 
 
-            if (firstTile.IsRemoved || !firstTile.IsActive)
+            for (
+                int i = 0;
+                i < positions.Count;
+                i++)
+            {
+                remainingIndices.Add(i);
+            }
+
+
+            List<int> result =
+                new List<int>();
+
+
+            bool failed = false;
+
+
+            // -------------------------------------------------
+            // —нимаем виртуально пары одну за другой.
+            //
+            // Ќа каждом шаге выбираем две позиции,
+            // которые в данный момент доступны.
+            // -------------------------------------------------
+
+            while (remainingIndices.Count > 0)
+            {
+                List<int> activeIndices =
+                    GetActivePositionIndices(
+                        positions,
+                        remainingIndices
+                    );
+
+
+                if (activeIndices.Count < 2)
+                {
+                    failed = true;
+                    break;
+                }
+
+
+                // -------------------------------------------------
+                // —тараемс€ выбирать разные слои,
+                // чтобы пары не концентрировались только внизу.
+                // -------------------------------------------------
+
+                List<int> shuffledActive =
+                    new List<int>(
+                        activeIndices
+                    );
+
+                Shuffle(
+                    shuffledActive
+                );
+
+
+                int firstIndex =
+                    shuffledActive[0];
+
+
+                int secondIndex =
+                    -1;
+
+
+                MahjongTilePosition firstPosition =
+                    positions[firstIndex];
+
+
+                // —начала ищем пару на другом слое.
+                for (
+                    int i = 1;
+                    i < shuffledActive.Count;
+                    i++)
+                {
+                    int candidateIndex =
+                        shuffledActive[i];
+
+                    MahjongTilePosition candidate =
+                        positions[candidateIndex];
+
+
+                    if (
+                        candidate.Layer !=
+                        firstPosition.Layer)
+                    {
+                        secondIndex =
+                            candidateIndex;
+
+                        break;
+                    }
+                }
+
+
+                // ≈сли другого сло€ нет Ч
+                // берЄм любую другую доступную позицию.
+                if (secondIndex == -1)
+                {
+                    for (
+                        int i = 1;
+                        i < shuffledActive.Count;
+                        i++)
+                    {
+                        if (
+                            shuffledActive[i] !=
+                            firstIndex)
+                        {
+                            secondIndex =
+                                shuffledActive[i];
+
+                            break;
+                        }
+                    }
+                }
+
+
+                if (secondIndex == -1)
+                {
+                    failed = true;
+                    break;
+                }
+
+
+                result.Add(
+                    firstIndex
+                );
+
+                result.Add(
+                    secondIndex
+                );
+
+
+                remainingIndices.Remove(
+                    firstIndex
+                );
+
+                remainingIndices.Remove(
+                    secondIndex
+                );
+            }
+
+
+            if (failed)
+                continue;
+
+
+            // -------------------------------------------------
+            // ѕреобразуем последовательность пар
+            // в pairId дл€ каждой позиции.
+            // -------------------------------------------------
+
+            pairIds =
+                new List<int>(
+                    new int[positions.Count]
+                );
+
+
+            for (
+                int i = 0;
+                i < result.Count;
+                i += 2)
+            {
+                int firstIndex =
+                    result[i];
+
+                int secondIndex =
+                    result[i + 1];
+
+
+                int pairId =
+                    i / 2;
+
+
+                pairIds[firstIndex] =
+                    pairId;
+
+                pairIds[secondIndex] =
+                    pairId;
+            }
+
+
+            return true;
+        }
+
+
+        return false;
+    }
+
+
+    // =========================================================
+    // GET ACTIVE POSITIONS
+    // =========================================================
+
+    private List<int> GetActivePositionIndices(
+        List<MahjongTilePosition> positions,
+        List<int> remainingIndices)
+    {
+        List<int> activeIndices =
+            new List<int>();
+
+
+        foreach (
+            int index
+            in remainingIndices)
+        {
+            MahjongTilePosition tile =
+                positions[index];
+
+
+            if (
+                IsPositionActive(
+                    tile,
+                    positions,
+                    remainingIndices))
+            {
+                activeIndices.Add(
+                    index
+                );
+            }
+        }
+
+
+        return activeIndices;
+    }
+
+
+    // =========================================================
+    // CHECK POSITION ACTIVE
+    // =========================================================
+
+    private bool IsPositionActive(
+        MahjongTilePosition tile,
+        List<MahjongTilePosition> positions,
+        List<int> remainingIndices)
+    {
+        // -----------------------------------------------------
+        // TILE ABOVE
+        // -----------------------------------------------------
+
+        foreach (
+            int index
+            in remainingIndices)
+        {
+            MahjongTilePosition other =
+                positions[index];
+
+
+            if (other.Equals(tile))
+                continue;
+
+
+            if (other.Layer <= tile.Layer)
+                continue;
+
+
+            if (
+                IsPositionOverlapping(
+                    tile,
+                    other))
+            {
+                return false;
+            }
+        }
+
+
+        // -----------------------------------------------------
+        // LEFT / RIGHT
+        // -----------------------------------------------------
+
+        bool leftBlocked =
+            HasPositionOnSide(
+                tile,
+                -1,
+                positions,
+                remainingIndices
+            );
+
+
+        bool rightBlocked =
+            HasPositionOnSide(
+                tile,
+                1,
+                positions,
+                remainingIndices
+            );
+
+
+        return
+            !leftBlocked ||
+            !rightBlocked;
+    }
+
+
+    // =========================================================
+    // SIDE BLOCK
+    // =========================================================
+
+    private bool HasPositionOnSide(
+        MahjongTilePosition tile,
+        int direction,
+        List<MahjongTilePosition> positions,
+        List<int> remainingIndices)
+    {
+        foreach (
+            int index
+            in remainingIndices)
+        {
+            MahjongTilePosition other =
+                positions[index];
+
+
+            if (other.Equals(tile))
+                continue;
+
+
+            if (other.Layer != tile.Layer)
+                continue;
+
+
+            if (other.GridY != tile.GridY)
+                continue;
+
+
+            if (
+                other.GridX !=
+                tile.GridX + direction)
             {
                 continue;
             }
 
 
-            for (int j = i + 1;j < tiles.Count;j++)
+            return true;
+        }
+
+
+        return false;
+    }
+
+
+    // =========================================================
+    // OVERLAP
+    // =========================================================
+
+    private bool IsPositionOverlapping(
+        MahjongTilePosition first,
+        MahjongTilePosition second)
+    {
+        int deltaX =
+            Mathf.Abs(
+                first.GridX -
+                second.GridX
+            );
+
+
+        int deltaY =
+            Mathf.Abs(
+                first.GridY -
+                second.GridY
+            );
+
+
+        return
+            deltaX <= 1 &&
+            deltaY <= 1;
+    }
+
+
+    // =========================================================
+    // HINT
+    // =========================================================
+
+    public void Hint()
+    {
+        if (firstSelectedTile != null)
+            OnTileUnselected?.Invoke(
+                firstSelectedTile.Id
+            );
+
+
+        firstSelectedTile = null;
+
+
+        List<(int firstId, int secondId)>
+            availablePairs = new();
+
+
+        for (
+            int i = 0;
+            i < tiles.Count;
+            i++)
+        {
+            MahjongTileData firstTile =
+                tiles[i];
+
+
+            if (
+                firstTile.IsRemoved ||
+                !firstTile.IsActive)
             {
-                MahjongTileData secondTile = tiles[j];
+                continue;
+            }
 
 
-                if (secondTile.IsRemoved || !secondTile.IsActive)
+            for (
+                int j = i + 1;
+                j < tiles.Count;
+                j++)
+            {
+                MahjongTileData secondTile =
+                    tiles[j];
+
+
+                if (
+                    secondTile.IsRemoved ||
+                    !secondTile.IsActive)
                 {
                     continue;
                 }
 
 
-                if (firstTile.PairId != secondTile.PairId)
+                if (
+                    firstTile.PairId !=
+                    secondTile.PairId)
                 {
                     continue;
                 }
 
 
-                availablePairs.Add((firstTile.Id,secondTile.Id));
+                availablePairs.Add(
+                    (
+                        firstTile.Id,
+                        secondTile.Id
+                    )
+                );
             }
         }
+
 
         if (availablePairs.Count == 0)
             return;
 
-        var (firstId,secondId) =availablePairs[UnityEngine.Random.Range(0,availablePairs.Count)];
+
+        var (
+            firstId,
+            secondId
+        ) =
+            availablePairs[
+                UnityEngine.Random.Range(
+                    0,
+                    availablePairs.Count
+                )
+            ];
+
 
         _movesProvider.Increase();
 
-        OnTileHintSelected?.Invoke(firstId,secondId);
+
+        OnTileHintSelected?.Invoke(
+            firstId,
+            secondId
+        );
     }
 
 
@@ -295,15 +713,24 @@ public class MahjongModel
 
     public void SelectTile(int tileId)
     {
-        MahjongTileData tile = GetTile(tileId);
+        MahjongTileData tile =
+            GetTile(tileId);
 
-        if (tile == null) return;
 
-        if (tile.IsRemoved) return;
+        if (tile == null)
+            return;
 
-        if (!tile.IsActive) return;
+
+        if (tile.IsRemoved)
+            return;
+
+
+        if (!tile.IsActive)
+            return;
+
 
         _movesProvider.Increase();
+
 
         // =====================================================
         // FIRST CLICK
@@ -311,14 +738,19 @@ public class MahjongModel
 
         if (firstSelectedTile == null)
         {
-            firstSelectedTile = tile;
+            firstSelectedTile =
+                tile;
 
 
             OnTileSelected?.Invoke(
                 tile.Id
             );
 
-            _soundProvider.PlayOneShot("Choose");
+
+            _soundProvider.PlayOneShot(
+                "Choose"
+            );
+
 
             return;
         }
@@ -334,7 +766,10 @@ public class MahjongModel
                 firstSelectedTile.Id
             );
 
-            _soundProvider.PlayOneShot("Choose");
+
+            _soundProvider.PlayOneShot(
+                "Choose"
+            );
 
 
             firstSelectedTile = null;
@@ -360,15 +795,22 @@ public class MahjongModel
         // PAIR CHECK
         // =====================================================
 
-        if (firstTile.PairId != secondTile.PairId)
+        if (
+            firstTile.PairId !=
+            secondTile.PairId)
         {
             OnTileUnselected?.Invoke(
                 firstTile.Id
             );
 
+
             firstSelectedTile = null;
 
-            _soundProvider.PlayOneShot("Incorrect");
+
+            _soundProvider.PlayOneShot(
+                "Incorrect"
+            );
+
 
             return;
         }
@@ -401,7 +843,10 @@ public class MahjongModel
             secondTile
         );
 
-        _soundProvider.PlayOneShot("Choose");
+
+        _soundProvider.PlayOneShot(
+            "Choose"
+        );
 
 
         UpdateActiveStates();
@@ -515,7 +960,8 @@ public class MahjongModel
                 continue;
 
 
-            if (IsTileOverlapping(
+            if (
+                IsTileOverlapping(
                     tile,
                     other))
             {
@@ -544,15 +990,24 @@ public class MahjongModel
                 continue;
 
 
-            if (other.Layer != tile.Layer)
+            if (
+                other.Layer !=
+                tile.Layer)
+            {
                 continue;
+            }
 
 
-            if (other.GridY != tile.GridY)
+            if (
+                other.GridY !=
+                tile.GridY)
+            {
                 continue;
+            }
 
 
-            if (other.GridX !=
+            if (
+                other.GridX !=
                 tile.GridX + direction)
             {
                 continue;
@@ -599,8 +1054,11 @@ public class MahjongModel
     {
         if (firstSelectedTile != null)
         {
-            OnTileUnselected?.Invoke(firstSelectedTile.Id);
+            OnTileUnselected?.Invoke(
+                firstSelectedTile.Id
+            );
         }
+
 
         firstSelectedTile = null;
 
@@ -610,7 +1068,8 @@ public class MahjongModel
         int thirdLayerCount = 0;
 
 
-        List<MahjongTileData> availableTiles = new List<MahjongTileData>();
+        List<MahjongTileData> availableTiles =
+            new List<MahjongTileData>();
 
 
         foreach (
@@ -632,9 +1091,11 @@ public class MahjongModel
                     firstLayerCount++;
                     break;
 
+
                 case 1:
                     secondLayerCount++;
                     break;
+
 
                 case 2:
                     thirdLayerCount++;
@@ -651,7 +1112,8 @@ public class MahjongModel
             );
 
 
-        if (positions.Count !=
+        if (
+            positions.Count !=
             availableTiles.Count)
         {
             return;
@@ -681,7 +1143,9 @@ public class MahjongModel
 
         UpdateActiveStates();
 
+
         _movesProvider.Increase();
+
 
         OnMix?.Invoke();
     }
@@ -776,7 +1240,8 @@ public class MahjongModel
                     continue;
 
 
-                if (firstTile.PairId !=
+                if (
+                    firstTile.PairId !=
                     secondTile.PairId)
                 {
                     continue;
