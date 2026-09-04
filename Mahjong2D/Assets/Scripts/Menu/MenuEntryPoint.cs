@@ -13,7 +13,9 @@ public class MenuEntryPoint : SceneEntryPoint
     private ViewContainer _viewContainer;
 
     private FirebaseAuthenticationPresenter _firebaseAuthenticationPresenter;
+    private FirebasePlayerDatabasePresenter _firebasePlayerDatabasePresenter;
     private FirebaseDatabasePresenter _firebaseDatabasePresenter;
+    private LeaderboardPresenter _leaderboardPresenter;
 
     private AuthenticationDescriptionPresenter _authenticationDescriptionPresenter;
 
@@ -72,6 +74,10 @@ public class MenuEntryPoint : SceneEntryPoint
         await OnSceneShuttingDown();
         await base.ShutDown();
 
+        _firebaseDatabasePresenter?.Cancel();
+        _firebasePlayerDatabasePresenter?.Cancel();
+
+        _leaderboardPresenter?.Dispose();
         _volumeSettingsPresenter?.Dispose();
         _moneyVisualPresenter?.Dispose();
 
@@ -90,6 +96,8 @@ public class MenuEntryPoint : SceneEntryPoint
 
     protected override UniTask OnBaseInitialized(DIContainer container)
     {
+        //-----------------------FIREBASE---------------------//
+
         FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(false);
         FirebaseAuth firebaseAuth = FirebaseAuth.DefaultInstance;
         FirebaseDatabase database = FirebaseDatabase.DefaultInstance;
@@ -98,13 +106,19 @@ public class MenuEntryPoint : SceneEntryPoint
         container.RegisterInstance<IAuthenticationInfoProvider>(_firebaseAuthenticationPresenter);
         container.RegisterInstance<IAuthenticationProvider>(_firebaseAuthenticationPresenter);
 
-        _firebaseDatabasePresenter = new FirebaseDatabasePresenter(new FirebaseDatabaseModel(database, _firebaseAuthenticationPresenter));
-        container.RegisterInstance<IPlayerDatabaseProvider>(_firebaseDatabasePresenter);
+        _firebasePlayerDatabasePresenter = new FirebasePlayerDatabasePresenter(new FirebasePlayerDatabaseModel(database, _firebaseAuthenticationPresenter));
+        container.RegisterInstance<IPlayerDatabaseProvider>(_firebasePlayerDatabasePresenter);
 
+        _firebaseDatabasePresenter = new FirebaseDatabasePresenter(new FirebaseDatabaseModel(database));
+        container.RegisterInstance<IDatabaseProvider>(_firebaseDatabasePresenter);
+
+        _leaderboardPresenter = new LeaderboardPresenter(new LeaderboardModel(_firebaseDatabasePresenter), _viewContainer.GetView<LeaderboardView>());
 
         _authenticationDescriptionPresenter = new AuthenticationDescriptionPresenter(new AuthenticationDescriptionModel(_firebaseAuthenticationPresenter), _viewContainer.GetView<AuthenticationDescriptionView>());
 
         _profileNicknameInputPresenter = new ProfileNicknameInputPresenter(new ProfileNicknameInputModel(_storePlayerProfilePresenter), _viewContainer.GetView<ProfileNicknameInputView>());
+
+        //-----------------------------------------------------//
 
         _uIRoot.SetSoundProvider(_soundPresenter);
 
@@ -123,6 +137,7 @@ public class MenuEntryPoint : SceneEntryPoint
         _stateMachine = new StateMachine_Menu(container);
 
         _uIRoot.Initialize();
+        _leaderboardPresenter.Initialize();
         _volumeSettingsPresenter.Initialize();
         _moneyVisualPresenter.Initialize();
 

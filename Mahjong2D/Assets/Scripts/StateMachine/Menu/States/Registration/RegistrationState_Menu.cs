@@ -8,6 +8,8 @@ public class RegistrationState_Game : AsyncState
     private readonly IPlayerProfileInfoProvider _profileInfo;
     private readonly IAuthenticationProvider _authentication;
     private readonly IPlayerDatabaseProvider _database;
+    private readonly IMoneyProvider _moneyProvider;
+    private readonly ILevelProvider _levelProvider;
 
     private readonly UIRoot_Menu _sceneRoot;
 
@@ -16,13 +18,17 @@ public class RegistrationState_Game : AsyncState
         IPlayerProfileInfoProvider profileInfo,
         IAuthenticationProvider authentication,
         IPlayerDatabaseProvider database,
-        UIRoot_Menu sceneRoot)
+        UIRoot_Menu sceneRoot,
+        IMoneyProvider moneyProvider,
+        ILevelProvider levelProvider)
     {
         _stateProvider = stateProvider;
         _profileInfo = profileInfo;
         _authentication = authentication;
         _database = database;
         _sceneRoot = sceneRoot;
+        _moneyProvider = moneyProvider;
+        _levelProvider = levelProvider;
     }
 
     protected override async UniTask EnterAsync(CancellationToken token)
@@ -39,9 +45,13 @@ public class RegistrationState_Game : AsyncState
             return;
         }
 
+        _levelProvider.SetZero();
+        _moneyProvider.SetZero();
+
         PlayerData playerData = new(profile.Nickname, 0);
 
-        DatabaseResult databaseResult = await _database.CreateOrUpdatePlayer(playerData);
+        //DatabaseResult databaseResult = 
+        await _database.CreateOrUpdatePlayer(playerData);
 
         //if (databaseResult != DatabaseResult.Success)
         //{

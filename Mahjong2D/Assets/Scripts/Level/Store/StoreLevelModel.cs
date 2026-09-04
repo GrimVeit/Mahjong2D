@@ -32,5 +32,12 @@ public class StoreLevelModel
         OnChangeLevel?.Invoke(Level);
     }
 
+    public void SetLevel(int level)
+    {
+        Level = level;
+
+        OnChangeLevel?.Invoke(Level);
+    }
+
     public event Action<int> OnChangeLevel;
 }

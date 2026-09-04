@@ -7,6 +7,7 @@ using UnityEngine;
 public sealed class FirebaseAuthenticationModel
 {
     private const string Password = "123456";
+    private const int RequestTimeoutSeconds = 10;
 
     private readonly FirebaseAuth _auth;
 
@@ -28,9 +29,16 @@ public sealed class FirebaseAuthenticationModel
 
         try
         {
-            await _auth.CreateUserWithEmailAndPasswordAsync(email, Password);
+            await _auth
+                .CreateUserWithEmailAndPasswordAsync(email, Password)
+                .AsUniTask()
+                .Timeout(TimeSpan.FromSeconds(RequestTimeoutSeconds));
 
             result = AuthenticationResult.Success;
+        }
+        catch (TimeoutException)
+        {
+            result = AuthenticationResult.Timeout;
         }
         catch (FirebaseException exception)
         {
@@ -56,11 +64,16 @@ public sealed class FirebaseAuthenticationModel
 
         try
         {
-            await _auth.SignInWithEmailAndPasswordAsync(
-                email,
-                Password);
+            await _auth
+                .SignInWithEmailAndPasswordAsync(email, Password)
+                .AsUniTask()
+                .Timeout(TimeSpan.FromSeconds(RequestTimeoutSeconds));
 
             result = AuthenticationResult.Success;
+        }
+        catch (TimeoutException)
+        {
+            result = AuthenticationResult.Timeout;
         }
         catch (FirebaseException exception)
         {
@@ -83,24 +96,66 @@ public sealed class FirebaseAuthenticationModel
         _auth.SignOut();
     }
 
-    public async UniTask<bool> DeleteAccount()
+    public async UniTask<AuthenticationResult> DeleteAccount()
     {
         FirebaseUser user = _auth.CurrentUser;
 
         if (user == null)
-            return false;
+        {
+            AuthenticationResult result = AuthenticationResult.NotAuthorized;
+
+            OnAuthenticationResult?.Invoke(result);
+
+            return result;
+        }
 
         try
         {
-            await user.DeleteAsync();
+            Credential credential = EmailAuthProvider.GetCredential(
+                user.Email,
+                Password);
 
-            return true;
+            await user
+                .ReauthenticateAsync(credential)
+                .AsUniTask()
+                .Timeout(TimeSpan.FromSeconds(RequestTimeoutSeconds));
+
+            await user
+                .DeleteAsync()
+                .AsUniTask()
+                .Timeout(TimeSpan.FromSeconds(RequestTimeoutSeconds));
+
+            AuthenticationResult result = AuthenticationResult.Success;
+
+            OnAuthenticationResult?.Invoke(result);
+
+            return result;
+        }
+        catch (TimeoutException)
+        {
+            AuthenticationResult result = AuthenticationResult.Timeout;
+
+            OnAuthenticationResult?.Invoke(result);
+
+            return result;
+        }
+        catch (FirebaseException exception)
+        {
+            AuthenticationResult result = MapException(exception);
+
+            OnAuthenticationResult?.Invoke(result);
+
+            return result;
         }
         catch (Exception exception)
         {
             Debug.LogException(exception);
 
-            return false;
+            AuthenticationResult result = AuthenticationResult.UnknownError;
+
+            OnAuthenticationResult?.Invoke(result);
+
+            return result;
         }
     }
 
@@ -131,6 +186,8 @@ public enum AuthenticationResult
     Success,
     NicknameAlreadyUsed,
     InvalidNickname,
+    NotAuthorized,
     NetworkError,
+    Timeout,
     UnknownError
 }

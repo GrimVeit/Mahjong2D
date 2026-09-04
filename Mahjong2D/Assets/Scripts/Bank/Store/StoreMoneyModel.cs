@@ -49,6 +49,12 @@ public class StoreMoneyModel
         OnChangeMoney?.Invoke(Money);
     }
 
+    public void SetMoney(int value)
+    {
+        Money = value;
+        OnChangeMoney?.Invoke(Money);
+    }
+
     public bool CanAfford(int amount)
     {
         return Money >= amount;

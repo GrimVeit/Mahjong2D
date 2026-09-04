@@ -29,7 +29,7 @@ public sealed class FirebaseAuthenticationPresenter : IAuthenticationProvider, I
         _model.SignOut();
     }
 
-    public UniTask<bool> DeleteAccount()
+    public UniTask<AuthenticationResult> DeleteAccount()
     {
         return _model.DeleteAccount();
     }
@@ -61,5 +61,5 @@ public interface IAuthenticationProvider
     UniTask<AuthenticationResult> Register(string nickname);
     UniTask<AuthenticationResult> SignIn(string nickname);
     void SignOut();
-    UniTask<bool> DeleteAccount();
+    UniTask<AuthenticationResult> DeleteAccount();
 }

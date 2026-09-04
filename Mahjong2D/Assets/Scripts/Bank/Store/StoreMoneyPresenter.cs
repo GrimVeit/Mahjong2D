@@ -60,6 +60,11 @@ public class StoreMoneyPresenter : IMoneyInfoProvider, IMoneyEventsProvider, IMo
         _model.ChangeMoney(amount);
     }
 
+    public void SetZero()
+    {
+        _model.SetMoney(0);
+    }
+
     public bool CanAfford(int amount)
     {
         return _model.CanAfford(amount);
@@ -85,5 +90,6 @@ public interface IMoneyEventsProvider
 public interface IMoneyProvider
 {
     public void ChangeMoney(int amount);
+    public void SetZero();
     public bool CanAfford(int amount);
 }

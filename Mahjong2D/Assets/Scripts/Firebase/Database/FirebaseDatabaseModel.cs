@@ -1,93 +1,149 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Firebase.Database;
 using UnityEngine;
 
-public sealed class FirebaseDatabaseModel
+public sealed class FirebaseDatabaseModel : IDisposable
 {
     private const string UsersNode = "Users";
+    private const int RequestTimeoutSeconds = 7;
 
     private readonly FirebaseDatabase _database;
-    private readonly IAuthenticationInfoProvider _authenticationInfo;
+    private readonly CancellationTokenSource _disposeCts = new();
 
-    public FirebaseDatabaseModel(
-        FirebaseDatabase database,
-        IAuthenticationInfoProvider authenticationInfo)
+    public FirebaseDatabaseModel(FirebaseDatabase database)
     {
         _database = database;
-        _authenticationInfo = authenticationInfo;
     }
 
-    public async UniTask<DatabaseResult> CreateOrUpdatePlayer(PlayerData data)
+    public async UniTask<(DatabaseResult Result, List<PlayerData> Players)> GetTopPlayers(int count)
     {
-        if (!_authenticationInfo.IsAuthorized) return DatabaseResult.NotAuthorized;
+        OnGetTopPlayersStarted?.Invoke();
+
+        DatabaseResult result;
+        List<PlayerData> players = null;
 
         try
         {
-            DatabaseReference reference = GetPlayerReference();
+            DataSnapshot snapshot = await _database.RootReference
+                .Child(UsersNode)
+                .OrderByChild("Level")
+                .LimitToLast(count)
+                .GetValueAsync()
+                .AsUniTask()
+                .AttachExternalCancellation(_disposeCts.Token)
+                .Timeout(TimeSpan.FromSeconds(RequestTimeoutSeconds));
 
-            Dictionary<string, object> values = CreateValues(data);
+            players = ReadPlayers(snapshot);
 
-            await reference.UpdateChildrenAsync(values);
+            players.Sort((a, b) => b.Level.CompareTo(a.Level));
 
-            return DatabaseResult.Success;
+            result = DatabaseResult.Success;
+        }
+        catch (OperationCanceledException)
+        {
+            return (DatabaseResult.Cancelled, null);
+        }
+        catch (TimeoutException)
+        {
+            result = DatabaseResult.Timeout;
         }
         catch (DatabaseException exception)
         {
             Debug.LogException(exception);
-            return DatabaseResult.UnknownError;
+            result = DatabaseResult.UnknownError;
         }
         catch (Exception exception)
         {
             Debug.LogException(exception);
-            return DatabaseResult.UnknownError;
+            result = DatabaseResult.UnknownError;
         }
+
+        OnGetTopPlayers?.Invoke(result, players);
+
+        return (result, players);
     }
 
-    public async UniTask<(DatabaseResult Result, PlayerData Data)> LoadPlayer()
+    public async UniTask<(DatabaseResult Result, PlayerData Player)> GetPlayerByPlace(int place)
     {
-        if (!_authenticationInfo.IsAuthorized) return (DatabaseResult.NotAuthorized, null);
+        OnGetPlayerByPlaceStarted?.Invoke();
+
+        DatabaseResult result;
+        PlayerData player = null;
+
+        if (place <= 0)
+        {
+            result = DatabaseResult.NotFound;
+
+            OnGetPlayerByPlace?.Invoke(result, null);
+
+            return (result, null);
+        }
 
         try
         {
-            DatabaseReference reference = GetPlayerReference();
+            DataSnapshot snapshot = await _database.RootReference
+                .Child(UsersNode)
+                .OrderByChild("Level")
+                .LimitToLast(place)
+                .GetValueAsync()
+                .AsUniTask()
+                .AttachExternalCancellation(_disposeCts.Token)
+                .Timeout(TimeSpan.FromSeconds(RequestTimeoutSeconds));
 
-            DataSnapshot snapshot = await reference.GetValueAsync();
+            List<PlayerData> players = ReadPlayers(snapshot);
 
-            if (!snapshot.Exists)
-                return (DatabaseResult.NotFound, null);
+            players.Sort((a, b) => b.Level.CompareTo(a.Level));
 
-            PlayerData data = ReadPlayerData(snapshot);
+            int index = place - 1;
 
-            return (DatabaseResult.Success, data);
+            if (index >= players.Count)
+            {
+                result = DatabaseResult.NotFound;
+            }
+            else
+            {
+                result = DatabaseResult.Success;
+                player = players[index];
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            return (DatabaseResult.Cancelled, null);
+        }
+        catch (TimeoutException)
+        {
+            result = DatabaseResult.Timeout;
         }
         catch (DatabaseException exception)
         {
             Debug.LogException(exception);
-            return (DatabaseResult.UnknownError, null);
+            result = DatabaseResult.UnknownError;
         }
         catch (Exception exception)
         {
             Debug.LogException(exception);
-            return (DatabaseResult.UnknownError, null);
+            result = DatabaseResult.UnknownError;
         }
+
+        OnGetPlayerByPlace?.Invoke(result, player);
+
+        return (result, player);
     }
 
-    private DatabaseReference GetPlayerReference()
+    private static List<PlayerData> ReadPlayers(DataSnapshot snapshot)
     {
-        return _database.RootReference
-            .Child(UsersNode)
-            .Child(_authenticationInfo.UserId);
-    }
+        List<PlayerData> players = new();
 
-    private static Dictionary<string, object> CreateValues(PlayerData data)
-    {
-        return new Dictionary<string, object>
+        foreach (DataSnapshot child in snapshot.Children)
         {
-            ["Nickname"] = data.Nickname,
-            ["Level"] = data.Level
-        };
+            players.Add(ReadPlayerData(child));
+        }
+
+        return players;
     }
 
     private static PlayerData ReadPlayerData(DataSnapshot snapshot)
@@ -97,24 +153,16 @@ public sealed class FirebaseDatabaseModel
 
         return new PlayerData(nickname, level);
     }
-}
 
-public sealed class PlayerData
-{
-    public string Nickname { get; }
-    public int Level { get; }
+    public event Action OnGetTopPlayersStarted;
+    public event Action<DatabaseResult, List<PlayerData>> OnGetTopPlayers;
 
-    public PlayerData(string nickname, int level)
+    public event Action OnGetPlayerByPlaceStarted;
+    public event Action<DatabaseResult, PlayerData> OnGetPlayerByPlace;
+
+    public void Dispose()
     {
-        Nickname = nickname;
-        Level = level;
+        _disposeCts.Cancel();
+        _disposeCts.Dispose();
     }
-}
-
-public enum DatabaseResult
-{
-    Success,
-    NotAuthorized,
-    NotFound,
-    UnknownError
 }

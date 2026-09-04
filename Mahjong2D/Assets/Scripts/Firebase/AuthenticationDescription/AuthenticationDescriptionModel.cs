@@ -7,11 +7,26 @@ public class AuthenticationDescriptionModel
 {
     private readonly Dictionary<AuthenticationResult, string> _descriptions = new()
     {
-        [AuthenticationResult.Success] = string.Empty,
-        [AuthenticationResult.NicknameAlreadyUsed] = "This nickname is already registered.",
-        [AuthenticationResult.InvalidNickname] = "Please enter a valid nickname.",
-        [AuthenticationResult.NetworkError] = "No internet connection. Please try again.",
-        [AuthenticationResult.UnknownError] = "Something went wrong. Please try again."
+        [AuthenticationResult.Success] =
+        string.Empty,
+
+        [AuthenticationResult.NicknameAlreadyUsed] =
+        "This nickname is already registered.",
+
+        [AuthenticationResult.InvalidNickname] =
+        "Please enter a valid nickname.",
+
+        [AuthenticationResult.NotAuthorized] =
+        "You are not authorized.",
+
+        [AuthenticationResult.NetworkError] =
+        "No internet connection. Please try again.",
+
+        [AuthenticationResult.Timeout] =
+        "The connection is taking too long. Please check your internet connection and try again.",
+
+        [AuthenticationResult.UnknownError] =
+        "Something went wrong or no internet connection. Please try again."
     };
 
     private readonly IAuthenticationEventsProvider _authenticationEventsProvider;

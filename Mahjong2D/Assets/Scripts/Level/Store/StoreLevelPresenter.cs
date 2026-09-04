@@ -42,6 +42,11 @@ public class StoreLevelPresenter : ILevelInfoProvider, ILevelEventsProvider, ILe
         _model.IncreaseLevel();
     }
 
+    public void SetZero()
+    {
+        _model.SetLevel(0);
+    }
+
     #endregion
 }
 
@@ -58,4 +63,5 @@ public interface ILevelEventsProvider
 public interface ILevelProvider
 {
     void IncreaseLevel();
+    void SetZero();
 }
