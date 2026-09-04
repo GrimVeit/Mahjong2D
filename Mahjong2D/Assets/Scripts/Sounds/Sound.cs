@@ -45,7 +45,9 @@ public class Sound : ISound
 
         if (isPlayAwake)
         {
+            audioSource.volume = 0;
             audioSource.Play();
+            SetVolumeEnd(localVolume, 0.4f);
         }
     }
 

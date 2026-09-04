@@ -8,6 +8,7 @@ public class MahjongModel
 {
     private readonly MahjongBoardGenerator _generator;
     private readonly IMovesProvider _movesProvider;
+    private readonly ISoundProvider _soundProvider;
 
     private readonly List<MahjongTileData> tiles = new();
 
@@ -15,15 +16,13 @@ public class MahjongModel
 
     private CancellationTokenSource generateCancellation;
 
+    public IReadOnlyList<MahjongTileData> Tiles => tiles;
 
-    public IReadOnlyList<MahjongTileData> Tiles =>
-        tiles;
-
-
-    public MahjongModel(MahjongBoardGenerator generator, IMovesProvider movesProvider)
+    public MahjongModel(MahjongBoardGenerator generator, IMovesProvider movesProvider, ISoundProvider soundProvider)
     {
         _generator = generator;
         _movesProvider = movesProvider;
+        _soundProvider = soundProvider;
     }
 
 
@@ -319,6 +318,7 @@ public class MahjongModel
                 tile.Id
             );
 
+            _soundProvider.PlayOneShot("Choose");
 
             return;
         }
@@ -333,6 +333,8 @@ public class MahjongModel
             OnTileUnselected?.Invoke(
                 firstSelectedTile.Id
             );
+
+            _soundProvider.PlayOneShot("Choose");
 
 
             firstSelectedTile = null;
@@ -358,16 +360,15 @@ public class MahjongModel
         // PAIR CHECK
         // =====================================================
 
-        if (firstTile.PairId !=
-            secondTile.PairId)
+        if (firstTile.PairId != secondTile.PairId)
         {
             OnTileUnselected?.Invoke(
                 firstTile.Id
             );
 
-
             firstSelectedTile = null;
 
+            _soundProvider.PlayOneShot("Incorrect");
 
             return;
         }
@@ -399,6 +400,8 @@ public class MahjongModel
         RemoveTile(
             secondTile
         );
+
+        _soundProvider.PlayOneShot("Choose");
 
 
         UpdateActiveStates();

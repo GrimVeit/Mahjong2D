@@ -6,10 +6,12 @@ using UnityEngine;
 public class MahjongMatchModel
 {
     private readonly IMahjongListener _mahjongListener;
+    private readonly ISoundProvider _soundProvider;
 
-    public MahjongMatchModel(IMahjongListener mahjongListener)
+    public MahjongMatchModel(IMahjongListener mahjongListener, ISoundProvider soundProvider)
     {
         _mahjongListener = mahjongListener;
+        _soundProvider = soundProvider;
     }
 
     public void Initialize()
@@ -20,6 +22,11 @@ public class MahjongMatchModel
     public void Dispose()
     {
         _mahjongListener.OnPairRemoved -= SetPair;
+    }
+
+    public void Punch()
+    {
+        _soundProvider.PlayOneShot("Correct");
     }
 
     private void SetPair(MahjongPairRemovedData removedData)

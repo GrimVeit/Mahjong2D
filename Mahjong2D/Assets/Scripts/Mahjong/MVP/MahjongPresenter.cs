@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 
-public class MahjongPresenter :
-    IMahjongListener,
-    IMahjongProvider,
-    IMahjongInfo
+public class MahjongPresenter : IMahjongListener, IMahjongProvider, IMahjongInfo
 {
     private readonly MahjongModel model;
     private readonly MahjongView view;
@@ -122,12 +119,9 @@ public class MahjongPresenter :
     // INPUT
     // =========================================================
 
-    private void HandleClickTile(
-        int tileId)
+    private void HandleClickTile(int tileId)
     {
-        model.SelectTile(
-            tileId
-        );
+        model.SelectTile(tileId);
     }
 
 

@@ -288,6 +288,7 @@ public class MahjongMatchView : View
 
         sequence.AppendCallback(() =>
         {
+            OnPunch?.Invoke();
             impact = CreateImpact(center);
         });
 
@@ -654,6 +655,8 @@ public class MahjongMatchView : View
 
     public event Action OnStartMatch;
     public event Action OnEndMatch;
+
+    public event Action OnPunch;
 
     #endregion
 }

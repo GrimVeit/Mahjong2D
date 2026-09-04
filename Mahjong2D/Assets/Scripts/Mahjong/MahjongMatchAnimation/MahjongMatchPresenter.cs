@@ -30,11 +30,15 @@ public class MahjongMatchPresenter : IMahjongMatchListener
 
     private void ActivateEvents()
     {
+        _view.OnPunch += _model.Punch;
+
         _model.OnSetPair += _view.Play;
     }
 
     private void DeactivateEvents()
     {
+        _view.OnPunch -= _model.Punch;
+
         _model.OnSetPair -= _view.Play;
     }
 

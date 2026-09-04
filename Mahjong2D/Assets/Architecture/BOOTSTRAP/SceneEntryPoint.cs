@@ -126,7 +126,6 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
 
     public virtual async UniTask ShutDown()
     {
-        _soundPresenter?.Dispose();
         _storeMoneyPresenter?.Dispose();
         _storeSoundSettingsPresenter?.Dispose();
         _storeLevelPresenter?.Dispose();
@@ -174,7 +173,11 @@ public abstract class SceneEntryPoint : MonoBehaviour, ISceneEntry
     // -----------------------------------------------------
 
     public virtual UniTask BeforeShutdown()
-        => UniTask.CompletedTask;
+    {
+        _soundPresenter?.Dispose();
+
+        return UniTask.CompletedTask;
+    }
     protected virtual UniTask OnBaseInitialized(DIContainer container)
         => UniTask.CompletedTask;
 

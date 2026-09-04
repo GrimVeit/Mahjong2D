@@ -33,11 +33,6 @@ public class SoundModel
 
     public void Initialize()
     {
-        foreach (Sound sound in _sounds.Values)
-        {
-            sound.Initialize();
-        }
-
         _settingsEvents.OnChangeSoundVolume += HandleChangeSoundVolume;
         _settingsEvents.OnChangeMusicVolume += HandleChangeMusicVolume;
         _settingsEvents.OnChangeMute += HandleChangeMute;
@@ -45,6 +40,11 @@ public class SoundModel
         HandleChangeSoundVolume(_settingsInfo.SoundVolume);
         HandleChangeMusicVolume(_settingsInfo.MusicVolume);
         HandleChangeMute(_settingsInfo.IsMuted);
+
+        foreach (Sound sound in _sounds.Values)
+        {
+            sound.Initialize();
+        }
     }
 
     public void Dispose()
@@ -55,7 +55,7 @@ public class SoundModel
 
         foreach (Sound sound in _sounds.Values)
         {
-            sound.Dispose();
+            sound.SetVolumeEnd(0, 0.4f);
         }
     }
 

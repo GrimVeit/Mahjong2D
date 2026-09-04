@@ -120,12 +120,12 @@ public class GameEntryPoint : SceneEntryPoint
             _viewContainer.GetView<MoneyVisualView>()
         );
 
-        _mahjongPresenter = new MahjongPresenter(new MahjongModel(mahjongBoardGenerator, _storeMovesPresenter), _viewContainer.GetView<MahjongView>());
+        _mahjongPresenter = new MahjongPresenter(new MahjongModel(mahjongBoardGenerator, _storeMovesPresenter, _soundPresenter), _viewContainer.GetView<MahjongView>());
         container.RegisterInstance<IMahjongProvider>(_mahjongPresenter);
         container.RegisterInstance<IMahjongListener>(_mahjongPresenter);
         container.RegisterInstance<IMahjongInfo>(_mahjongPresenter);
 
-        _mahjongMatchPresenter = new MahjongMatchPresenter(new MahjongMatchModel(_mahjongPresenter), _viewContainer.GetView<MahjongMatchView>());
+        _mahjongMatchPresenter = new MahjongMatchPresenter(new MahjongMatchModel(_mahjongPresenter, _soundPresenter), _viewContainer.GetView<MahjongMatchView>());
         container.RegisterInstance<IMahjongMatchListener>(_mahjongMatchPresenter);
 
         _mahjongMixPresenter = new MahjongMixPresenter(new MahjongMixModel(_mahjongPresenter, _mahjongPresenter), _viewContainer.GetView<MahjongMixView>());
