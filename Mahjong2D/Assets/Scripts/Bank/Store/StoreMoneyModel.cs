@@ -8,7 +8,7 @@ public class StoreMoneyModel
     private readonly string _moneyKey;
     private readonly int _defaultMoney;
 
-    public StoreMoneyModel(string moneyKey, int defaultMoney = 3500)
+    public StoreMoneyModel(string moneyKey, int defaultMoney = 0)
     {
         _moneyKey = moneyKey;
         _defaultMoney = defaultMoney;

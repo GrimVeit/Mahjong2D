@@ -15,4 +15,4 @@ MonoBehaviour:
   index: 1
   nameBack: Dragon
   sprite: {fileID: 21300000, guid: 2c0b21388a1b8534aa3d5468d4cc4710, type: 3}
-  price: 25
+  price: 900

@@ -15,4 +15,4 @@ MonoBehaviour:
   index: 3
   nameBack: Player
   sprite: {fileID: 21300000, guid: c27da0a5f4b0d374d989be5a39380ebc, type: 3}
-  price: 15
+  price: 900

@@ -15,4 +15,4 @@ MonoBehaviour:
   index: 7
   nameBack: Fortune
   sprite: {fileID: 21300000, guid: 53f1f42361a8c4b42892d22c93d27b77, type: 3}
-  price: 35
+  price: 1500

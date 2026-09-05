@@ -216,7 +216,7 @@ public class UIRoot_Game : UIRoot
 
     private void ClickMenu_MainHeader()
     {
-        _soundProvider?.PlayOneShot("Click");
+        _soundProvider?.PlayOneShot("Transition");
 
         OnClickMenu_MainHeader?.Invoke();
     }
@@ -231,14 +231,14 @@ public class UIRoot_Game : UIRoot
 
     private void ClickMenu_Win()
     {
-        _soundProvider?.PlayOneShot("Click");
+        _soundProvider?.PlayOneShot("Transition");
 
         OnClickMenu_Win?.Invoke();
     }
 
     private void ClickGame_Win()
     {
-        _soundProvider?.PlayOneShot("Click");
+        _soundProvider?.PlayOneShot("Transition");
 
         OnClickGame_Win?.Invoke();
     }
@@ -253,14 +253,14 @@ public class UIRoot_Game : UIRoot
 
     private void ClickMenu_Lose()
     {
-        _soundProvider?.PlayOneShot("Click");
+        _soundProvider?.PlayOneShot("Transition");
 
         OnClickMenu_Lose?.Invoke();
     }
 
     private void ClickGame_Lose()
     {
-        _soundProvider?.PlayOneShot("Click");
+        _soundProvider?.PlayOneShot("Transition");
 
         OnClickGame_Lose?.Invoke();
     }

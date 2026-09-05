@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: BackgroundData_1
   m_EditorClassIdentifier: 
   index: 0
-  nameBack: Doctor Hui
+  nameBack: Doctor
   sprite: {fileID: 21300000, guid: e6716195f01b44642aa964f49cc8bb93, type: 3}
-  price: 12
+  price: 0

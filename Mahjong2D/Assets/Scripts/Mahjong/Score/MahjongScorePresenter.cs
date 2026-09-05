@@ -16,6 +16,8 @@ public class MahjongScorePresenter : IMahjongScoreProvider
     public void Initialize()
     {
         ActivateEvents();
+
+        _model.Initialize();
     }
 
     public void Dispose()

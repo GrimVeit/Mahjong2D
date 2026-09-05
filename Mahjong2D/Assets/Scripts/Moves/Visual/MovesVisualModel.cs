@@ -12,6 +12,8 @@ public class MovesVisualModel
     public void Initialize()
     {
         _movesEventsProvider.OnChangeMoves += SetMoves;
+
+        SetMoves(0);
     }
 
     public void Dispose()

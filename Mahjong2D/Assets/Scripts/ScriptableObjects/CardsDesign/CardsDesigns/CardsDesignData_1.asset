@@ -15,4 +15,4 @@ MonoBehaviour:
   index: 0
   nameBack: Standard
   sprite: {fileID: 21300000, guid: 126a7e2d378126242b964a432edfac2f, type: 3}
-  price: 25
+  price: 0

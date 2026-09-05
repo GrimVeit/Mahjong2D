@@ -99,6 +99,8 @@ public class GameEntryPoint : SceneEntryPoint
 
     protected override UniTask OnBaseInitialized(DIContainer container)
     {
+        _uIRoot.SetSoundProvider(_soundPresenter);
+
         _storeMahjongTilesPresenter = new StoreMahjongTilesPresenter(new StoreMahjongTilesModel(tilesSpritesGroup));
         container.RegisterInstance<IMahjongTilesSpritesProvider>(_storeMahjongTilesPresenter);
 

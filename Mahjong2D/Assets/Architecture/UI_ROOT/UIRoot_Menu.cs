@@ -308,7 +308,7 @@ public class UIRoot_Menu : UIRoot
 
     private void ClickPlay_Main()
     {
-        _soundProvider?.PlayOneShot("Click");
+        _soundProvider?.PlayOneShot("Transition");
 
         OnClickPlay_Main?.Invoke();
     }
@@ -349,7 +349,7 @@ public class UIRoot_Menu : UIRoot
 
     private void ClickExit_Settings()
     {
-        _soundProvider?.PlayOneShot("Click");
+        _soundProvider?.PlayOneShot("Click_Back");
 
         OnClickExit_Settings?.Invoke();
     }
@@ -362,7 +362,7 @@ public class UIRoot_Menu : UIRoot
 
     private void ClickExit_Wallet()
     {
-        _soundProvider?.PlayOneShot("Click");
+        _soundProvider?.PlayOneShot("Click_Back");
 
         OnClickExit_Wallet?.Invoke();
     }
@@ -375,7 +375,7 @@ public class UIRoot_Menu : UIRoot
 
     private void ClickExit_Leader()
     {
-        _soundProvider?.PlayOneShot("Click");
+        _soundProvider?.PlayOneShot("Click_Back");
 
         OnClickExit_Leader?.Invoke();
     }
@@ -390,7 +390,7 @@ public class UIRoot_Menu : UIRoot
 
     private void ClickExit_StoreChooseType()
     {
-        _soundProvider?.PlayOneShot("Click");
+        _soundProvider?.PlayOneShot("Click_Back");
 
         OnClickExit_StoreChooseType?.Invoke();
     }
@@ -417,7 +417,7 @@ public class UIRoot_Menu : UIRoot
 
     private void ClickExit_StoreBackground()
     {
-        _soundProvider?.PlayOneShot("Click");
+        _soundProvider?.PlayOneShot("Click_Back");
 
         OnClickExit_StoreBackground?.Invoke();
     }
@@ -430,7 +430,7 @@ public class UIRoot_Menu : UIRoot
 
     private void ClickExit_StoreDesign()
     {
-        _soundProvider?.PlayOneShot("Click");
+        _soundProvider?.PlayOneShot("Click_Back");
 
         OnClickExit_StoreDesign?.Invoke();
     }

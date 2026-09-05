@@ -266,7 +266,7 @@ public class BuyDisplay
         sequence.Insert(
             0f,
             transformBuy
-                .DOScale(1, duration)
+                .DOScale(0.9f, duration)
                 .SetEase(Ease.OutBack)
         );
     }

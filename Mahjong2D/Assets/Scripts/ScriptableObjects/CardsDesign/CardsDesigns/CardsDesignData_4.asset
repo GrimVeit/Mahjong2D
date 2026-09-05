@@ -15,4 +15,4 @@ MonoBehaviour:
   index: 3
   nameBack: Cats
   sprite: {fileID: 21300000, guid: c2192ea735025f8459cdd10a9be62003, type: 3}
-  price: 25
+  price: 1400

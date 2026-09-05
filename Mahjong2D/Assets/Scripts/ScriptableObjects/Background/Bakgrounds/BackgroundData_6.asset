@@ -15,4 +15,4 @@ MonoBehaviour:
   index: 5
   nameBack: Village
   sprite: {fileID: 21300000, guid: 267b31cc4d08916448c0cce33c92708f, type: 3}
-  price: 35
+  price: 1200
