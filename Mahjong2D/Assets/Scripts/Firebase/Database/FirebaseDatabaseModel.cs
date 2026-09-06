@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -8,6 +7,7 @@ using UnityEngine;
 
 public sealed class FirebaseDatabaseModel : IDisposable
 {
+    private const string DataNode = "Data";
     private const string UsersNode = "Users";
     private const int RequestTimeoutSeconds = 7;
 
@@ -18,6 +18,8 @@ public sealed class FirebaseDatabaseModel : IDisposable
     {
         _database = database;
     }
+
+    #region Players
 
     public async UniTask<(DatabaseResult Result, List<PlayerData> Players)> GetTopPlayers(int count)
     {
@@ -154,15 +156,93 @@ public sealed class FirebaseDatabaseModel : IDisposable
         return new PlayerData(nickname, level);
     }
 
+    #endregion
+
+    #region Others
+
+    public async UniTask<(DatabaseResult Result, LinkGeoData Data)> GetLinkGeoData()
+    {
+        OnGetLinkConfigStarted?.Invoke();
+
+        DatabaseResult result;
+        LinkGeoData data = null;
+
+        try
+        {
+            DataSnapshot snapshot = await _database.RootReference
+                .Child(DataNode)
+                .GetValueAsync()
+                .AsUniTask()
+                .AttachExternalCancellation(_disposeCts.Token)
+                .Timeout(TimeSpan.FromSeconds(RequestTimeoutSeconds));
+
+            string link = snapshot.Child("Link").Value?.ToString();
+
+            List<string> geo = new();
+
+            foreach (DataSnapshot child in snapshot.Child("Geo").Children)
+            {
+                string value = child.Value?.ToString();
+
+                if (!string.IsNullOrEmpty(value))
+                {
+                    geo.Add(value);
+                }
+            }
+
+            data = new LinkGeoData(link, geo);
+            result = DatabaseResult.Success;
+        }
+        catch (OperationCanceledException)
+        {
+            return (DatabaseResult.Cancelled, null);
+        }
+        catch (TimeoutException)
+        {
+            result = DatabaseResult.Timeout;
+        }
+        catch (DatabaseException exception)
+        {
+            Debug.LogException(exception);
+            result = DatabaseResult.UnknownError;
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception);
+            result = DatabaseResult.UnknownError;
+        }
+
+        OnGetLinkConfig?.Invoke(result, data);
+
+        return (result, data);
+    }
+
+    #endregion
+
     public event Action OnGetTopPlayersStarted;
     public event Action<DatabaseResult, List<PlayerData>> OnGetTopPlayers;
 
     public event Action OnGetPlayerByPlaceStarted;
     public event Action<DatabaseResult, PlayerData> OnGetPlayerByPlace;
 
+    public event Action OnGetLinkConfigStarted; 
+    public event Action<DatabaseResult, LinkGeoData> OnGetLinkConfig;
+
     public void Dispose()
     {
         _disposeCts.Cancel();
         _disposeCts.Dispose();
+    }
+}
+
+public sealed class LinkGeoData
+{
+    public string Link { get; }
+    public List<string> Geo { get; }
+
+    public LinkGeoData(string link, List<string> geo)
+    {
+        Link = link;
+        Geo = geo;
     }
 }

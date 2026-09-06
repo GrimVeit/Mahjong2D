@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>964161670265-3cd8o4cton77p4h9o25bvgbofa3be8i4.apps.googleusercontent.com</string>
+	<string>964161670265-nuhkggke0ctnl6a4b5mhm0bvc3bn20cg.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.964161670265-3cd8o4cton77p4h9o25bvgbofa3be8i4</string>
+	<string>com.googleusercontent.apps.964161670265-nuhkggke0ctnl6a4b5mhm0bvc3bn20cg</string>
 	<key>API_KEY</key>
 	<string>AIzaSyB2p7FV6XsAYZ2BVclK_fExsv2Z_ANJeXM</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.test.mahjong</string>
+	<string>com.cardsgame.mahjongg</string>
 	<key>PROJECT_ID</key>
 	<string>mahjong2d-cbd24</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,7 +29,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:964161670265:ios:ebfc043c88528c6a2218a8</string>
+	<string>1:964161670265:ios:2f64f4dbbd06716b2218a8</string>
 	<key>DATABASE_URL</key>
 	<string>https://mahjong2d-cbd24-default-rtdb.asia-southeast1.firebasedatabase.app</string>
 </dict>

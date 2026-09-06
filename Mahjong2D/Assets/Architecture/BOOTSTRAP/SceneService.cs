@@ -109,7 +109,7 @@ public class SceneService : ISceneService
         await currentScene.BeforeShutdown();
     }
 
-    private async UniTask ShowLoading(LoadingType type)
+    public async UniTask ShowLoading(LoadingType type)
     {
         if (type == LoadingType.None)
             return;
@@ -119,7 +119,7 @@ public class SceneService : ISceneService
         await uiRoot.ShowLoadingScreen(type);
     }
 
-    private async UniTask HideLoading(LoadingType type)
+    public async UniTask HideLoading(LoadingType type)
     {
         if (type == LoadingType.None)
             return;
@@ -134,4 +134,7 @@ public interface ISceneService
 {
     void ChangeScene(SceneTransition transition);
     UniTask<bool> ChangeSceneAsync(SceneTransition transition);
+
+    public UniTask ShowLoading(LoadingType type);
+    public UniTask HideLoading(LoadingType type);
 }
