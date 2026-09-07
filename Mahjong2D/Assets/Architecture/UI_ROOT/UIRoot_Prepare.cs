@@ -2,10 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum LoadingType
+public class UIRoot_Prepare : UIRoot
 {
-    None,
-    Black,
-    Start,
-    Default,
+    
 }

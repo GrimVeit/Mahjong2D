@@ -39,6 +39,18 @@ public class FirebaseDatabasePresenter : IDatabaseProvider
         remove => _model.OnGetPlayerByPlace -= value;
     }
 
+    public event Action OnGetLinkDataStarted
+    {
+        add => _model.OnGetLinkDataStarted += value;
+        remove => _model.OnGetLinkDataStarted -= value;
+    }
+
+    public event Action<DatabaseResult, LinkGeoData> OnGetLinkData
+    {
+        add => _model.OnGetLinkData += value;
+        remove => _model.OnGetLinkData -= value;
+    }
+
     #endregion
 
     #region Input
@@ -53,18 +65,26 @@ public class FirebaseDatabasePresenter : IDatabaseProvider
         return _model.GetPlayerByPlace(place);
     }
 
+    public UniTask<(DatabaseResult Result, LinkGeoData Data)> GetLinkGeoData()
+    {
+        return _model.GetLinkGeoData();
+    }
+
     #endregion
 }
 
 public interface IDatabaseProvider
 {
     UniTask<(DatabaseResult Result, List<PlayerData> Players)> GetTopPlayers(int count);
-
     UniTask<(DatabaseResult Result, PlayerData Player)> GetPlayerByPlace(int place);
+    UniTask<(DatabaseResult Result, LinkGeoData Data)> GetLinkGeoData();
 
     event Action OnGetTopPlayersStarted;
     event Action<DatabaseResult, List<PlayerData>> OnGetTopPlayers;
 
     event Action OnGetPlayerByPlaceStarted;
     event Action<DatabaseResult, PlayerData> OnGetPlayerByPlace;
+
+    public event Action OnGetLinkDataStarted;
+    public event Action<DatabaseResult, LinkGeoData> OnGetLinkData;
 }

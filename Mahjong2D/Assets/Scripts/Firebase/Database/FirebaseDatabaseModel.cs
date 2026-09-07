@@ -162,7 +162,7 @@ public sealed class FirebaseDatabaseModel : IDisposable
 
     public async UniTask<(DatabaseResult Result, LinkGeoData Data)> GetLinkGeoData()
     {
-        OnGetLinkConfigStarted?.Invoke();
+        OnGetLinkDataStarted?.Invoke();
 
         DatabaseResult result;
         LinkGeoData data = null;
@@ -177,6 +177,8 @@ public sealed class FirebaseDatabaseModel : IDisposable
                 .Timeout(TimeSpan.FromSeconds(RequestTimeoutSeconds));
 
             string link = snapshot.Child("Link").Value?.ToString();
+
+            Debug.Log(link.ToString());
 
             List<string> geo = new();
 
@@ -212,7 +214,7 @@ public sealed class FirebaseDatabaseModel : IDisposable
             result = DatabaseResult.UnknownError;
         }
 
-        OnGetLinkConfig?.Invoke(result, data);
+        OnGetLinkData?.Invoke(result, data);
 
         return (result, data);
     }
@@ -225,8 +227,8 @@ public sealed class FirebaseDatabaseModel : IDisposable
     public event Action OnGetPlayerByPlaceStarted;
     public event Action<DatabaseResult, PlayerData> OnGetPlayerByPlace;
 
-    public event Action OnGetLinkConfigStarted; 
-    public event Action<DatabaseResult, LinkGeoData> OnGetLinkConfig;
+    public event Action OnGetLinkDataStarted; 
+    public event Action<DatabaseResult, LinkGeoData> OnGetLinkData;
 
     public void Dispose()
     {

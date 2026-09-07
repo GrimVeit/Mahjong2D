@@ -281,7 +281,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 190454760}
-  - component: {fileID: 190454761}
   - component: {fileID: 190454762}
   m_Layer: 0
   m_Name: SceneEntryPoint
@@ -305,18 +304,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &190454761
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 190454759}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3291f558643b5a4382f1180ad8fd8f5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &190454762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -332,6 +319,7 @@ MonoBehaviour:
   sounds: []
   backgroundDatas: []
   cardsDesignDatas: []
+  uIRoot: {fileID: 1552479689102697575, guid: c5235fb65d2dd124b8fa1a2016c3b45f, type: 3}
 --- !u!1 &1624560541
 GameObject:
   m_ObjectHideFlags: 0

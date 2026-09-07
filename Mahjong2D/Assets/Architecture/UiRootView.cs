@@ -6,6 +6,7 @@ public class UIRootView : MonoBehaviour
 {
     [SerializeField] private Canvas canvas;
     [SerializeField] private FadePanel fadeBlackPanel;
+    [SerializeField] private FadePanel fadeStaticPanel;
     [SerializeField] private CircleTransitionUI circleTransitionUI;
     [SerializeField] private Transform uiSceneContainer;
 
@@ -18,27 +19,43 @@ public class UIRootView : MonoBehaviour
 
     public async UniTask ShowLoadingScreen(LoadingType loadingType)
     {
-        if(loadingType == LoadingType.Black)
+        switch (loadingType)
         {
-            fadeBlackPanel.Show();
+            case LoadingType.Black:
 
-            await UniTask.Delay(100);
-        }
-        else
-        {
-            await circleTransitionUI.Show();
+                fadeBlackPanel.Show();
+                await UniTask.Delay(100);
+
+                return;
+            case LoadingType.Start:
+
+                fadeStaticPanel.Show();
+                await UniTask.Delay(100);
+
+                return;
+            case LoadingType.Default:
+                await circleTransitionUI.Show();
+                return;
         }
     }
 
     public async UniTask HideLoadingScreen(LoadingType loadingType)
     {
-        if (loadingType == LoadingType.Black)
+        switch (loadingType)
         {
-            fadeBlackPanel.Hide();
-        }
-        else
-        {
-            await circleTransitionUI.Hide();
+            case LoadingType.Black:
+
+                fadeBlackPanel.Hide();
+
+                return;
+            case LoadingType.Start:
+
+                fadeStaticPanel.Hide();
+
+                return;
+            case LoadingType.Default:
+                await circleTransitionUI.Hide();
+                return;
         }
     }
 
